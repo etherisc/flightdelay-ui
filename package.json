@@ -52,7 +52,7 @@
     "@etherisc/qcc": "0.0.3-5861ef1-169",
     "@hookform/devtools": "^4.3.1",
     "@openzeppelin/contracts": "^5.0.0",
-    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
     "@typechain/ethers-v6": "^0.5.1",
