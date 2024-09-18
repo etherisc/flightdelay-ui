@@ -21,14 +21,4 @@ updates:
     ignore:
       - dependency-name: "@types/node"
         versions: ["22.x"]
-  - package-ecosystem: "npm"
-    directory: "/webapp/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 30
-  - package-ecosystem: "npm"
-    directory: "/component-lib/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 30
-    
+  
