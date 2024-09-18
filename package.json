@@ -22,7 +22,7 @@
     "@fortawesome/pro-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@mui/material": "^5.14.19",
-    "@react-hooks-hub/use-debounce": "^1.1.5",
+    "@react-hooks-hub/use-debounce": "^1.1.8",
     "@reduxjs/toolkit": "^2.0.1",
     "@uidotdev/usehooks": "^2.4.1",
     "abi-coder": "^5.0.0",
