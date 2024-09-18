@@ -2,14 +2,12 @@
 
 import { Box, Dialog, Slide, Typography } from "@mui/material";
 import Trans from "../Trans/trans";
-import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import ConnectButton from "./connect_button";
 import { forwardRef, useState } from "react";
 import { TransitionProps } from "@mui/material/transitions";
 import { ZINDEX_WALLET } from "../../config/theme";
-import Card from "../(basic_widgets)/Card/card";
 import Wallet from "./wallet";
 import { JazziconAvatar } from "../(basic_widgets)/Jazzicon/jazzicon_avatar";
 
@@ -30,7 +28,8 @@ export default function TopBar() {
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Image src="/icon.svg" alt="logo_alt" width={40} height={40} /> 
+            {/* <Image src="/etherisc_logo_white.svg" alt="logo_alt" width={40} height={40} />  */}
+            LogoHere
             <Typography variant="h1" component="div" sx={{ flexGrow: 1, ml: 1 }}>
                 <Trans k="app_name" />
             </Typography>
@@ -49,7 +48,7 @@ export default function TopBar() {
                     }
                 }}
                 // Paper={Card}
-                PaperComponent={Card}
+                // PaperComponent={Card}
             >
                 <Wallet 
                     onDisconnect={toggleWallet}

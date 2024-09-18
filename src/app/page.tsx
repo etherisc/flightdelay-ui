@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
-import { PATH_SIGNUP } from '../utils/paths';
+import { PATH_APPLICATION } from '../utils/paths';
 
 export default function Page() {
-    redirect(PATH_SIGNUP);
+    redirect(PATH_APPLICATION);
 }
 

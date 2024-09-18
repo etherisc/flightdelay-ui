@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { formatAmount } from '../../utils/amount';
 import { parseBigInt } from '../../utils/bigint';
-import { PATH_MYPOLICIES, PATH_SIGNUP } from '../../utils/paths';
+import { PATH_MYPOLICIES, PATH_APPLICATION } from '../../utils/paths';
 import { JazziconAvatar } from '../(basic_widgets)/Jazzicon/jazzicon_avatar';
 import Button from '../Button/button';
 import Trans from '../Trans/trans';
@@ -19,9 +19,9 @@ export default function Wallet({
     onDisconnect?: () => void;
 }) {
     const { disconnectWallet, refreshBalance } = useWallet();
-    const address = useSelector((state: RootState) => state.wallet.address);
-    const balanceEth = useSelector((state: RootState) => state.wallet.balanceEth);
-    const balanceUsdc = useSelector((state: RootState) => state.wallet.balanceUsdc);
+    const address = useSelector((state: RootState) => state.wallet.address) || '';
+    const balanceEth = useSelector((state: RootState) => state.wallet.balanceEth) || '0';
+    const balanceUsdc = useSelector((state: RootState) => state.wallet.balanceUsdc) || '0';
     const symbol = useSelector((state: RootState) => state.common.tokenSymbol);
     const symbolEth = useSelector((state: RootState) => state.common.tokenSymbolEth);
 
@@ -66,7 +66,7 @@ export default function Wallet({
                 </Box>
                 <Trans k="action.refresh"/>
             </Button>
-            <Link href={PATH_SIGNUP}>
+            <Link href={PATH_APPLICATION}>
                 <Button fullwidth sx={{ my: 1 }}>
                     <Box sx={{ mr: 2 }}>
                         <FontAwesomeIcon icon={faShoppingCart} />

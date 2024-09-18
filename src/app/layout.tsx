@@ -3,15 +3,13 @@ import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
 import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
-import { Box, Container } from '@mui/material';
-import 'leaflet/dist/leaflet.css';
+import { Container } from '@mui/material';
 import type { Metadata } from 'next';
 import React from 'react';
 import ThemeRegistry from '../components/ThemeRegistry/ThemeRegistry';
 import TopBar from '../components/TopBar/topbar';
 import './layout.css';
 import { PublicEnvProvider } from 'next-runtime-env';
-import BottomNav from '../components/BottomNav/bottom_nav';
 import { headers } from 'next/headers';
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { config } from "@fortawesome/fontawesome-svg-core"; 
@@ -55,14 +53,9 @@ function AppBaseLayout({
     children: React.ReactNode,
 }) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Container maxWidth="sm" sx={{ p: 2, py: 1 }}>
-                <TopBar />
-            </Container>
-            <Container maxWidth="sm" sx={{ p: 0, top: 0, bottom: 0, height: '100%', overflow: 'scroll' }}>
-                {children}
-            </Container>
-            <BottomNav />
-        </Box>
+        <Container maxWidth="md" sx={{ p: 2, py: 1 }}>
+            <TopBar />
+            {children}
+        </Container>
     )
 }

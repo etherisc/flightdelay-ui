@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { waitFor } from '@testing-library/react';
 import { SIGNUP_STEP_SELECT_LOCATION } from '../../../../src/utils/step_constants';
-import CheckoutSuccessPage from '../../../../src/app/signup/success/page';
+import CheckoutSuccessPage from '../../../../src/app/apply/success/page';
 import { tMock } from '../../../test-helper/i18n';
 import { renderWithProvidersAndDispatchMock } from '../../../test-helper/render_with_providers';
 
