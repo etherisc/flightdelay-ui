@@ -1,0 +1,7 @@
+html, body {
+    height: 100%;
+}
+
+.margin-bottom-2:last-child {
+    padding-bottom: 16px !important; 
+}

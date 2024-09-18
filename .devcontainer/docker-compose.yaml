@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  webapp:
+    # See https://aka.ms/vscode-remote/containers/non-root for details.
+    user: node
+    build: 
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        VARIANT: 1-20
+    volumes:
+      - ..:/workspaces/flightdelay-ui:cached
+      #- $HOME/.ssh/:/home/vscode/.ssh/ # Mount the ssh folder to authenticate with github
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+

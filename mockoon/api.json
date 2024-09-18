@@ -1,0 +1,396 @@
+{
+  "uuid": "693e7b8f-d70a-4390-a9f1-8beca4a771cd",
+  "lastMigration": 25,
+  "name": "Remote",
+  "endpointPrefix": "api",
+  "latency": 0,
+  "port": 27345,
+  "hostname": "0.0.0.0",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "bbca210b-0f51-4437-9d46-41bd6d101e37",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v1/cities/closest",
+      "responses": [
+        {
+          "uuid": "30b275dc-78ae-4576-a4ee-1780aabcd5b0",
+          "body": "{\n  \"request\":\"cities.closest\",\n  \"success\":1,\n  \"reqBudget\":65,\n  \"sec2reset\":60,\n  \"cities\": [\n    {\n        \"id\": 1,\n        \"name\": {\n            \"en\": \"Zurich\",\n            \"local\": \"Zuerich\"\n        },\n        \"lat\": {{subtract (queryParam 'lat') 0.10 }},\n        \"lon\": {{queryParam 'lon'}},\n        \"active\": true,\n        \"selling\": true\n    },\n    {\n        \"id\": 2,\n        \"name\": {\n            \"en\": \"Bern\",\n            \"local\": \"Bern\"\n        },\n        \"lat\": {{add (queryParam 'lat') 0.14 }},\n        \"lon\": {{queryParam 'lon'}},\n        \"active\": false,\n        \"selling\": true\n    },\n    {\n        \"id\": 3,\n        \"name\": {\n            \"en\": \"Basel\",\n            \"local\": \"Basel\"\n        },\n        \"lat\": {{queryParam 'lat' }},\n        \"lon\": {{add (queryParam 'lon') 0.20}},\n        \"active\": false,\n        \"selling\": false\n    }\n  ]\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "ok",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "123a9b72-6dd6-46f5-ab58-151547f37ea3",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "d2b10002-eae9-42b6-9be7-6038e6b38cbe",
+          "body": "{\n  \"request\":\"locations.cities.closest\",\n  \"success\":0,\n  \"sec2reset\":42,\n  \"err_id\":103,\n  \"err_msg\":\"API Token exceeded usage limit per minute\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "req budget used",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "f3c64733-5a28-4294-92cc-9bd313c39243",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v1/cities/premium",
+      "responses": [
+        {
+          "uuid": "01399025-89cb-4f9f-98d6-638fb96280f4",
+          "body": "{\n  \"request\": \"cities.premium\",\n  \"success\": 1,\n  \"reqBudget\": 65,\n  \"sec2reset\": 60,\n  \"city_id\": {{queryParam 'city_id'}},\n  \"type1\": { \n      \"minimum_premium\": 10, \n      \"maximum_premium\": 10000, \n      \"payout_ratio\": 5\n  },\n  \"type2\": { \n      \"minimum_premium\": 1000, \n      \"maximum_premium\": 100000, \n      \"payout_ratio\": 50\n  }\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "74d23869-c4b8-4ccd-8cf8-437c2b3788ec",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "041e10aa-f2cb-46af-8a04-d55f6235fb55",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v1/cities/payout_scale",
+      "responses": [
+        {
+          "uuid": "234634dc-20e3-461d-9c9a-7d16c445b106",
+          "body": "{\n  \"request\": \"cities.payout_scale\",\n  \"success\": 1,\n  \"reqBudget\": 65,\n  \"sec2reset\": 60,\n  \"city_id\": {{queryParam 'city_id'}},\n  \"policies\": [\n    {\n      \"policy_type\": \"type1\",\n      \"mmi_payout_scale\": [\n        {\n          \"mmi_level\": 5,\n          \"payout\": 0.25\n        },\n        {\n          \"mmi_level\": 6,\n          \"payout\": 0.5\n        },\n        {\n          \"mmi_level\": 7,\n          \"payout\": 1\n        }\n      ]\n    },\n    {\n      \"policy_type\": \"type2\",\n      \"mmi_payout_scale\": [\n        {\n          \"mmi_level\": 6,\n          \"payout\": 0.25\n        },\n        {\n          \"mmi_level\": 7,\n          \"payout\": 0.5\n        },\n        {\n          \"mmi_level\": 8,\n          \"payout\": 1\n        }\n      ]\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "9f3fbd2c-50cb-4205-a958-4300c6134247",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "f8510727-3416-48db-907c-c6abdfc5d376",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "v1/application/notification",
+      "responses": [
+        {
+          "uuid": "be25339b-ab9e-4866-90bc-e9c1e85c9429",
+          "body": "{\n    \"nft_id\": \"{{body 'nft_id'}}\"\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "f4ad2cd8-5246-431a-91da-7a721b3953c6",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "v1/application",
+      "responses": [
+        {
+          "uuid": "902be96f-bac6-421e-a9e9-56af92c7188b",
+          "body": "{}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "009f044d-60b0-48ba-bfa9-4aa0775ccedc",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v1/pricing/offer",
+      "responses": [
+        {
+          "uuid": "4d99725b-0255-4c87-902e-b97e24af4390",
+          "body": "{\n    \"type1_advocate_discount\": \"0.1\",\n    \"type2_advocate_discount\": \"0.15\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "7c722c45-c853-4cb3-a3e7-fe29b4bde508",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v1/cities/",
+      "responses": [
+        {
+          "uuid": "60ca03b3-2698-46f3-a5fa-96591705b719",
+          "body": "{\n  \"request\":\"cities\",\n  \"success\":1,\n  \"reqBudget\":65,\n  \"sec2reset\":60,\n  \"city\": [{\n      \"id\": {{queryParam 'city_id'}},\n      \"name\": {\n          \"en\": \"Zurich\",\n          \"local\": \"Zuerich (Mock)\"\n      },\n      \"lat\": 47.3769,\n      \"lon\": 8.5417,\n      \"active\": true,\n      \"selling\": true\n  }]\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "ok",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "2cc04e8b-16ab-44f9-928e-757b6269b244",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "cb9ed606-6fee-41e8-9e9f-71c18179c297",
+          "body": "{\n  \"request\":\"locations.cities.closest\",\n  \"success\":0,\n  \"sec2reset\":42,\n  \"err_id\":103,\n  \"err_msg\":\"API Token exceeded usage limit per minute\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "req budget used",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "89504013-db62-4096-bf01-469f241bb4e3",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "locationiq/v1/autocomplete",
+      "responses": [
+        {
+          "uuid": "19bc58cc-e119-4575-b00a-84b2532b9219",
+          "body": "[\n  {\n    \"place_id\": \"324227502613\",\n    \"osm_id\": \"370870741\",\n    \"osm_type\": \"way\",\n    \"licence\": \"https://locationiq.com/attribution\",\n    \"lat\": \"51.5081201\",\n    \"lon\": \"-0.07622237\",\n    \"boundingbox\": [\n      \"51.5071546\",\n      \"51.5091106\",\n      \"-0.0780521\",\n      \"-0.0745206\"\n    ],\n    \"class\": \"tourism\",\n    \"type\": \"attraction\",\n    \"display_name\": \"Tower of London, Tower Hill, Tower Liberty, Whitechapel, London, Greater London, England, EC3N 4AB, United Kingdom\",\n    \"display_place\": \"Tower of London\",\n    \"display_address\": \"Tower Hill, Tower Liberty, Whitechapel, London, Greater London, England, EC3N 4AB, United Kingdom\",\n    \"address\": {\n      \"name\": \"Tower of London\",\n      \"road\": \"Tower Hill\",\n      \"neighbourhood\": \"Tower Liberty\",\n      \"suburb\": \"Whitechapel\",\n      \"city\": \"London\",\n      \"county\": \"Greater London\",\n      \"state\": \"England\",\n      \"postcode\": \"EC3N 4AB\",\n      \"country\": \"United Kingdom\",\n      \"country_code\": \"gb\"\n    }\n  }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "7c722c45-c853-4cb3-a3e7-fe29b4bde508"
+    },
+    {
+      "type": "route",
+      "uuid": "bbca210b-0f51-4437-9d46-41bd6d101e37"
+    },
+    {
+      "type": "route",
+      "uuid": "f3c64733-5a28-4294-92cc-9bd313c39243"
+    },
+    {
+      "type": "route",
+      "uuid": "041e10aa-f2cb-46af-8a04-d55f6235fb55"
+    },
+    {
+      "type": "route",
+      "uuid": "f8510727-3416-48db-907c-c6abdfc5d376"
+    },
+    {
+      "type": "route",
+      "uuid": "f4ad2cd8-5246-431a-91da-7a721b3953c6"
+    },
+    {
+      "type": "route",
+      "uuid": "009f044d-60b0-48ba-bfa9-4aa0775ccedc"
+    },
+    {
+      "type": "route",
+      "uuid": "89504013-db62-4096-bf01-469f241bb4e3"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": []
+}

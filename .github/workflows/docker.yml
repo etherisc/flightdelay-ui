@@ -1,0 +1,24 @@
+name: Docker
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+    - '*'
+  # pull_request:
+  #   branches:
+  #   - main
+  #   - develop
+
+jobs:
+  docker:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u doerfli --password-stdin
+      - uses: rlespinasse/github-slug-action@v2.x
+      # - run: docker build --build-arg INSTANCE=mumbai -t ghcr.io/etherisc/flightdelay-ui/flightdelay-ui:${{ env.GITHUB_REF_SLUG }} .
+      - run: docker build -t ghcr.io/etherisc/flightdelay-ui/flightdelay-ui:${{ env.GITHUB_REF_SLUG }} --build-arg FONTAWESOME_NPM_AUTH_TOKEN=${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }} .
+      # no push to ghcr.io for now
+      # - run: docker push ghcr.io/etherisc/flightdelay-ui/flightdelay-ui:${{ env.GITHUB_REF_SLUG }}

@@ -1,0 +1,19 @@
+{
+  "name": "component-lib",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "ts-jest": "^29.1.1",
+    "watch": "^1.0.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "buildmon": "tsc --watch",
+    "testLoop": "jest --watch",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC"
+}
