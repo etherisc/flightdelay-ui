@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import ConnectButton from '../../../src/components/TopBar/connect_button';
 import { tMock } from '../../test-helper/i18n';
 import { renderWithProviders } from '../../test-helper/render_with_providers';
