@@ -46,7 +46,7 @@
     "react-redux": "^9.0.0",
     "react-swipeable": "^7.0.1",
     "utf-8-validate": "^6.0.3",
-    "winston": "^3.11.0"
+    "winston": "^3.14.2"
   },
   "devDependencies": {
     "@etherisc/qcc": "0.0.3-5861ef1-169",
