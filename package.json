@@ -26,7 +26,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "@uidotdev/usehooks": "^2.4.1",
     "abi-coder": "^5.0.0",
-    "axios": "^1.6.2",
+    "axios": "^1.7.4",
     "bufferutil": "^4.0.8",
     "dayjs": "^1.11.10",
     "encoding": "^0.1.13",
