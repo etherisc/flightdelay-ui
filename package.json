@@ -43,7 +43,7 @@
     "react-hook-form": "^7.48.2",
     "react-i18next": "^13.5.0",
     "react-leaflet": "^4.2.1",
-    "react-redux": "^9.0.0",
+    "react-redux": "^9.1.2",
     "react-swipeable": "^7.0.1",
     "utf-8-validate": "^6.0.3",
     "winston": "^3.11.0"
