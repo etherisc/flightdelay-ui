@@ -1,10 +1,5 @@
 # Flightdelay UI Web Application
 
-## Structure
-
-- `/component-lib`: contains the shared React components
-- `/webapp`: contains the Next.js webapp
-- `/mockoon`: contains the mockoon configuration for the API
 
 ## Webapp
 
@@ -29,7 +24,6 @@ The webapp is configured via environment variables. The following variables are 
 ### Start
 
 ```bash
-cd webapp
 npm run dev
 ```
 
@@ -38,7 +32,6 @@ npm run dev
 ### Test
 
 ```bash
-cd webapp
 npm run test
 (or)
 npm run testLoop

@@ -9,8 +9,7 @@
 /coverage
 
 # next.js
-/webapp/.next/
-/component-lib/dist/
+/.next/
 /out/
 
 # production
