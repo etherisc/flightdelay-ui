@@ -45,7 +45,7 @@
     "react-leaflet": "^4.2.1",
     "react-redux": "^9.0.0",
     "react-swipeable": "^7.0.1",
-    "utf-8-validate": "^6.0.3",
+    "utf-8-validate": "^6.0.4",
     "winston": "^3.11.0"
   },
   "devDependencies": {
