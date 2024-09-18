@@ -1,4 +1,4 @@
-import { grey } from '@mui/material/colors';
+import { blue, grey } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
 
 export const PRIMARY_BLUE = '#405FFF';
@@ -10,6 +10,8 @@ export const BLUE_LIGHT = '#EFF3FB';
 export const BLUE_LIGHT2 = '#D4E0F6';
 
 export const BLUE_BACKGROUND = '#E9EFFA';
+
+export const WHITE = '#FFFFFF';
 
 export const GREY_LIGHT = grey[100];
 
@@ -45,6 +47,14 @@ export const customTheme = createTheme({
                     boxSizing: 'content-box',
                     padding: 3,
                     fontSize: '1.125rem',
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    color: blue[300],
+                    backgroundColor: grey[200],
                 },
             },
         },

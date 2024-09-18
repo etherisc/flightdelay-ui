@@ -27,7 +27,7 @@ export default function TopBar() {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
             {/* <Image src="/etherisc_logo_white.svg" alt="logo_alt" width={40} height={40} />  */}
             LogoHere
             <Typography variant="h1" component="div" sx={{ flexGrow: 1, ml: 1 }}>

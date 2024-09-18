@@ -9,7 +9,7 @@ import Trans from "../Trans/trans";
 export default function ConnectButton() {
     const { connectWallet } = useWallet();
 
-    return (<Button onClick={connectWallet}>
+    return (<Button onClick={connectWallet} >
         <SvgIcon sx={{ mr: 1 }} fontSize="small">
             <FontAwesomeIcon icon={faWallet} />
         </SvgIcon>
