@@ -5,14 +5,12 @@ FROM ${VARIANT} AS deps
 RUN apk add --no-cache libc6-compat python3 make g++ git
 WORKDIR /app
 
-ARG FONTAWESOME_NPM_AUTH_TOKEN
-ENV FONTAWESOME_NPM_AUTH_TOKEN=$FONTAWESOME_NPM_AUTH_TOKEN
+# ARG FONTAWESOME_NPM_AUTH_TOKEN
+# ENV FONTAWESOME_NPM_AUTH_TOKEN=$FONTAWESOME_NPM_AUTH_TOKEN
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-COPY component-lib/ ./component-lib/
-COPY webapp/package.json webapp/package-lock.json* ./webapp/
-COPY .npmrc ./
+#COPY .npmrc ./
 RUN npm install
 
 # Build the webapp code only when needed
@@ -30,13 +28,9 @@ WORKDIR /app
 
 #ARG INSTANCE=int
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/webapp/src/contracts ./webapp/src/contracts
+# COPY --from=deps /app/src/contracts ./src/contracts
 COPY . .
 
-WORKDIR /app/component-lib
-RUN npm run build
-
-WORKDIR /app/webapp
 #COPY webapp/.env.$INSTANCE .env
 RUN npm run build
 CMD ["npm", "run", "start"]

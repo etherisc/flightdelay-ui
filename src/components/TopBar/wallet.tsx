@@ -1,7 +1,7 @@
 import { Box, IconButton, Link, Typography } from '@mui/material';
 import Address from './address';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileSignature, faPowerOff, faRefresh, faShoppingCart } from '@fortawesome/pro-regular-svg-icons';
+import { faFileSignature, faPowerOff, faRefresh, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { grey } from '@mui/material/colors';
 import { useWallet } from '../../hooks/onchain/use_wallet';
 import { useSelector } from 'react-redux';

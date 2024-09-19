@@ -1,4 +1,4 @@
-import { faChevronLeft } from "@fortawesome/pro-solid-svg-icons";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Typography } from "@mui/material";
 import { BLUE_LIGHT } from "../../../config/theme";

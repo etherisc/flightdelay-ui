@@ -1,7 +1,7 @@
-import { faHouseChimneyCrack, faWineGlassCrack } from "@fortawesome/pro-solid-svg-icons";
+import { faHouseChimneyCrack, faWineGlass} from "@fortawesome/free-solid-svg-icons";
 import { CoverageType } from "../types/coverage_type";
 
-export const ICON_FRAGILE_SHIELD = faWineGlassCrack;
+export const ICON_FRAGILE_SHIELD = faWineGlass;
 export const ICON_HOME_GUARD = faHouseChimneyCrack;
 
 /** 

@@ -1,4 +1,4 @@
-import { faWallet } from "@fortawesome/pro-solid-svg-icons";
+import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SvgIcon } from "@mui/material";
 
