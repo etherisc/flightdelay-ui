@@ -1,9 +1,10 @@
-import { TextField } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { INPUT_VARIANT } from "../../config/theme";
 import Trans from "../Trans/trans";
 import Grid from '@mui/material/Grid2';
+import { carriers } from "../../config/carriers.json";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -29,6 +30,9 @@ export default function ApplicationForm() {
         console.log(data);
     };
 
+    const carrierOptionsList = () => 
+        carriers.map((e) => ({ label: e.name, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
             <Grid container spacing={2}>
@@ -43,14 +47,17 @@ export default function ApplicationForm() {
                             // max: maxAmount
                         }}
                         render={({ field }) => 
-                            <TextField 
-                                label={<Trans k="carrier" />}
+                            <Autocomplete
                                 fullWidth
-                                variant={INPUT_VARIANT}
-                                {...field} 
-                                data-testid="carrier"
+                                options={carrierOptionsList()}
+                                renderInput={(params) => 
+                                    <TextField 
+                                        {...field}
+                                        {...params} 
+                                        label={<Trans k="carrier" />} 
+                                        />}
                                 />}
-                            />
+                        />
                     
                 </Grid>
                 <Grid size={4}>
