@@ -24,7 +24,7 @@ export function useWallet() {
         // @ts-ignore
         if (!window.ethereum) {
             dispatch(setSnackbarErrorMessage("Please install MetaMask first."));
-            return;
+            return undefined;
         }
         
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -35,6 +35,7 @@ export function useWallet() {
             return signer;
         } catch (error: unknown) {
             console.log(error);
+            throw error;
         }
     }, [dispatch]);
 
@@ -44,13 +45,13 @@ export function useWallet() {
         dispatch(setAddress(address));
 
         if (address !== undefined) {
-            const balanceEth = await signer.provider?.getBalance(address);
+            const balanceEth = await signer.provider?.getBalance(address) || BigInt(0);
             console.log("address, balance", address, balanceEth);
             dispatch(setBalanceEth(stringifyBigInt(balanceEth)));
             const erc20TokenContractAddress = NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS;
             if (erc20TokenContractAddress !== undefined) {
                 // console.log("erc20TokenContractAddress", erc20TokenContractAddress);
-                const bal = await getBalance(erc20TokenContractAddress, address, await getSigner());
+                const bal = await getBalance(erc20TokenContractAddress, address, (await getSigner())!); // TODO: remove the ! when getSigner is fixed
                 console.log("address, balance", address, bal);
                 dispatch(setBalanceUsdc(stringifyBigInt(bal)));
             }

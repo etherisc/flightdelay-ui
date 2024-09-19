@@ -16,10 +16,15 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
 }
 
 export const UNDEFINED_ROOT_STATE: RootState = {
+    // @ts-expect-error sadf
     common: undefined,
+    // @ts-expect-error sadf
     wallet: undefined,
+    // @ts-expect-error sadf
     signup: undefined,
+    // @ts-expect-error sadf
     application: undefined,
+    // @ts-expect-error sadf
     myPolicies: undefined
 };
 
@@ -48,10 +53,15 @@ export function renderWithProvidersAndDispatchMock(
     ui: React.ReactElement,
     {
         preloadedState = {
+            // @ts-expect-error sadf
             common: undefined,
+            // @ts-expect-error sadf
             wallet: undefined,
+            // @ts-expect-error sadf
             signup: undefined,
+            // @ts-expect-error sadf
             application: undefined,
+            // @ts-expect-error sadf
             myPolicies: undefined
         },
         // Automatically create a store instance if no store was passed in
@@ -72,7 +82,7 @@ export function renderWithProvidersAndDispatchMock(
 }
 
 export function withRouterAndEnvProviderWrapper(router: Partial<AppRouterInstance>) {
-    return { wrapper: ({ children }) => 
+    return { wrapper: ({ children }: { children: React.ReactNode }) => 
         <AppRouterContextProviderMock router={router}>
             <PublicEnvProvider>
                 {children}

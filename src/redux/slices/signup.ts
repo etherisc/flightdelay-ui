@@ -76,15 +76,15 @@ export const accountSlice = createSlice({
         setUserCoordinates(state, action: PayloadAction<Coordinates>) {
             state.userCoordinates = action.payload;
         },
-        setSumInsured(state, action: PayloadAction<{ type: CoverageType, sumInsured: number }>) {
-            const details = state.availableTypes.find(t => t.type === action.payload.type);
-            const sumInsured = action.payload.sumInsured;
-            details.sumInsured = sumInsured;
-            // set payout scheme
-            details.payoutScheme[0].payout = sumInsured * 0.25;
-            details.payoutScheme[1].payout = sumInsured * 0.5;
-            details.payoutScheme[2].payout = sumInsured * 1.0;
-        },
+        // setSumInsured(state, action: PayloadAction<{ type: CoverageType, sumInsured: number }>) {
+        //     // const details = state.availableTypes.find(t => t.type === action.payload.type);
+        //     // const sumInsured = action.payload.sumInsured;
+        //     // details.sumInsured = sumInsured;
+        //     // // set payout scheme
+        //     // details.payoutScheme[0].payout = sumInsured * 0.25;
+        //     // details.payoutScheme[1].payout = sumInsured * 0.5;
+        //     // details.payoutScheme[2].payout = sumInsured * 1.0;
+        // },
         setPreloadedReferralCode(state, action: PayloadAction<string>) {
             state.referralCode = action.payload;
         },
@@ -108,36 +108,36 @@ export const accountSlice = createSlice({
         });
         builder.addCase(loadPremiumData.rejected, (state, action) => {
             logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'signup/loadPremiumData');
-            state.premiumDataFetchFailedReason = action.error.message;
+            // state.premiumDataFetchFailedReason = action.error.message;
         });
         builder.addCase(loadPayoutScale.pending, (state/*, action*/) => {
             state.payoutScaleFetchFailedReason = null;
         });
-        builder.addCase(loadPayoutScale.fulfilled, (state, action) => {
-            const { response } = action.payload;
-            const fragileShieldScales = response.policies.find(x => x.policy_type === 'type1')?.mmi_payout_scale;
-            const fragileShieldIdx = state.availableTypes.findIndex(t => t.type === CoverageType.FragileShield);
-            state.availableTypes[fragileShieldIdx].payoutScheme = fragileShieldScales.map(p => {
-                return { 
-                    mmiLevel: p.mmi_level, 
-                    payoutPercentage: p.payout,
-                    payout: null,
-                } as PayoutSchemeEntry;
-            });
-            const homeGuardScales = response.policies.find(x => x.policy_type === 'type2')?.mmi_payout_scale;
-            const homeGuardTypeIdx = state.availableTypes.findIndex(t => t.type === CoverageType.HomeGuard);
-            state.availableTypes[homeGuardTypeIdx].payoutScheme = homeGuardScales.map(p => {
-                return { 
-                    mmiLevel: p.mmi_level, 
-                    payoutPercentage: p.payout,
-                    payout: null,
-                } as PayoutSchemeEntry;
-            });
+        builder.addCase(loadPayoutScale.fulfilled, (/*state, action*/) => {
+            // const { response } = action.payload;
+            // const fragileShieldScales = response.policies.find(x => x.policy_type === 'type1')?.mmi_payout_scale;
+            // const fragileShieldIdx = state.availableTypes.findIndex(t => t.type === CoverageType.FragileShield);
+            // state.availableTypes[fragileShieldIdx].payoutScheme = fragileShieldScales.map(p => {
+            //     return { 
+            //         mmiLevel: p.mmi_level, 
+            //         payoutPercentage: p.payout,
+            //         payout: null,
+            //     } as PayoutSchemeEntry;
+            // });
+            // const homeGuardScales = response.policies.find(x => x.policy_type === 'type2')?.mmi_payout_scale;
+            // const homeGuardTypeIdx = state.availableTypes.findIndex(t => t.type === CoverageType.HomeGuard);
+            // state.availableTypes[homeGuardTypeIdx].payoutScheme = homeGuardScales.map(p => {
+            //     return { 
+            //         mmiLevel: p.mmi_level, 
+            //         payoutPercentage: p.payout,
+            //         payout: null,
+            //     } as PayoutSchemeEntry;
+            // });
             
         });
         builder.addCase(loadPayoutScale.rejected, (state, action) => {
             logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'signup/loadPayoutScale');
-            state.payoutScaleFetchFailedReason = action.error.message;
+            // state.payoutScaleFetchFailedReason = action.error.message;
         });
         builder.addCase(findClosestCites.pending, (state/*, action*/) => {
             state.cityFetchFailedReason = null;
@@ -147,16 +147,16 @@ export const accountSlice = createSlice({
         });
         builder.addCase(findClosestCites.rejected, (state, action) => {
             console.log('findClosestCites.rejected', action);
-            // handle request budget exhausted special case (wait a bit more before retrying)
-            if (action.error.message.includes('err_id: 103')) {
-                logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'signup/findClosestCites');
-                state.cityFetchFailedReason = '103';
-                state.citiesOnMap = [];
-            } else {
-                logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'signup/findClosestCites');
-                state.cityFetchFailedReason = action.error.stack;
-                state.citiesOnMap = [];
-            }
+            // // handle request budget exhausted special case (wait a bit more before retrying)
+            // if (action.error.message.includes('err_id: 103')) {
+            //     logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'signup/findClosestCites');
+            //     state.cityFetchFailedReason = '103';
+            //     state.citiesOnMap = [];
+            // } else {
+            //     logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'signup/findClosestCites');
+            //     state.cityFetchFailedReason = action.error.stack;
+            //     state.citiesOnMap = [];
+            // }
         });
     },
 });
@@ -165,7 +165,7 @@ export const accountSlice = createSlice({
 export const { 
     setStep, resetSignup,
     setUserCoordinates,
-    setSumInsured,
+    // setSumInsured,
     setPreloadedReferralCode,
 } = accountSlice.actions;
 

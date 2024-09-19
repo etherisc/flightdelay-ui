@@ -16,7 +16,8 @@ import { setSnackbarErrorMessage } from '../../redux/slices/common';
 
 // This implementation is from emotion-js
 // https://github.com/emotion-js/emotion/issues/2928#issuecomment-1319747902
-export default function ThemeRegistry(props) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function ThemeRegistry(props: { options: any, children: React.ReactNode }) {
     const { options, children } = props;
 
     const [{ cache, flush }] = React.useState(() => {
@@ -78,7 +79,7 @@ export default function ThemeRegistry(props) {
     );
 }
 
-export function ClientsideLayout(props) {
+export function ClientsideLayout(props: { children: React.ReactNode }) {
     const { children } = props;
     const snackBarErrorMsg = useSelector((state: RootState) => (state.common.snackbarErrorMessage));
     const dispatch = useDispatch();

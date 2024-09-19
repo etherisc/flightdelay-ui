@@ -1,10 +1,9 @@
 'use client';
 
-import { Signer } from "ethers";
 
-export function useDistributionContract(productContractAddress: string) {
+export function useDistributionContract(/*productContractAddress: string*/) {
 
-    async function calculateDiscountPercentage(signer: Signer, referralCode: string): Promise<{
+    async function calculateDiscountPercentage(/*signer: Signer, referralCode: string*/): Promise<{
         discountPercentage: number,
         referralStatus: number,
     }> {

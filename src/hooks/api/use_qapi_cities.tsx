@@ -28,6 +28,7 @@ export function useQApiCities() {
             }
             return city;
         } catch (error) {
+            // @ts-expect-error error is an error
             await logErrorOnBackend(`${error.message}`, error.toString(), 'GET /api/cities/:city_id');
             throw error;
         }
@@ -49,6 +50,7 @@ export function useQApiCities() {
             }
             return jsonResponse as PayoutScaleResponse;
         } catch (error) {
+            // @ts-expect-error error is an error
             await logErrorOnBackend(`${error.message}`, error.toString(), 'GET /api/cities/:city_id/payout_scale');
             throw error;
         }
@@ -70,6 +72,7 @@ export function useQApiCities() {
             }
             return response;
         } catch (error) {
+            // @ts-expect-error error is an error
             await logErrorOnBackend(`${error.message}`, error.toString(), 'GET /api/cities/:city_id/premium');
             throw error;
         }
@@ -88,6 +91,7 @@ export function useQApiCities() {
             validateQApiResponse(response);
             return jsonResponse as ClosestCityResponse
         } catch (error) {
+            // @ts-expect-error error is an error
             await logErrorOnBackend(`${error.message}`, error.toString(), 'GET /api/cities/closest');
             throw error;
         }

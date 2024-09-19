@@ -6,6 +6,6 @@ export async function GET(request: NextRequest) {
         return Response.json({ latitude: null, longitude: null }, { status: 200 });
     }
 
-    const { latitude, longitude } = await getlocateIp(request.headers.get('cf-connecting-ip'));
+    const { latitude, longitude } = await getlocateIp(request.headers.get('cf-connecting-ip')!);
     return Response.json({ latitude, longitude }, { status: 200 });
 }

@@ -33,9 +33,9 @@ export function useERC20Contract(tokenAddress: string, decimals: number) {
         const receipt = await tx.wait();
         console.log("approval tx mined", receipt, tx)
 
-        if (receipt.status !== 1) {
+        if (receipt!.status !== 1) {
             trackEvent(EVENT_ERC20_APPROVAL_FAIL);
-            throw new BaseError("ERC20-001:TX_FAILED", `tx hash: ${receipt.hash}`);
+            throw new BaseError("ERC20-001:TX_FAILED", `tx hash: ${receipt!.hash}`);
         }
 
         trackEvent(EVENT_ERC20_APPROVAL_SUCCESS);

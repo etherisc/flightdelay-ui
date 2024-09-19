@@ -5,7 +5,7 @@ import { logErrorOnBackend } from "../utils/logger";
 import { useEffect } from "react";
 
 
-export default function Error({ error, resetErrorBoundary }) {
+export default function Error({ error, resetErrorBoundary }: { error: Error, resetErrorBoundary: () => void }) {
     useEffect(() => {
         logErrorOnBackend(error.message, JSON.stringify(error), "error boundary");
     }, [error]);

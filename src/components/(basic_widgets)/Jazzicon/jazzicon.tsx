@@ -12,13 +12,16 @@ export default function Jazzicon({ address }: { address: string }) {
 
     useEffect(() => {
         if (address === null || address.length !== 42) {
+            // @ts-expect-error ref is not null
             ref.current.innerHTML = '';
             return;
         }
         
         if (ref.current) {
+            // @ts-expect-error ref is not null
             ref.current.innerHTML = '';
             const el = jazzicon(42, numberForAddress(address));
+            // @ts-expect-error ref is not null
             ref.current.appendChild(el);
         }
     }, [address]);

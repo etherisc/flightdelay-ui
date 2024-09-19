@@ -18,7 +18,7 @@ export default function PolicyShort({ policy, symbol }: { policy: PolicyData, sy
     const router = useRouter();
     
     const { type, nftId: nftIdb, sumInsured: sumInsuredB, locationName } = policy;
-    const nftId = parseBigInt(nftIdb);
+    const nftId = parseBigInt(nftIdb) || BigInt(0);
     const sumInsured = parseBigInt(sumInsuredB);
 
     return (<Card 

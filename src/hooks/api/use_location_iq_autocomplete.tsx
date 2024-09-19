@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export function useLocationIQAutocomplete(queryString: string) {
     const [ data, setData ] = useState<Array<LocationIQResult>>([]);
-    const [ error, setError ] = useState<string>(null);
+    const [ error, setError ] = useState<string>("");
     const [ loading, setLoading ] = useState<boolean>(false);
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

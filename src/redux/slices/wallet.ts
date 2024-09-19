@@ -6,8 +6,8 @@ export interface WalletState {
     isExpectedChain: boolean,
     connecting: boolean,
     address: string | null,
-    balanceEth: string | null,
-    balanceUsdc: string | null,
+    balanceEth: string,
+    balanceUsdc: string,
     isAccountSwitchListenerConnected: boolean,
 }
 
@@ -43,8 +43,8 @@ export const accountSlice = createSlice({
             state.isAccountSwitchListenerConnected = action.payload;
         },
         resetAccount(state) {
-            state.address = null;
-            state.balanceUsdc = null;
+            state.address = stringifyBigInt(BigInt(0));
+            state.balanceUsdc = stringifyBigInt(BigInt(0));
         }
     },
 });
