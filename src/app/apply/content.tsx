@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import InvalidChain from "../../components/InvalidChain/invalid_chain";
 import { useAnalytics } from "../../hooks/use_analytics";
 import { RootState } from "../../redux/store";
+import Application from "../../components/Application/application";
 
 
 
@@ -27,6 +28,6 @@ export function Content() {
     }
 
     return (<>
-        Flight delay insurance
+        <Application />
     </>);   
 }

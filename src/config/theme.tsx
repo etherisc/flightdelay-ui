@@ -45,45 +45,62 @@ export const customTheme = createTheme({
                 },
             },
         },
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    borderRadius: '1.5rem',
+                    padding: 4,
+                },
+            },
+        },
+        MuiCardHeader: {
+            styleOverrides: {
+                title: {
+                    fontSize: '1.5rem',
+                    fontWeight: 600,
+                },
+            },
+        },
     },
     typography: {
         fontFamily: 'Poppins, Arial,sans-serif',
-        fontSize: 14,
-        h1: {
-            fontSize: '24px',
-            fontWeight: 600,
-        },
+        fontSize: 18,
+        // h1: {
+        //     fontSize: '24px',
+        //     fontWeight: 600,
+        // },
         h2: {
-            fontSize: '18px',
+            fontSize: '1.2rem',
             fontWeight: 500,
             color: PRIMARY_BLUE,
         },
-        h3: {
-            fontSize: '15px',
-            fontWeight: 500,
-        },
-        h4: {
-            fontSize: '16px',
-            fontWeight: 500,
-        },
-        h5: {
-            fontSize: '14px',
-            fontWeight: 600,
-        },
-        h6: {
-            fontSize: '20px',
-            fontWeight: 600,
-        },
-        body1: {
-            fontSize: '14px',
-            fontWeight: 400,
-        },
-        body2: {
-            fontSize: '13px',
-            fontWeight: 400,
-        },
+        // h3: {
+        //     fontSize: '15px',
+        //     fontWeight: 500,
+        // },
+        // h4: {
+        //     fontSize: '16px',
+        //     fontWeight: 500,
+        // },
+        // h5: {
+        //     fontSize: '14px',
+        //     fontWeight: 600,
+        // },
+        // h6: {
+        //     fontSize: '20px',
+        //     fontWeight: 600,
+        // },
+        // body1: {
+        //     fontSize: '14px',
+        //     fontWeight: 400,
+        // },
+        // body2: {
+        //     fontSize: '13px',
+        //     fontWeight: 400,
+        // },
         button: {
             textTransform: 'none',
+            fontSize: '1.2rem',
         },
     },
 });
