@@ -4,6 +4,7 @@ import { Card, CardActions, CardContent, CardHeader, SvgIcon } from "@mui/materi
 import Image from "next/image";
 import Button from "../Button/button";
 import { useWallet } from "../../hooks/onchain/use_wallet";
+import ApplicationForm from "./application_form";
 
 export default function Application() {
     const { connectWallet } = useWallet();
@@ -17,7 +18,7 @@ export default function Application() {
                 title="Etherisc Flightdelay Protection"
                     />
             <CardContent>
-                Put form here
+                <ApplicationForm />
             </CardContent>
             <CardActions>
                 {/* TODO: only show connect button when wallet not connected */}
