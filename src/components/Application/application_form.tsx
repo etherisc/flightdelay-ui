@@ -91,7 +91,7 @@ export default function ApplicationForm() {
                         render={({ field }) => 
                             <DatePicker
                                 {...field} 
-                                label={<Trans k="departureData" />}
+                                label={<Trans k="departureDate" />}
                                 format="YYYY-MM-DD"
                                 slotProps={{ 
                                     textField: { 
