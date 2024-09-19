@@ -10,6 +10,8 @@ import { TransitionProps } from "@mui/material/transitions";
 import { ZINDEX_WALLET } from "../../config/theme";
 import Wallet from "./wallet";
 import { JazziconAvatar } from "../(basic_widgets)/Jazzicon/jazzicon_avatar";
+import { grey } from "@mui/material/colors";
+import Image from "next/image";
 
 export default function TopBar() {
     const address = useSelector((state: RootState) => (state.wallet.address));
@@ -27,11 +29,13 @@ export default function TopBar() {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
-            {/* <Image src="/etherisc_logo_white.svg" alt="logo_alt" width={40} height={40} />  */}
-            LogoHere
-            <Typography variant="h1" component="div" sx={{ flexGrow: 1, ml: 1 }}>
-                <Trans k="app_name" />
+        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 4, backgroundColor: grey[200] }}>
+            <Image src="/assets/images/etherisc_logo_blue.svg" alt="Etherisc Logo" width={120} height="46"/>
+            <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 2 }}>
+                <Trans k="nav.apply" />
+            </Typography>
+            <Typography variant="h2" component="div" sx={{ flexGrow: 1, ml: 2 }}>
+                <Trans k="nav.policies" />
             </Typography>
             {wallet}
             <Dialog

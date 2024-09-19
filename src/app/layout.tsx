@@ -13,8 +13,6 @@ import React from 'react';
 import ThemeRegistry from '../components/ThemeRegistry/ThemeRegistry';
 import TopBar from '../components/TopBar/topbar';
 import './layout.css';
-import { grey } from '@mui/material/colors';
-import { WHITE } from '../config/theme';
 
 config.autoAddCss = false;
 
@@ -56,12 +54,12 @@ function AppBaseLayout({
 }) {
     return (
         <>
-        <Container maxWidth={false} sx={{ backgroundColor: grey[50], opacity: 0.4 }}>
-            <TopBar />
-        </Container>
-        <Container maxWidth="md" sx={{ p: 2, py: 1 }}>
-            {children}
-        </Container>
+            <Container disableGutters maxWidth={false}>
+                <TopBar />
+            </Container>
+            <Container maxWidth="md" sx={{ p: 2, py: 1 }}>
+                {children}
+            </Container>
         </>
     )
 }

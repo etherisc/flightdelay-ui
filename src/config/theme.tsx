@@ -1,23 +1,7 @@
-import { blue, grey } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
 
-export const PRIMARY_BLUE = '#405FFF';
-export const SECONDARY_YELLOW = '#FFD747';
-export const SECONDARY_CONTRAST_TEXT = '#000';
-
-// background color for boxes
-export const BLUE_LIGHT = '#EFF3FB';
-export const BLUE_LIGHT2 = '#D4E0F6';
-
-export const BLUE_BACKGROUND = '#E9EFFA';
-
-export const WHITE = '#FFFFFF';
-
-export const GREY_LIGHT = grey[100];
-
+export const PRIMARY_BLUE = '#5180F3';
 export const INPUT_VARIANT = 'outlined';
-
-export const HEIGHT_BOTTOM_NAV = 56;
 
 export const ZINDEX_SIGNUP_MAP_ACTIONS = 1100;
 export const ZINDEX_SIGNUP_LOCATION_SEARCH_OVERLAY = 1800;
@@ -34,10 +18,10 @@ export const customTheme = createTheme({
         primary: {
             main: PRIMARY_BLUE,
         },
-        secondary: {
-            main: SECONDARY_YELLOW,
-            contrastText: SECONDARY_CONTRAST_TEXT 
-        },
+        // secondary: {
+        //     main: SECONDARY_YELLOW,
+        //     contrastText: SECONDARY_CONTRAST_TEXT 
+        // },
     },
     components: {
         MuiIcon: {
@@ -53,8 +37,9 @@ export const customTheme = createTheme({
         MuiButton: {
             styleOverrides: {
                 root: {
-                    color: blue[300],
-                    backgroundColor: grey[200],
+                    // color: lightBlue['900'],
+                    // backgroundColor: grey['400'],
+                    // border: '2px solid #ffffff',
                 },
             },
         },
@@ -63,12 +48,13 @@ export const customTheme = createTheme({
         fontFamily: 'Poppins, Arial,sans-serif',
         fontSize: 14,
         h1: {
-            fontSize: '16px',
+            fontSize: '24px',
             fontWeight: 600,
         },
         h2: {
             fontSize: '18px',
-            fontWeight: 700,
+            fontWeight: 500,
+            color: PRIMARY_BLUE,
         },
         h3: {
             fontSize: '15px',

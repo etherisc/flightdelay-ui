@@ -2,7 +2,7 @@ body {
     min-height: 100vh;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url(./images/FlightDelayBackgroundDesktopLR.png);
+    background-image: url("/assets/images/FlightDelayBackgroundDesktopLR.png");
 }
 
 .margin-bottom-2:last-child {
