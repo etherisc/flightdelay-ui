@@ -3,6 +3,8 @@
   "description": "",
   "version": "0.1.0",
   "scripts": {
+    "postinstall": "$npm_execpath run typechainOpenzeppelinTypes",
+    "typechainOpenzeppelinTypes": "D=./node_modules/@openzeppelin/contracts/build/contracts && typechain --target ethers-v6 --out-dir src/contracts/openzeppelin-contracts $D/ERC20.json $D/IERC20.json",
     "dev": "next dev",
     "build": "next build",
     "start": "next start -H ${HOST:-0.0.0.0} -p ${PORT:-3000}",
