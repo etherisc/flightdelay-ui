@@ -5,11 +5,12 @@ import { INPUT_VARIANT } from "../../config/theme";
 import Trans from "../Trans/trans";
 import Grid from '@mui/material/Grid2';
 import { carriers } from "../../config/carriers.json";
+import { DatePicker } from "@mui/x-date-pickers";
 
 export type IApplicationFormValues = {
     carrier: string;
     flightNumber: string;
-    departureDate: string;
+    departureDate: dayjs.Dayjs;
 };
 
 export default function ApplicationForm() {
@@ -21,7 +22,7 @@ export default function ApplicationForm() {
         defaultValues: {
             carrier: "",
             flightNumber: "",
-            departureDate: dayjs().add(1, 'w').format("YYYY-MM-DD"),
+            departureDate: dayjs().add(1, 'w'),
         }
     });
 
@@ -86,19 +87,24 @@ export default function ApplicationForm() {
                         control={control}
                         rules={{ 
                             required: true, 
-                            // pattern: /^[0-9]+$/,
-                            // min: 1,
-                            // max: maxAmount
                         }}
                         render={({ field }) => 
-                            <TextField 
-                                label={<Trans k="departureDate" />}
-                                fullWidth
-                                variant={INPUT_VARIANT}
+                            <DatePicker
                                 {...field} 
+                                label={<Trans k="departureData" />}
+                                format="YYYY-MM-DD"
+                                slotProps={{ 
+                                    textField: { 
+                                        variant: INPUT_VARIANT,
+                                        fullWidth: true, 
+                                    }
+                                }}
+                                disablePast={true}
                                 data-testid="departureDate"
+                                // minDate={coverageUntilMin}
+                                maxDate={dayjs().add(1, 'y')} 
                                 />}
-                            />
+                        />
                 </Grid>
             </Grid>
             

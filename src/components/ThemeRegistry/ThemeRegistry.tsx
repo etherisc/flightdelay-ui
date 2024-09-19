@@ -13,6 +13,8 @@ import { RootState, store } from '../../redux/store';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import { Alert, Snackbar } from '@mui/material';
 import { setSnackbarErrorMessage } from '../../redux/slices/common';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 // This implementation is from emotion-js
 // https://github.com/emotion-js/emotion/issues/2928#issuecomment-1319747902
@@ -67,12 +69,14 @@ export default function ThemeRegistry(props: { options: any, children: React.Rea
             <GoogleAnalytics />
             <CacheProvider value={cache}>
                 <I18nextProvider i18n={i18n} defaultNS={'common'}>
-                    <ThemeProvider theme={customTheme}>
-                        <CssBaseline enableColorScheme />
-                        <ClientsideLayout>
-                            {children}
-                        </ClientsideLayout>
-                    </ThemeProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <ThemeProvider theme={customTheme}>
+                            <CssBaseline enableColorScheme />
+                            <ClientsideLayout>
+                                {children}
+                            </ClientsideLayout>
+                        </ThemeProvider>
+                    </LocalizationProvider>
                 </I18nextProvider>
             </CacheProvider>
         </Provider>
