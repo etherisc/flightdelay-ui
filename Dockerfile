@@ -28,7 +28,7 @@ WORKDIR /app
 
 #ARG INSTANCE=int
 COPY --from=deps /app/node_modules ./node_modules
-# COPY --from=deps /app/src/contracts ./src/contracts
+COPY --from=deps /app/src/contracts ./src/contracts
 COPY . .
 
 #COPY webapp/.env.$INSTANCE .env
