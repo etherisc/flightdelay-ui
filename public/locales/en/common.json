@@ -10,5 +10,12 @@
     },
     "carrier": "Airline",
     "flightNumber": "Flight number",
-    "departureDate": "Departure date"
+    "departureDate": "Departure date",
+    "error": {
+        "field": {
+            "carrier": "Please choose an airline",
+            "flightNumber": "Please enter a valid flight number (1-4 digits)",
+            "departureDate": "Please select a departure date"
+        }
+    }
 }

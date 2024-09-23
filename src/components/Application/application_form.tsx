@@ -6,6 +6,10 @@ import Trans from "../Trans/trans";
 import Grid from '@mui/material/Grid2';
 import carrierData from "../../config/carrierData.json";
 import { DatePicker } from "@mui/x-date-pickers";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useApplicationForm } from "../../hooks/use_application_form";
+import { useDebounce } from "@react-hooks-hub/use-debounce";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -14,9 +18,13 @@ export type IApplicationFormValues = {
 };
 
 export default function ApplicationForm() {
+    const { t } = useTranslation();
+    const { fetchFlightData } = useApplicationForm();
 
-    const { handleSubmit, control } = useForm<IApplicationFormValues>({
-        mode: "onSubmit",
+    const debouncedFetchFlightData = useDebounce(fetchFlightData, 600);
+
+    const { handleSubmit, control, formState, watch } = useForm<IApplicationFormValues>({
+        mode: "onChange",
         reValidateMode: "onChange",
         shouldFocusError: false,
         defaultValues: {
@@ -26,11 +34,21 @@ export default function ApplicationForm() {
         }
     });
 
+    const formValues = watch();
+    useEffect(() => {
+        console.log(formValues);
+        if (formState.isValid) {
+            debouncedFetchFlightData(formValues.carrier, formValues.flightNumber, formValues.departureDate);
+        }
+    }, [formValues, debouncedFetchFlightData, formState.isValid]);
+
 
     const onSubmit: SubmitHandler<IApplicationFormValues> = (data) => {
+        // do nothing, just log for now
         console.log(data);
+        console.log(formState);
     };
-
+    
     const carrierOptionsList = () => 
         carrierData.carriers.map((e) => ({ label: e.name, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
 
@@ -56,7 +74,11 @@ export default function ApplicationForm() {
                                         {...field}
                                         {...params} 
                                         label={<Trans k="carrier" />} 
+                                        error={formState.errors.carrier !== undefined}
+                                        helperText={formState.errors.carrier !== undefined 
+                                            ? t(`error.field.carrier`)  : ""}
                                         />}
+                                onChange={(e, data) => field.onChange(data?.code)}
                                 />}
                         />
                     
@@ -67,7 +89,8 @@ export default function ApplicationForm() {
                         control={control}
                         rules={{ 
                             required: true, 
-                            pattern: /^[0-9]{1-4}$/,
+                            // reg for 1-4 digits
+                            pattern: /^[0-9]{1,4}$/,
                             // min: 1,
                             // max: 9999
                         }}
@@ -78,7 +101,9 @@ export default function ApplicationForm() {
                                 variant={INPUT_VARIANT}
                                 fullWidth
                                 data-testid="flightNumber"
-                                
+                                error={formState.errors.flightNumber !== undefined}
+                                helperText={formState.errors.flightNumber !== undefined 
+                                    ? t(`error.field.flightNumber`)  : ""}
                                 />}
                             />
                 </Grid>
@@ -98,6 +123,9 @@ export default function ApplicationForm() {
                                     textField: { 
                                         variant: INPUT_VARIANT,
                                         fullWidth: true, 
+                                        error: formState.errors.departureDate !== undefined,
+                                        helperText: formState.errors.departureDate !== undefined 
+                                            ? t(`error.field.departureDate`)  : ""
                                     }
                                 }}
                                 disablePast={true}
