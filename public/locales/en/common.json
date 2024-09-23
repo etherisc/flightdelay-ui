@@ -11,6 +11,12 @@
     "carrier": "Airline",
     "flightNumber": "Flight number",
     "departureDate": "Departure date",
+    "departureAirport": "Departing from",
+    "arrivalAirport": "Arriving at",
+    "departureTime": "@",
+    "arrivalTime": "@",
+    "ontimepercent": "On-time",
+    "premium": "Premium",
     "error": {
         "field": {
             "carrier": "Please choose an airline",

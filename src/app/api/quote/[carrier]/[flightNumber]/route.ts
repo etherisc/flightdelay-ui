@@ -26,5 +26,6 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
 
     return Response.json({
         premium: 15, // FIXME: return actual premium 
+        ontimepercent: rating.ontimePercent,
     }, { status: 200 });
 }

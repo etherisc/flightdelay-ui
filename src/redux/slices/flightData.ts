@@ -20,6 +20,7 @@ export interface FlightDataState {
     errorReasonQuote: Reason | null,
     errorDataQuote: unknown | null,
     premium: number | null,
+    ontime: number | null,
 }
 
 /**
@@ -40,6 +41,7 @@ const initialState: FlightDataState = {
     errorReasonQuote: null,
     errorDataQuote: null,
     premium: null,
+    ontime: null,
 };
 
 export const flightDataSlice = createSlice({
@@ -93,6 +95,7 @@ export const flightDataSlice = createSlice({
             const { response } = action.payload;
             state.loadingQuote = false;
             state.premium = response.premium;
+            state.ontime = response.ontimepercent;
         });
     },
 });

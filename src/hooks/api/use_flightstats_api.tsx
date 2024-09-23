@@ -23,7 +23,7 @@ export function useFlightstatsApi() {
         return jsonResponse.scheduledFlights as ScheduledFlight[];
     }
 
-    async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number}> {
+    async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number, ontimepercent: number}> {
         console.log("fetching quote for", carrier, flightNumber);
         const uri = `/api/quote/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}`;
         const res = await fetch(uri);

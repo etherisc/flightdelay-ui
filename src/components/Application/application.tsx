@@ -1,6 +1,6 @@
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Box, Card, CardActions, CardContent, CardHeader, SvgIcon } from "@mui/material";
+import { Alert, Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon } from "@mui/material";
 import Image from "next/image";
 import Button from "../Button/button";
 import { useWallet } from "../../hooks/onchain/use_wallet";
@@ -8,10 +8,14 @@ import ApplicationForm from "./application_form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
+import FlightData from "./flight_data";
 
 export default function Application() {
     const { connectWallet } = useWallet();
     const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
+    const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
+    const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
+    const flightFound = useSelector((state: RootState) => state.flightData.arrivalAirport !== null);
     
     let error = <></>;
 
@@ -19,6 +23,16 @@ export default function Application() {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
         </Box>;
+    }
+
+    let flightDataLoading = <></>;
+    if (loadingFlightData || loadingQuote) {
+        flightDataLoading = <LinearProgress />;
+    }
+
+    let flightData = <></>;
+    if (flightFound) {
+        flightData = <FlightData />;
     }
 
     return (<>
@@ -32,6 +46,8 @@ export default function Application() {
             <CardContent>
                 <ApplicationForm />
                 {error}
+                {flightDataLoading}
+                {flightData}
             </CardContent>
             <CardActions>
                 {/* TODO: only show connect button when wallet not connected */}
