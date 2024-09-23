@@ -6,14 +6,14 @@ import dayjs from "dayjs";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import carrierData from "../../config/carrierData.json";
 import { INPUT_VARIANT } from "../../config/theme";
 import { useConstants } from "../../hooks/use_constants";
 import { setFlight } from "../../redux/slices/flightData";
+import { AppDispatch, RootState } from "../../redux/store";
 import { fetchFlightData } from "../../redux/thunks/flightData";
 import Trans from "../Trans/trans";
-import { AppDispatch } from "../../redux/store";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -25,13 +25,19 @@ export default function ApplicationForm() {
     const { t } = useTranslation();
     const { DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DAYS_MAX, DEPARTURE_DATE_DATE_FROM, DEPARTURE_DATE_DATE_TO } = useConstants();
     const dispatch = useDispatch() as AppDispatch;
+    const stateCarrier = useSelector((state: RootState) => state.flightData.carrier);
+    const stateFlightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
+    const stateDepartureDate = useSelector((state: RootState) => state.flightData.departureDate);
 
     const departureDateMin = (DEPARTURE_DATE_DATE_FROM !== '') ? dayjs(DEPARTURE_DATE_DATE_FROM) : dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd');
     const departureDateMax = (DEPARTURE_DATE_DATE_TO !== '') ? dayjs(DEPARTURE_DATE_DATE_TO) : dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd');
 
     const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
-        dispatch(setFlight({ carrier, flightNumber, departureDate }));
-        dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
+        // only send again if data is changed
+        if (carrier !== stateCarrier || flightNumber !== stateFlightNumber || departureDate.toISOString() !== stateDepartureDate) {
+            dispatch(setFlight({ carrier, flightNumber, departureDate }));
+            dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
+        }
     };
 
     const debouncedFetchFlightData = useDebounce(sendRequest, 600);
@@ -64,6 +70,7 @@ export default function ApplicationForm() {
     
     const carrierOptionsList = () => 
         carrierData.carriers.map((e) => ({ label: e.name, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
@@ -153,8 +160,6 @@ export default function ApplicationForm() {
                         />
                 </Grid>
             </Grid>
-            
-            
         </form>
     );
 }

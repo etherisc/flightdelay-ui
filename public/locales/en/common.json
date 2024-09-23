@@ -16,6 +16,8 @@
             "carrier": "Please choose an airline",
             "flightNumber": "Please enter a valid flight number (1-4 digits)",
             "departureDate": "Please select a departure date"
-        }
+        },
+        "no_flight_found": "No matching flight found",
+        "inconsistent_data": "The flight data provided by the flight data service is inconsistent and cannot be used for protection purposes."
     }
 }

@@ -1,13 +1,25 @@
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, CardActions, CardContent, CardHeader, SvgIcon } from "@mui/material";
+import { Alert, Box, Card, CardActions, CardContent, CardHeader, SvgIcon } from "@mui/material";
 import Image from "next/image";
 import Button from "../Button/button";
 import { useWallet } from "../../hooks/onchain/use_wallet";
 import ApplicationForm from "./application_form";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import Trans from "../Trans/trans";
 
 export default function Application() {
     const { connectWallet } = useWallet();
+    const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
+    
+    let error = <></>;
+
+    if (errorReason !== null) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
+        </Box>;
+    }
 
     return (<>
         <Card>
@@ -19,6 +31,7 @@ export default function Application() {
                     />
             <CardContent>
                 <ApplicationForm />
+                {error}
             </CardContent>
             <CardActions>
                 {/* TODO: only show connect button when wallet not connected */}
