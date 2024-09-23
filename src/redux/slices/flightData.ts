@@ -34,9 +34,9 @@ const initialState: FlightDataState = {
     flightNumber: null,
     departureDate: null,
     departureAirport: null,
-    departureAirportWhitelisted: false,
+    departureAirportWhitelisted: true,
     arrivalAirport: null,
-    arrivalAirportWhitelisted: false,
+    arrivalAirportWhitelisted: true,
     departureTime: null,
     arrivalTime: null,
     loading: false,
@@ -69,9 +69,9 @@ export const flightDataSlice = createSlice({
             state.errorReason = null;
             state.errorData = null;
             state.departureAirport = null;
-            state.departureAirportWhitelisted = false;
+            state.departureAirportWhitelisted = true;
             state.arrivalAirport = null;
-            state.arrivalAirportWhitelisted = false;
+            state.arrivalAirportWhitelisted = true;
             state.departureTime = null;
             state.arrivalTime = null;
         });
@@ -84,9 +84,9 @@ export const flightDataSlice = createSlice({
                 state.errorReason = Reason.INCONSISTENT_DATA;
             } else {
                 state.departureAirport = response[0].departureAirportFsCode
-                state.departureAirportWhitelisted = DEPARTURE_AIRPORTS_WHITELIST.includes(response[0].departureAirportFsCode);
+                state.departureAirportWhitelisted = DEPARTURE_AIRPORTS_WHITELIST.length > 0 ? DEPARTURE_AIRPORTS_WHITELIST.includes(response[0].departureAirportFsCode) : true;
                 state.arrivalAirport = response[0].arrivalAirportFsCode
-                state.arrivalAirportWhitelisted = ARRIVAL_AIRPORTS_WHITELIST.includes(response[0].arrivalAirportFsCode);
+                state.arrivalAirportWhitelisted = ARRIVAL_AIRPORTS_WHITELIST.length > 0 ? ARRIVAL_AIRPORTS_WHITELIST.includes(response[0].arrivalAirportFsCode) : true;
                 state.departureTime = response[0].departureTime;
                 state.arrivalTime = response[0].arrivalTime;
             }
