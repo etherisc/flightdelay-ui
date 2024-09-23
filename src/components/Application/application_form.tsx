@@ -21,7 +21,10 @@ export type IApplicationFormValues = {
 export default function ApplicationForm() {
     const { t } = useTranslation();
     const { fetchFlightData } = useApplicationForm();
-    const { DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DAYS_MAX } = useConstants();
+    const { DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DAYS_MAX, DEPARTURE_DATE_DATE_FROM, DEPARTURE_DATE_DATE_TO } = useConstants();
+
+    const departureDateMin = (DEPARTURE_DATE_DATE_FROM !== '') ? dayjs(DEPARTURE_DATE_DATE_FROM) : dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd');
+    const departureDateMax = (DEPARTURE_DATE_DATE_TO !== '') ? dayjs(DEPARTURE_DATE_DATE_TO) : dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd');
 
     const debouncedFetchFlightData = useDebounce(fetchFlightData, 600);
 
@@ -32,7 +35,7 @@ export default function ApplicationForm() {
         defaultValues: {
             carrier: "",
             flightNumber: "",
-            departureDate: dayjs().add(1, 'w'),
+            departureDate: departureDateMin,
         }
     });
 
@@ -136,8 +139,8 @@ export default function ApplicationForm() {
                                 }}
                                 disablePast={true}
                                 data-testid="departureDate"
-                                minDate={dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd')}
-                                maxDate={dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd')}
+                                minDate={departureDateMin}
+                                maxDate={departureDateMax}
                                 />}
                         />
                 </Grid>

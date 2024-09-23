@@ -7,8 +7,8 @@
 
 The webapp is configured via environment variables. The following variables are available:
 
-- `NEXT_PUBLIC_DEPARTURE_DATE_DAYS_MIN`: The minimum number of days in the future for the departure date
-- `NEXT_PUBLIC_DEPARTURE_DATE_DAYS_MAX`: The maximum number of days in the future for the departure date
+- `NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS`: The minimum number of days in the future for the departure date
+- `NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS`: The maximum number of days in the future for the departure date
 
 - `LOG_API_PROXY`: set the `true` to log proxy requests on the backend
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`: The Google Analytics measurement ID. No tracking is done if this value is not set
