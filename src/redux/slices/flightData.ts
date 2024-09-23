@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { logErrorOnBackend } from '../../utils/logger';
-import { fetchFlightData } from '../thunks/flightData';
+import { fetchFlightData, fetchQuote } from '../thunks/flightData';
 import { Reason } from '../../types/errors';
 
 export interface FlightDataState {
@@ -14,8 +14,12 @@ export interface FlightDataState {
     departureTime: string | null,
     arrivalTime: string | null,
     loading: boolean,
+    loadingQuote: boolean,
     errorReason: Reason | null,
     errorData: unknown | null,
+    errorReasonQuote: Reason | null,
+    errorDataQuote: unknown | null,
+    premium: number | null,
 }
 
 /**
@@ -30,8 +34,12 @@ const initialState: FlightDataState = {
     departureTime: null,
     arrivalTime: null,
     loading: false,
+    loadingQuote: false,
     errorReason: null,
     errorData: null,
+    errorReasonQuote: null,
+    errorDataQuote: null,
+    premium: null,
 };
 
 export const flightDataSlice = createSlice({
@@ -78,7 +86,14 @@ export const flightDataSlice = createSlice({
             state.errorData = action.error;
             logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'flightData/fetchFlightData');
         });
-
+        builder.addCase(fetchQuote.pending, (state, /*action*/) => {
+            state.loadingQuote = true;
+        });
+        builder.addCase(fetchQuote.fulfilled, (state, action) => {
+            const { response } = action.payload;
+            state.loadingQuote = false;
+            state.premium = response.premium;
+        });
     },
 });
 
