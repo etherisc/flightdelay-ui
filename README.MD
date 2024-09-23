@@ -7,13 +7,9 @@
 
 The webapp is configured via environment variables. The following variables are available:
 
-- `IP_GEOLOCATION_API_KEY`: The API key for the geolocation API (https://ipgeolocation.io/) - client geolocation is disabled if not set
-- `LOCATION_IQ_API_KEY`: The API key for the location IQ API (https://locationiq.com/) - location search is disabled if not set
-- `NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS`: The address of the ERC20 token contract used to pay the premium
-- `NEXT_PUBLIC_EXPECTED_CHAIN_ID`: The expected chain ID of the blockchain network
-- `NEXT_PUBLIC_EXPECTED_CHAIN_NAME`: The expected chain name of the blockchain network
-- `NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS`: The address of the Product contract
-- `NEXT_PUBLIC_NFT_CONTRACT_ADDRESS`: The address of the NFT
+- `NEXT_PUBLIC_DEPARTURE_DATE_DAYS_MIN`: The minimum number of days in the future for the departure date
+- `NEXT_PUBLIC_DEPARTURE_DATE_DAYS_MAX`: The maximum number of days in the future for the departure date
+
 - `LOG_API_PROXY`: set the `true` to log proxy requests on the backend
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`: The Google Analytics measurement ID. No tracking is done if this value is not set
 - `NEXT_PUBLIC_GA_ENVIRONMENT_ID`: The Google Analytics environment identifier 

@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useApplicationForm } from "../../hooks/use_application_form";
 import { useDebounce } from "@react-hooks-hub/use-debounce";
+import { useConstants } from "../../hooks/use_constants";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -20,6 +21,7 @@ export type IApplicationFormValues = {
 export default function ApplicationForm() {
     const { t } = useTranslation();
     const { fetchFlightData } = useApplicationForm();
+    const { DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DAYS_MAX } = useConstants();
 
     const debouncedFetchFlightData = useDebounce(fetchFlightData, 600);
 
@@ -61,9 +63,6 @@ export default function ApplicationForm() {
                         control={control}
                         rules={{ 
                             required: true, 
-                            // pattern: /^[0-9]+$/,
-                            // min: 1,
-                            // max: maxAmount
                         }}
                         render={({ field }) => 
                             <Autocomplete
@@ -89,10 +88,7 @@ export default function ApplicationForm() {
                         control={control}
                         rules={{ 
                             required: true, 
-                            // reg for 1-4 digits
                             pattern: /^[0-9]{1,4}$/,
-                            // min: 1,
-                            // max: 9999
                         }}
                         render={({ field }) => 
                             <TextField 
@@ -130,8 +126,8 @@ export default function ApplicationForm() {
                                 }}
                                 disablePast={true}
                                 data-testid="departureDate"
-                                // minDate={coverageUntilMin}
-                                maxDate={dayjs().add(1, 'y')} 
+                                minDate={dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd')}
+                                maxDate={dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd')}
                                 />}
                         />
                 </Grid>
