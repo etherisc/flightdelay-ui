@@ -1,4 +1,4 @@
-import { faWallet } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon } from "@mui/material";
 import Image from "next/image";
@@ -9,9 +9,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
 import FlightData from "./flight_data";
+import useApplication from "../../hooks/use_application";
 
 export default function Application() {
     const { connectWallet } = useWallet();
+    const { purchaseProtection, purchaseProtectionError } = useApplication();
     const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirportWhitelisted);
@@ -20,6 +22,7 @@ export default function Application() {
     const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
     const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
     const flightFound = useSelector((state: RootState) => state.flightData.arrivalAirport !== null);
+    const walletIsConnected = useSelector((state: RootState) => state.wallet.address !== null);
     
     let error = <></>;
 
@@ -35,7 +38,7 @@ export default function Application() {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.arrival_airport_not_whitelisted" values={{ airport: arrivalAirport }} /></Alert>
         </Box>;
-    }
+    } 
 
     let flightDataLoading = <></>;
     if (loadingFlightData || loadingQuote) {
@@ -47,6 +50,28 @@ export default function Application() {
         flightData = <FlightData />;
     }
 
+    let button = <Button color="primary" fullwidth onClick={connectWallet}>
+        <SvgIcon sx={{ mr: 1 }} fontSize="small">
+            <FontAwesomeIcon icon={faWallet} />
+        </SvgIcon>
+        <Trans k="action.connect" />
+    </Button>;
+    if (walletIsConnected) {
+        button = <Button color="primary" fullwidth onClick={purchaseProtection}>
+            <SvgIcon sx={{ mr: 1 }} fontSize="small">
+                <FontAwesomeIcon icon={faCartShopping} />
+            </SvgIcon>
+            <Trans k="action.purchase" />
+        </Button>;
+    }
+
+    let purchaseProtectionErrorMsg = <></>;
+    if (purchaseProtectionError !== null) {
+        purchaseProtectionErrorMsg = <Box sx={{ py: 2 }}>
+            <Alert severity="warning">{purchaseProtectionError}</Alert>
+        </Box>;
+    }
+
     return (<>
         <Card>
             <CardHeader
@@ -54,21 +79,16 @@ export default function Application() {
                     <Image src="/assets/images/etherisc_logo_bird_blue.svg" alt="Etherisc Logo" height={64} width={64} />
                     }
                 title="Etherisc Flightdelay Protection"
-                    />
+                />
             <CardContent>
                 <ApplicationForm />
                 {error}
                 {flightDataLoading}
                 {flightData}
+                {purchaseProtectionErrorMsg}
             </CardContent>
             <CardActions>
-                {/* TODO: only show connect button when wallet not connected */}
-                <Button color="primary" fullwidth onClick={connectWallet}>
-                    <SvgIcon sx={{ mr: 1 }} fontSize="small">
-                        <FontAwesomeIcon icon={faWallet} />
-                    </SvgIcon>
-                    Connect wallet
-                </Button>
+                {button}
             </CardActions>
         </Card>
     </>);

@@ -6,7 +6,8 @@
         "policies": "Policies"
     },
     "action": {
-        "connect": "Connect wallet"
+        "connect": "Connect wallet",
+        "purchase": "Purchase flight delay protection"
     },
     "carrier": "Airline",
     "flightNumber": "Flight number",
@@ -26,6 +27,7 @@
         "no_flight_found": "No matching flight found",
         "inconsistent_data": "The flight data provided by the flight data service is inconsistent and cannot be used for protection purposes.",
         "departure_airport_not_whitelisted": "Buying protection for flights departing from {{airport}} is currently not allowed",
-        "arrival_airport_not_whitelisted": "Buying protection for flights arriving into {{airport}} is currently not allowed"
+        "arrival_airport_not_whitelisted": "Buying protection for flights arriving into {{airport}} is currently not allowed",
+        "purchase_protection_not_possible": "To purchase protection, please connect your wallet, choose a flight and departure date and try again."
     }
 }
