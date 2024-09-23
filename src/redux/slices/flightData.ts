@@ -4,13 +4,16 @@ import dayjs from 'dayjs';
 import { logErrorOnBackend } from '../../utils/logger';
 import { fetchFlightData, fetchQuote } from '../thunks/flightData';
 import { Reason } from '../../types/errors';
+import { ARRIVAL_AIRPORTS_WHITELIST, DEPARTURE_AIRPORTS_WHITELIST } from '../../config/constants';
 
 export interface FlightDataState {
     carrier: string | null,
     flightNumber: string | null,
     departureDate: string | null,
     departureAirport: string | null,
+    departureAirportWhitelisted: boolean,
     arrivalAirport: string | null,
+    arrivalAirportWhitelisted: boolean
     departureTime: string | null,
     arrivalTime: string | null,
     loading: boolean,
@@ -31,7 +34,9 @@ const initialState: FlightDataState = {
     flightNumber: null,
     departureDate: null,
     departureAirport: null,
+    departureAirportWhitelisted: false,
     arrivalAirport: null,
+    arrivalAirportWhitelisted: false,
     departureTime: null,
     arrivalTime: null,
     loading: false,
@@ -64,7 +69,9 @@ export const flightDataSlice = createSlice({
             state.errorReason = null;
             state.errorData = null;
             state.departureAirport = null;
+            state.departureAirportWhitelisted = false;
             state.arrivalAirport = null;
+            state.arrivalAirportWhitelisted = false;
             state.departureTime = null;
             state.arrivalTime = null;
         });
@@ -77,7 +84,9 @@ export const flightDataSlice = createSlice({
                 state.errorReason = Reason.INCONSISTENT_DATA;
             } else {
                 state.departureAirport = response[0].departureAirportFsCode
+                state.departureAirportWhitelisted = DEPARTURE_AIRPORTS_WHITELIST.includes(response[0].departureAirportFsCode);
                 state.arrivalAirport = response[0].arrivalAirportFsCode
+                state.arrivalAirportWhitelisted = ARRIVAL_AIRPORTS_WHITELIST.includes(response[0].arrivalAirportFsCode);
                 state.departureTime = response[0].departureTime;
                 state.arrivalTime = response[0].arrivalTime;
             }

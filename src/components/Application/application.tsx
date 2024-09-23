@@ -13,6 +13,10 @@ import FlightData from "./flight_data";
 export default function Application() {
     const { connectWallet } = useWallet();
     const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
+    const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
+    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirportWhitelisted);
+    const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
+    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirportWhitelisted);
     const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
     const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
     const flightFound = useSelector((state: RootState) => state.flightData.arrivalAirport !== null);
@@ -22,6 +26,14 @@ export default function Application() {
     if (errorReason !== null) {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
+        </Box>;
+    } else if (! isDepartureAirportWhiteListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error"><Trans k="error.departure_airport_not_whitelisted" values={{ airport: departureAirport }} /></Alert>
+        </Box>;
+    } else if (! isArrivalAirportWhiteListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error"><Trans k="error.arrival_airport_not_whitelisted" values={{ airport: arrivalAirport }} /></Alert>
         </Box>;
     }
 

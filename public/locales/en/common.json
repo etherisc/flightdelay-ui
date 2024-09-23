@@ -24,6 +24,8 @@
             "departureDate": "Please select a departure date"
         },
         "no_flight_found": "No matching flight found",
-        "inconsistent_data": "The flight data provided by the flight data service is inconsistent and cannot be used for protection purposes."
+        "inconsistent_data": "The flight data provided by the flight data service is inconsistent and cannot be used for protection purposes.",
+        "departure_airport_not_whitelisted": "Buying protection for flights departing from {{airport}} is currently not allowed",
+        "arrival_airport_not_whitelisted": "Buying protection for flights arriving into {{airport}} is currently not allowed"
     }
 }

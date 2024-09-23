@@ -9,11 +9,11 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import carrierData from "../../config/carrierData.json";
 import { INPUT_VARIANT } from "../../config/theme";
-import { useConstants } from "../../hooks/use_constants";
 import { setFlight } from "../../redux/slices/flightData";
 import { AppDispatch, RootState } from "../../redux/store";
 import { fetchFlightData } from "../../redux/thunks/flightData";
 import Trans from "../Trans/trans";
+import { DEPARTURE_DATE_DATE_FROM, DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DATE_TO, DEPARTURE_DATE_DAYS_MAX } from "../../config/constants";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -23,7 +23,6 @@ export type IApplicationFormValues = {
 
 export default function ApplicationForm() {
     const { t } = useTranslation();
-    const { DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DAYS_MAX, DEPARTURE_DATE_DATE_FROM, DEPARTURE_DATE_DATE_TO } = useConstants();
     const dispatch = useDispatch() as AppDispatch;
     const stateCarrier = useSelector((state: RootState) => state.flightData.carrier);
     const stateFlightNumber = useSelector((state: RootState) => state.flightData.flightNumber);

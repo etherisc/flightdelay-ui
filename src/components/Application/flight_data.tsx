@@ -4,12 +4,11 @@ import { Box, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
-import { useConstants } from "../../hooks/use_constants";
 import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
+import { PREMIUM_TOKEN_SYMBOL } from "../../config/constants";
 
 export default function FlightData() {
-    const { PREMIUM_TOKEN_SYMBOL } = useConstants();
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const departureTime = useSelector((state: RootState) => state.flightData.departureTime);

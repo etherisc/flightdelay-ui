@@ -7,8 +7,12 @@
 
 The webapp is configured via environment variables. The following variables are available:
 
+- `NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL`: The symbol for the premium token
 - `NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS`: The minimum number of days in the future for the departure date
 - `NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS`: The maximum number of days in the future for the departure date
+- `NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted departure airports
+- `NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted arrival airports
+
 - `FLIGHTSTATS_BASE_URL`: The base URL for the Flightstats API
 - `FLIGHTSTATS_APP_ID`: The Flightstats API application ID
 - `FLIGHTSTATS_APP_KEY`: The Flightstats API application key
