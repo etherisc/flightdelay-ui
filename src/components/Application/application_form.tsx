@@ -1,16 +1,19 @@
 import { Autocomplete, TextField } from "@mui/material";
-import dayjs from "dayjs";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { INPUT_VARIANT } from "../../config/theme";
-import Trans from "../Trans/trans";
 import Grid from '@mui/material/Grid2';
-import carrierData from "../../config/carrierData.json";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { useApplicationForm } from "../../hooks/use_application_form";
 import { useDebounce } from "@react-hooks-hub/use-debounce";
+import dayjs from "dayjs";
+import { useEffect } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import carrierData from "../../config/carrierData.json";
+import { INPUT_VARIANT } from "../../config/theme";
 import { useConstants } from "../../hooks/use_constants";
+import { setFlight } from "../../redux/slices/flightData";
+import { fetchFlightData } from "../../redux/thunks/flightData";
+import Trans from "../Trans/trans";
+import { AppDispatch } from "../../redux/store";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -20,13 +23,18 @@ export type IApplicationFormValues = {
 
 export default function ApplicationForm() {
     const { t } = useTranslation();
-    const { fetchFlightData } = useApplicationForm();
     const { DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DAYS_MAX, DEPARTURE_DATE_DATE_FROM, DEPARTURE_DATE_DATE_TO } = useConstants();
+    const dispatch = useDispatch() as AppDispatch;
 
     const departureDateMin = (DEPARTURE_DATE_DATE_FROM !== '') ? dayjs(DEPARTURE_DATE_DATE_FROM) : dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd');
     const departureDateMax = (DEPARTURE_DATE_DATE_TO !== '') ? dayjs(DEPARTURE_DATE_DATE_TO) : dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd');
 
-    const debouncedFetchFlightData = useDebounce(fetchFlightData, 600);
+    const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
+        dispatch(setFlight({ carrier, flightNumber, departureDate }));
+        dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
+    };
+
+    const debouncedFetchFlightData = useDebounce(sendRequest, 600);
 
     const { handleSubmit, control, formState, watch } = useForm<IApplicationFormValues>({
         mode: "onChange",

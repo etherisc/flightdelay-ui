@@ -21,9 +21,7 @@ export const UNDEFINED_ROOT_STATE: RootState = {
     // @ts-expect-error sadf
     wallet: undefined,
     // @ts-expect-error sadf
-    signup: undefined,
-    // @ts-expect-error sadf
-    application: undefined,
+    flightData: undefined,
     // @ts-expect-error sadf
     myPolicies: undefined
 };
@@ -58,9 +56,7 @@ export function renderWithProvidersAndDispatchMock(
             // @ts-expect-error sadf
             wallet: undefined,
             // @ts-expect-error sadf
-            signup: undefined,
-            // @ts-expect-error sadf
-            application: undefined,
+            flightData: undefined,
             // @ts-expect-error sadf
             myPolicies: undefined
         },

@@ -9,6 +9,9 @@ The webapp is configured via environment variables. The following variables are 
 
 - `NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS`: The minimum number of days in the future for the departure date
 - `NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS`: The maximum number of days in the future for the departure date
+- `FLIGHTSTATS_BASE_URL`: The base URL for the Flightstats API
+- `FLIGHTSTATS_APP_ID`: The Flightstats API application ID
+- `FLIGHTSTATS_APP_KEY`: The Flightstats API application key
 
 - `LOG_API_PROXY`: set the `true` to log proxy requests on the backend
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`: The Google Analytics measurement ID. No tracking is done if this value is not set
