@@ -74,6 +74,11 @@ export default function ApplicationForm() {
                                         {...params} 
                                         label={<Trans k="carrier" />} 
                                         error={formState.errors.carrier !== undefined}
+                                        slotProps={{
+                                            inputLabel: {
+                                                shrink: true,
+                                            },
+                                        }}
                                         helperText={formState.errors.carrier !== undefined 
                                             ? t(`error.field.carrier`)  : ""}
                                         />}
@@ -98,6 +103,11 @@ export default function ApplicationForm() {
                                 fullWidth
                                 data-testid="flightNumber"
                                 error={formState.errors.flightNumber !== undefined}
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink: true,
+                                    },
+                                }}
                                 helperText={formState.errors.flightNumber !== undefined 
                                     ? t(`error.field.flightNumber`)  : ""}
                                 />}
