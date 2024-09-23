@@ -4,7 +4,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { INPUT_VARIANT } from "../../config/theme";
 import Trans from "../Trans/trans";
 import Grid from '@mui/material/Grid2';
-import { carriers } from "../../config/carriers.json";
+import carrierData from "../../config/carrierData.json";
 import { DatePicker } from "@mui/x-date-pickers";
 
 export type IApplicationFormValues = {
@@ -32,7 +32,7 @@ export default function ApplicationForm() {
     };
 
     const carrierOptionsList = () => 
-        carriers.map((e) => ({ label: e.name, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
+        carrierData.carriers.map((e) => ({ label: e.name, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
@@ -67,17 +67,18 @@ export default function ApplicationForm() {
                         control={control}
                         rules={{ 
                             required: true, 
-                            pattern: /^[0-9]+$/,
+                            pattern: /^[0-9]{1-4}$/,
                             // min: 1,
-                            // max: maxAmount
+                            // max: 9999
                         }}
                         render={({ field }) => 
                             <TextField 
                                 label={<Trans k="flightNumber" />}
-                                fullWidth
-                                variant={INPUT_VARIANT}
                                 {...field} 
+                                variant={INPUT_VARIANT}
+                                fullWidth
                                 data-testid="flightNumber"
+                                
                                 />}
                             />
                 </Grid>
