@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Dialog, Slide, Typography } from "@mui/material";
+import { Box, Dialog, Link, Slide, Typography } from "@mui/material";
 import Trans from "../Trans/trans";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
@@ -29,13 +29,17 @@ export default function TopBar() {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 4, backgroundColor: grey[200] }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 4, mb: 6, backgroundColor: grey[200] }}>
             <Image src="/assets/images/etherisc_logo_blue.svg" alt="Etherisc Logo" width={120} height="46"/>
             <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 2 }}>
-                <Trans k="nav.apply" />
+                <Link href="/apply" color="inherit" sx={{ textDecoration: 'none' }}>
+                    <Trans k="nav.apply" />
+                </Link>
             </Typography>
             <Typography variant="h2" component="div" sx={{ flexGrow: 1, ml: 2 }}>
-                <Trans k="nav.policies" />
+                <Link href="/policies" color="inherit" sx={{ textDecoration: 'none' }}>
+                    <Trans k="nav.policies" />
+                </Link>
             </Typography>
             {wallet}
             <Dialog
