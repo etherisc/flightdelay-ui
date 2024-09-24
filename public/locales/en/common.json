@@ -2,7 +2,7 @@
     "app_name": "Flightdelay", 
     "app.title": "Etherisc Flightdelay Protection",
     "app.title.short": "Flightdelay Protection",
-    "hello_world": "Hello World",
+    "policies": "Policies",
     "nav": {
         "apply": "Apply for protection",
         "policies": "Policies"
@@ -23,9 +23,10 @@
     "ontimepercent": "On-time",
     "premium": "Premium",
     "actual_arrival": "Actual arrival",
+    "flight": "Flight",
     "table": {
         "header": {
-            "nftId": "NFT ID",
+            "nftId": "NftId",
             "carrier": "Airline",
             "flightNumber": "Number",
             "departureDate": "Departure date",

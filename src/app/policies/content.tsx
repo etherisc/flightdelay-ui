@@ -7,13 +7,17 @@ import InvalidChain from "../../components/InvalidChain/invalid_chain";
 import { useAnalytics } from "../../hooks/use_analytics";
 import { RootState } from "../../redux/store";
 import PoliciesList from "../../components/PoliciesList/policies_list";
-import { Card, CardContent } from "@mui/material";
+import { Card, CardContent, CardHeader, Theme, useMediaQuery } from "@mui/material";
 import { useWallet } from "../../hooks/onchain/use_wallet";
+import PoliciesListMobile from "../../components/PoliciesList/policies_list_mobile";
+import { useTranslation } from "react-i18next";
 
 
 
 export function Content() {
     const { reconnectWallet } = useWallet();
+    const { t } = useTranslation();
+    const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const { trackPageView } = useAnalytics();
     const isExpectedChain = useSelector((state: RootState) => (state.wallet.isExpectedChain));
     const { NEXT_PUBLIC_EXPECTED_CHAIN_ID, NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
@@ -34,8 +38,10 @@ export function Content() {
     }
 
     return (<Card>
+        <CardHeader title={t('policies', { ns: 'common'})} />
         <CardContent>
-            <PoliciesList policies={policies} loading={loading} />
+            {isMobile && <PoliciesListMobile policies={policies} loading={loading} />}
+            {!isMobile && <PoliciesList policies={policies} loading={loading} />}
         </CardContent>
     </Card>);   
 }
