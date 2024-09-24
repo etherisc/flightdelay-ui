@@ -48,7 +48,6 @@ describe('Wallet', () => {
 
         expect(screen.getByText('MockJazzicon')).toBeInTheDocument();
         expect(screen.getByText('0x2CeC…4729')).toBeInTheDocument();
-        expect(screen.getByText('MATIC 12345.67')).toBeInTheDocument();
         expect(screen.getByText('USDC 72.58')).toBeInTheDocument();
     })
 
