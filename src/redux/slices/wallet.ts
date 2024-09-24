@@ -43,8 +43,12 @@ export const accountSlice = createSlice({
             state.isAccountSwitchListenerConnected = action.payload;
         },
         resetAccount(state) {
-            state.address = stringifyBigInt(BigInt(0));
+            state.isExpectedChain = true;
+            state.connecting = false;
+            state.address = null;
+            state.balanceEth = stringifyBigInt(BigInt(0));
             state.balanceUsdc = stringifyBigInt(BigInt(0));
+            state.isAccountSwitchListenerConnected = false;
         }
     },
 });
