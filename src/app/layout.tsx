@@ -33,6 +33,8 @@ export default function RootLayout({
         <html lang="en">
             <head>
                 <meta name="viewport" content="initial-scale=1, width=device-width" />
+                <meta charSet="utf-8" />
+                <link rel="icon" href="/favicon.svg" />
             </head>
             <body>
                 <PublicEnvProvider>
