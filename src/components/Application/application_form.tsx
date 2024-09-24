@@ -74,7 +74,7 @@ export default function ApplicationForm() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
             <Grid container spacing={2}>
-                <Grid size={4}>
+                <Grid size={{ xs: 12, md: 4}}>
                     <Controller
                         name="carrier"
                         control={control}
@@ -104,7 +104,7 @@ export default function ApplicationForm() {
                         />
                     
                 </Grid>
-                <Grid size={4}>
+                <Grid size={{ xs: 12, md: 4}}>
                     <Controller
                         name="flightNumber"
                         control={control}
@@ -130,7 +130,7 @@ export default function ApplicationForm() {
                                 />}
                             />
                 </Grid>
-                <Grid size={4}>
+                <Grid size={{ xs: 12, md: 4}}>
                     <Controller
                         name="departureDate"
                         control={control}

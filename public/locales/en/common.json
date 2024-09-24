@@ -1,5 +1,7 @@
 {
     "app_name": "Flightdelay", 
+    "app.title": "Etherisc Flightdelay Protection",
+    "app.title.short": "Flightdelay Protection",
     "hello_world": "Hello World",
     "nav": {
         "apply": "Apply for protection",
@@ -7,7 +9,8 @@
     },
     "action": {
         "connect": "Connect wallet",
-        "purchase": "Purchase flight delay protection",
+        "purchase": "Buy flight delay protection",
+        "purchase_short": "Buy protection",
         "refresh": "Refresh"
     },
     "carrier": "Airline",

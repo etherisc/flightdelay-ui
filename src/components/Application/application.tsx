@@ -1,17 +1,20 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon } from "@mui/material";
+import { Alert, Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
 import Image from "next/image";
-import Button from "../Button/button";
-import { useWallet } from "../../hooks/onchain/use_wallet";
-import ApplicationForm from "./application_form";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import Trans from "../Trans/trans";
-import FlightData from "./flight_data";
+import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
+import { RootState } from "../../redux/store";
+import Button from "../Button/button";
+import Trans from "../Trans/trans";
+import ApplicationForm from "./application_form";
+import FlightData from "./flight_data";
 
 export default function Application() {
+    const { t } = useTranslation();
+    const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
     const { purchaseProtection, purchaseProtectionError } = useApplication();
     const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
@@ -57,11 +60,12 @@ export default function Application() {
         <Trans k="action.connect" />
     </Button>;
     if (walletIsConnected) {
+        const buttonText = isSmallScreen ? t('action.purchase_short') : t('action.purchase');
         button = <Button color="primary" fullwidth onClick={purchaseProtection}>
             <SvgIcon sx={{ mr: 1 }} fontSize="small">
                 <FontAwesomeIcon icon={faCartShopping} />
             </SvgIcon>
-            <Trans k="action.purchase" />
+            {buttonText}
         </Button>;
     }
 
@@ -78,7 +82,7 @@ export default function Application() {
                 avatar={
                     <Image src="/assets/images/etherisc_logo_bird_blue.svg" alt="Etherisc Logo" height={64} width={64} />
                     }
-                title="Etherisc Flightdelay Protection"
+                title={isSmallScreen ? t('app.title.short') : t('app.title')}
                 />
             <CardContent>
                 <ApplicationForm />
