@@ -67,7 +67,7 @@ const initialState: PoliciesState = {
             nftId: '123410',
             createdAt: dayjs().subtract(1, 'w').unix(),
             carrier: 'LX',
-            flightNumber: '125',
+            flightNumber: '126',
             departureDate: dayjs().add(1, 'd').unix(),
             flightState: 3,
             flightData: {

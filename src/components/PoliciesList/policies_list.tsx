@@ -1,13 +1,13 @@
 import { Alert, Box, Container, LinearProgress, Link, Typography } from "@mui/material";
+import { blue, green, grey, red } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { FlightState, PolicyData } from "../../types/policy_data";
 import { FlightStatus } from "../../types/flightstats/flightStatus";
-import { blue, green, grey, red } from "@mui/material/colors";
+import { FlightState, PolicyData } from "../../types/policy_data";
 
 export default function PoliciesList({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
     const { t } = useTranslation();
@@ -21,9 +21,11 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
         loadingIndicator = <LinearProgress />;
     }
 
-    function formatState(state: FlightState) {
+    function formatState(policy: PolicyData) {
         let text;
         let color = grey[900] as string;
+        let additional = undefined;
+        const state = policy.flightState;
         switch (state) {
             case FlightState.SCHEDULED:
                 text = t('flight_state.scheduled');
@@ -35,9 +37,11 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             case FlightState.PUNCTUAL:
                 text = t('flight_state.punctual');
                 color = green[600];
+                additional = <>{t('actual_arrival')}: {dayjs(policy.flightData?.actualArrivalTime).format('HH:mm')}</>;
                 break;
             case FlightState.DELAYED:
                 text = t('flight_state.delayed');
+                additional = <>{t('actual_arrival')}: {dayjs(policy.flightData?.actualArrivalTime).format('HH:mm')}</>;
                 color = red[500];
                 break;
             case FlightState.CANCELLED:
@@ -47,7 +51,10 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
                 text = t('flight_state.diverted');
                 break;
         }
-        return <Typography color={color} variant="body2">{text}</Typography>;
+        return <Typography color={color} variant="body2">
+            {text}
+            {additional !== undefined ? <><br/>{additional}</> : null}
+        </Typography>;
     }
 
     const columns: GridColDef[] = [
@@ -88,7 +95,7 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             flex: 1,
             valueGetter: (_value, row) => row.flightState,
             renderCell: (params) => 
-                formatState(params.value as FlightState)
+                formatState(params.row as PolicyData)
         }
     ];
 
@@ -111,7 +118,7 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
         if (value.delay > 15) {
             return <Box>
                 {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-                {dayjs(value.publishedDepartureTime).format('HH:mm')} - <Typography color={red[500]} variant="body2" component="span">{dayjs(value.actualArrivalTime).format('HH:mm')}</Typography>
+                {dayjs(value.publishedDepartureTime).format('HH:mm')} - {dayjs(value.publishedArrivalTime).format('HH:mm')}
             </Box>;
         }
         return <Box>
