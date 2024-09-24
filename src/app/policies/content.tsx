@@ -8,11 +8,12 @@ import { useAnalytics } from "../../hooks/use_analytics";
 import { RootState } from "../../redux/store";
 import PoliciesList from "../../components/PoliciesList/policies_list";
 import { Card, CardContent } from "@mui/material";
+import { useWallet } from "../../hooks/onchain/use_wallet";
 
 
 
 export function Content() {
-    // const dispatch = useDispatch();
+    const { reconnectWallet } = useWallet();
     const { trackPageView } = useAnalytics();
     const isExpectedChain = useSelector((state: RootState) => (state.wallet.isExpectedChain));
     const { NEXT_PUBLIC_EXPECTED_CHAIN_ID, NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
@@ -21,6 +22,7 @@ export function Content() {
     const loading = useSelector((state: RootState) => state.policies.loading);
     
     useEffect(() => {
+        reconnectWallet();
         trackPageView("policies", "/policies");
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

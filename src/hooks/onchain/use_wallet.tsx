@@ -108,6 +108,7 @@ export function useWallet() {
             return;
         }
 
+        console.log("reconnectWallet");
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const provider = new ethers.BrowserProvider(window.ethereum);
