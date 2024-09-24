@@ -1,17 +1,17 @@
 'use client';
 
 import { Box, Dialog, Link, Slide, Typography } from "@mui/material";
-import Trans from "../Trans/trans";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import ConnectButton from "./connect_button";
-import { forwardRef, useState } from "react";
-import { TransitionProps } from "@mui/material/transitions";
-import { ZINDEX_WALLET } from "../../config/theme";
-import Wallet from "./wallet";
-import { JazziconAvatar } from "../(basic_widgets)/Jazzicon/jazzicon_avatar";
 import { grey } from "@mui/material/colors";
+import { TransitionProps } from "@mui/material/transitions";
 import Image from "next/image";
+import React, { forwardRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { JazziconAvatar } from "../(basic_widgets)/Jazzicon/jazzicon_avatar";
+import { ZINDEX_WALLET } from "../../config/theme";
+import { RootState } from "../../redux/store";
+import Trans from "../Trans/trans";
+import ConnectButton from "./connect_button";
+import Wallet from "./wallet";
 
 export default function TopBar() {
     const address = useSelector((state: RootState) => (state.wallet.address));
@@ -42,6 +42,7 @@ export default function TopBar() {
                 </Link>
             </Typography>
             {wallet}
+            <React.Fragment>
             <Dialog
                 fullScreen
                 open={showWallet}
@@ -49,19 +50,19 @@ export default function TopBar() {
                 TransitionComponent={Transition}
                 sx={{
                     zIndex: ZINDEX_WALLET,
-                    pt: 12,
+                    pt: 2,
+                    maxWidth: '25rem',
+                    marginLeft: 'auto',
+                    marginRight: 2,
+                    marginBottom: 2,
                     '& .MuiDialog-paper': {
-                        borderTopLeftRadius: 16,
-                        borderTopRightRadius: 16,
+                        borderRadius: 8,
                     }
                 }}
-                // Paper={Card}
-                // PaperComponent={Card}
-            >
-                <Wallet 
-                    onDisconnect={toggleWallet}
-                    />
+                >
+                <Wallet onDisconnect={toggleWallet} />
             </Dialog>
+            </React.Fragment>
         </Box>
     );
 }
@@ -72,5 +73,5 @@ const Transition = forwardRef(function Transition(
     },
     ref: React.Ref<unknown>,
 ) {
-    return <Slide direction="up" ref={ref} {...props} />;
+    return <Slide direction="left" ref={ref} {...props} />;
 });

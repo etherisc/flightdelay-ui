@@ -7,7 +7,8 @@
     },
     "action": {
         "connect": "Connect wallet",
-        "purchase": "Purchase flight delay protection"
+        "purchase": "Purchase flight delay protection",
+        "refresh": "Refresh"
     },
     "carrier": "Airline",
     "flightNumber": "Flight number",

@@ -12,6 +12,7 @@ import { PATH_MYPOLICIES, PATH_APPLICATION } from '../../utils/paths';
 import { JazziconAvatar } from '../(basic_widgets)/Jazzicon/jazzicon_avatar';
 import Button from '../Button/button';
 import Trans from '../Trans/trans';
+import { PREMIUM_TOKEN_SYMBOL } from '../../config/constants';
 
 export default function Wallet({
     onDisconnect,
@@ -20,10 +21,8 @@ export default function Wallet({
 }) {
     const { disconnectWallet, refreshBalance } = useWallet();
     const address = useSelector((state: RootState) => state.wallet.address) || '';
-    const balanceEth = useSelector((state: RootState) => state.wallet.balanceEth) || '0';
     const balanceUsdc = useSelector((state: RootState) => state.wallet.balanceUsdc) || '0';
-    const symbol = useSelector((state: RootState) => state.common.tokenSymbol);
-    const symbolEth = useSelector((state: RootState) => state.common.tokenSymbolEth);
+    const symbol = PREMIUM_TOKEN_SYMBOL;
 
 
     async function disconnect() {
@@ -33,8 +32,10 @@ export default function Wallet({
         }
     }
     
-    return (<Box sx={{
+    return (<Box 
+        sx={{
         display: 'flex',
+        p: 2,
         flexDirection: 'column',
     }}>
         <Box sx={{
@@ -53,9 +54,6 @@ export default function Wallet({
         </Box>
         <Box sx={{ py: 2 }}>
             <Typography variant="h6">
-                {symbolEth} {formatAmount(parseBigInt(balanceEth), 18, 2)}
-            </Typography>
-            <Typography variant="h6">
                 {symbol} {formatAmount(parseBigInt(balanceUsdc))}
             </Typography>
         </Box>
@@ -71,7 +69,7 @@ export default function Wallet({
                     <Box sx={{ mr: 2 }}>
                         <FontAwesomeIcon icon={faShoppingCart} />
                     </Box>
-                    <Trans k="action.buy_policy"/>
+                    <Trans k="nav.apply"/>
                 </Button>
             </Link>
             <Link href={PATH_MYPOLICIES}>
@@ -79,7 +77,7 @@ export default function Wallet({
                     <Box sx={{ mr: 2 }}>
                         <FontAwesomeIcon icon={faFileSignature} />
                     </Box>
-                    <Trans k="mypolicies.title" />
+                    <Trans k="nav.policies" />
                 </Button>
             </Link>
         </Box>
