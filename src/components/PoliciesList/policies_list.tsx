@@ -1,4 +1,4 @@
-import { Alert, Box, Container, LinearProgress, Link, Typography } from "@mui/material";
+import { Alert, Box, Container, LinearProgress, Typography } from "@mui/material";
 import { blue, green, grey, red } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
@@ -103,14 +103,14 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
         if (! isConnected) {
             return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
                 <Alert variant="standard" severity="info">
-                    <Trans i18nKey="alert.no_wallet_connected" t={t} />
+                    <Trans i18nKey="error.no_wallet_connected" t={t} />
                 </Alert>
             </Container>);
         }
         return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
-                <Trans i18nKey="no_policies" t={t}>
-                    <Link href="/">click here</Link>
-                </Trans>
+                <Alert variant="standard" severity="info">
+                    <Trans i18nKey="error.no_policies" t={t} />
+                </Alert>
             </Container>);
     }
 

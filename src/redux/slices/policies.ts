@@ -61,8 +61,7 @@ const initialState: PoliciesState = {
                 actualArrivalTime: '2021-10-10T14:01:00Z',
                 delay: 1,
             },
-        }
-        ,
+        },
         {
             nftId: '123410',
             createdAt: dayjs().subtract(1, 'w').unix(),
