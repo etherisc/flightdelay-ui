@@ -18,6 +18,23 @@
     "arrivalTime": "@",
     "ontimepercent": "On-time",
     "premium": "Premium",
+    "table": {
+        "header": {
+            "nftId": "NFT ID",
+            "carrier": "Airline",
+            "flightNumber": "Flight number",
+            "departureDate": "Departure date",
+            "flightState": "Flight state"
+        }
+    },
+    "flight_state": {
+        "expected": "Expected",
+        "en_route": "En route",
+        "punctual": "Punctual",
+        "delayed": "Delayed",
+        "cancelled": "Cancelled",
+        "landed": "Landed"
+    },
     "error": {
         "field": {
             "carrier": "Please choose an airline",

@@ -5,7 +5,7 @@ import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
 import { config } from "@fortawesome/fontawesome-svg-core";
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import type { Metadata } from 'next';
 import { PublicEnvProvider } from 'next-runtime-env';
 import { headers } from 'next/headers';
@@ -53,13 +53,13 @@ function AppBaseLayout({
     children: React.ReactNode,
 }) {
     return (
-        <>
+        <Box>
             <Container disableGutters maxWidth={false}>
                 <TopBar />
             </Container>
-            <Container maxWidth="md" sx={{ p: 2, py: 1 }}>
+            <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
                 {children}
             </Container>
-        </>
+        </Box>
     )
 }

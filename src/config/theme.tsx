@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 
+
 export const PRIMARY_BLUE = '#5180F3';
 // TODO: remove when no longer needed
 export const BLUE_LIGHT = PRIMARY_BLUE; 

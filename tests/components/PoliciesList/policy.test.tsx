@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
-import Policy from '../../../src/components/PoliciesList/policy_short';
+import Policy from '../../../src/components/PoliciesList/policy';
 import { CoverageType } from '../../../src/types/coverage_type';
 import { PolicyData } from '../../../src/types/policy_data';
 import { tMock } from '../../test-helper/i18n';

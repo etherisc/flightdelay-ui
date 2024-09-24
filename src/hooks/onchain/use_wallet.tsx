@@ -4,7 +4,7 @@ import { useEnvContext } from "next-runtime-env";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSnackbarErrorMessage } from "../../redux/slices/common";
-import { resetPolicies } from "../../redux/slices/mypolicies";
+import { resetPolicies } from "../../redux/slices/policies";
 import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setConnecting, setExpectedChain } from "../../redux/slices/wallet";
 import { RootState } from "../../redux/store";
 import { stringifyBigInt } from "../../utils/bigint";

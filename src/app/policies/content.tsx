@@ -6,7 +6,8 @@ import { useSelector } from "react-redux";
 import InvalidChain from "../../components/InvalidChain/invalid_chain";
 import { useAnalytics } from "../../hooks/use_analytics";
 import { RootState } from "../../redux/store";
-import Application from "../../components/Application/application";
+import PoliciesList from "../../components/PoliciesList/policies_list";
+import { Card, CardContent } from "@mui/material";
 
 
 
@@ -15,9 +16,12 @@ export function Content() {
     const { trackPageView } = useAnalytics();
     const isExpectedChain = useSelector((state: RootState) => (state.wallet.isExpectedChain));
     const { NEXT_PUBLIC_EXPECTED_CHAIN_ID, NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
+
+    const policies = useSelector((state: RootState) => state.policies.policies);
+    const loading = useSelector((state: RootState) => state.policies.loading);
     
     useEffect(() => {
-        trackPageView("apply", "/apply");
+        trackPageView("policies", "/policies");
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -27,7 +31,9 @@ export function Content() {
         }
     }
 
-    return (<>
-        <Application />
-    </>);   
+    return (<Card>
+        <CardContent>
+            <PoliciesList policies={policies} loading={loading} />
+        </CardContent>
+    </Card>);   
 }

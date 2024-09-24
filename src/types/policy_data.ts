@@ -1,38 +1,20 @@
-import { Coordinates } from "./coordinates";
-import { CoverageType } from "./coverage_type";
 
 // **Important**: only serializeable data here (no bigint, etc.)
 export type PolicyData = {
     nftId: string;
-    state: PolicyState;
-    type: CoverageType;
-    premium: string;
-    sumInsured: string;
-    locationId: number;
-    locationName: string;
-    locationCoordinates: Coordinates;
-    claimedAmount: string;
     createdAt: number;
-    expirationAt: number;
-    payoutScale: [PolicyDataScaleEntry, PolicyDataScaleEntry, PolicyDataScaleEntry] | null,
-}
-
-export interface PolicyDataScaleEntry {
-    mmiLevel: string;
-    payoutAmount: string;
+    carrier: string;
+    flightNumber: string;
+    departureDate: number;
+    flightState: FlightState;
 }
 
 
-export enum PolicyState {
-    APPLIED,
-    REVOKED,
-    DECLINED,
-    UNDERWRITTEN,
-    CONFIRMED,
+export enum FlightState {
     EXPECTED,
-    ACTIVE,
-    PAUSED,
-    CLOSED,
-    ARCHIVED,
-    PAID
+    EN_ROUTE,
+    PUNCTUAL,
+    DELAYED,
+    CANCELLED,
+    DIVERTED,
 }

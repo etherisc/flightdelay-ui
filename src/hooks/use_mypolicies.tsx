@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { resetPolicies } from "../redux/slices/mypolicies";
+import { resetPolicies } from "../redux/slices/policies";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
 
