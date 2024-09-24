@@ -14,9 +14,9 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     const year = departureDate.split('-')[0];
     const month = departureDate.split('-')[1];
     const day = departureDate.split('-')[2];
-    const scheduleUrl = FLIGHTSTATS_BASE_URL + '/schedules/rest/v1/json/flight';
-    const url = `${scheduleUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
-        + `/departing/${encodeURIComponent(year)}/${encodeURIComponent(month)}/${encodeURIComponent(day)}`
+    const statusUrl = FLIGHTSTATS_BASE_URL + '/flightstatus/rest/v2/json/flight/status/';
+    const url = `${statusUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
+        + `/dep/${encodeURIComponent(year)}/${encodeURIComponent(month)}/${encodeURIComponent(day)}`
         + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
     return sendRequestAndReturnResponse(reqId, url);
 }
