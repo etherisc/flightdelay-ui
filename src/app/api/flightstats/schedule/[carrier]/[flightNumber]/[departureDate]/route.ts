@@ -4,7 +4,10 @@ import { LOGGER } from "../../../../../../../utils/logger_backend";
 import { FLIGHTSTATS_BASE_URL } from "../../../../../_utils/config";
 import { sendRequestAndReturnResponse } from "../../../../../_utils/proxy";
 
-/** get flight schedule from flightstats */
+/** 
+ * get flight schedule from flightstats. 
+ * flightstats docs: https://developer.flightstats.com/api-docs/scheduledFlights/v1
+ */
 export async function GET(request: NextRequest, { params } : { params: { carrier: string, flightNumber: string, departureDate: string } }) {
     const reqId = nanoid();
     const carrier = params.carrier;
