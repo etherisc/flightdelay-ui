@@ -98,7 +98,7 @@ export const policiesSlice = createSlice({
             state.policies.push(action.payload);
         },
         resetPolicies(state) {
-            state.policies = [];
+            Object.assign(state, initialState);
         },
     },
 });

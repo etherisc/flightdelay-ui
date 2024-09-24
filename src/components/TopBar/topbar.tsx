@@ -29,7 +29,7 @@ export default function TopBar() {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 4, mb: 6, backgroundColor: grey[200] }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 4, mb: { xs: 0, md: 6} , backgroundColor: grey[200] }}>
             <Image src="/assets/images/etherisc_logo_blue.svg" alt="Etherisc Logo" width={120} height="46"/>
             <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 2, display: { 'xs': 'none', 'md': 'inherit'} }} >
                 <Link href="/apply" color="inherit" sx={{ textDecoration: 'none' }}>
