@@ -1,11 +1,13 @@
-import { Alert, Container, LinearProgress, Link } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Alert, Box, Container, LinearProgress, Link, Typography } from "@mui/material";
+import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { FlightState, PolicyData } from "../../types/policy_data";
+import { FlightStatus } from "../../types/flightstats/flightStatus";
+import { blue, green, grey, red } from "@mui/material/colors";
 
 export default function PoliciesList({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
     const { t } = useTranslation();
@@ -20,20 +22,32 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
     }
 
     function formatState(state: FlightState) {
+        let text;
+        let color = grey[900] as string;
         switch (state) {
-            case FlightState.EXPECTED:
-                return t('flight_state.expected');
+            case FlightState.SCHEDULED:
+                text = t('flight_state.scheduled');
+                break;
             case FlightState.EN_ROUTE:
-                return t('flight_state.en_route');
+                text = t('flight_state.en_route');
+                color = blue[600];
+                break;
             case FlightState.PUNCTUAL:
-                return t('flight_state.punctual');
+                text = t('flight_state.punctual');
+                color = green[600];
+                break;
             case FlightState.DELAYED:
-                return t('flight_state.delayed');
+                text = t('flight_state.delayed');
+                color = red[500];
+                break;
             case FlightState.CANCELLED:
-                return t('flight_state.cancelled');
+                text = t('flight_state.cancelled');
+                break;
             case FlightState.DIVERTED:
-                return t('flight_state.diverted');
+                text = t('flight_state.diverted');
+                break;
         }
+        return <Typography color={color} variant="body2">{text}</Typography>;
     }
 
     const columns: GridColDef[] = [
@@ -50,7 +64,7 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
         {
             field: 'flightNumber',
             headerName: t('table.header.flightNumber'),
-            flex: 0.5,
+            flex: 0.4,
         },
         {
             field: 'departureDate',
@@ -60,6 +74,13 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             renderCell: (params) => 
                 dayjs.unix(params.value).format('YYYY-MM-DD'),
             
+        },
+        {
+            field: 'flightData',
+            headerName: t('table.header.flightData'),
+            flex: 1,
+            valueGetter: (_value, row) => row.flightData,
+            renderCell: (params) => <FlightData value={params.value as FlightStatus} />
         },
         {
             field: 'flightState',
@@ -86,6 +107,19 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             </Container>);
     }
 
+    function FlightData({ value }: { value: FlightStatus }) {
+        if (value.delay > 15) {
+            return <Box>
+                {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
+                {dayjs(value.publishedDepartureTime).format('HH:mm')} - <Typography color={red[500]} variant="body2" component="span">{dayjs(value.actualArrivalTime).format('HH:mm')}</Typography>
+            </Box>;
+        }
+        return <Box>
+            {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
+            {dayjs(value.publishedDepartureTime).format('HH:mm')} - {dayjs(value.publishedArrivalTime).format('HH:mm')}
+        </Box>;
+    }
+
     return (<>
         {loadingIndicator}
 
@@ -94,6 +128,7 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             rows={policies} 
             columns={columns} 
             getRowId={(row: PolicyData) => row.nftId}
+            getRowHeight={() => 'auto'}
             slots={{
                 noRowsOverlay: NoRowsOverlay,
             }}
@@ -108,6 +143,11 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             onPaginationModelChange={setPaginationModel}
             disableRowSelectionOnClick={true}
             disableColumnMenu={true}
+            sx={{
+                [`& .${gridClasses.cell}`]: {
+                    py: 1,
+                },
+            }}
             />
     </>);
 }

@@ -22,13 +22,14 @@
         "header": {
             "nftId": "NFT ID",
             "carrier": "Airline",
-            "flightNumber": "Flight number",
+            "flightNumber": "Number",
             "departureDate": "Departure date",
-            "flightState": "Flight state"
+            "flightState": "Flight state",
+            "flightData": "Flight details"
         }
     },
     "flight_state": {
-        "expected": "Expected",
+        "scheduled": "Scheduled",
         "en_route": "En route",
         "punctual": "Punctual",
         "delayed": "Delayed",

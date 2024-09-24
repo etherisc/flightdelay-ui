@@ -1,3 +1,4 @@
+import { FlightStatus } from "./flightstats/flightStatus";
 
 // **Important**: only serializeable data here (no bigint, etc.)
 export type PolicyData = {
@@ -7,11 +8,12 @@ export type PolicyData = {
     flightNumber: string;
     departureDate: number;
     flightState: FlightState;
+    flightData: FlightStatus | null;
 }
 
 
 export enum FlightState {
-    EXPECTED,
+    SCHEDULED,
     EN_ROUTE,
     PUNCTUAL,
     DELAYED,
