@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Dialog, Link, Slide, Typography } from "@mui/material";
+import { Box, Dialog, Link, Slide, Theme, Typography, useMediaQuery } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { TransitionProps } from "@mui/material/transitions";
 import Image from "next/image";
@@ -44,25 +44,26 @@ export default function TopBar() {
             <Box sx={{ flexGrow: 1 }}>&nbsp;</Box>
             {wallet}
             <React.Fragment>
-            <Dialog
-                fullScreen
-                open={showWallet}
-                onClose={toggleWallet}
-                TransitionComponent={Transition}
-                sx={{
-                    zIndex: ZINDEX_WALLET,
-                    pt: 2,
-                    maxWidth: '25rem',
-                    marginLeft: 'auto',
-                    marginRight: 2,
-                    marginBottom: 2,
-                    '& .MuiDialog-paper': {
-                        borderRadius: 8,
-                    }
-                }}
-                >
-                <Wallet onDisconnect={toggleWallet} />
-            </Dialog>
+                <Dialog
+                    fullScreen
+                    open={showWallet}
+                    onClose={toggleWallet}
+                    TransitionComponent={Transition}
+                    sx={{
+                        zIndex: ZINDEX_WALLET,
+                        pt: { md: 2},
+                        top: { xs: 300, md: 0 },
+                        maxWidth: { md: '25rem' },
+                        marginLeft: { xs: 2, md: 'auto'},
+                        marginRight: 2,
+                        marginBottom: 2,
+                        '& .MuiDialog-paper': {
+                            borderRadius: 8,
+                        }
+                    }}
+                    >
+                    <Wallet onDisconnect={toggleWallet} />
+                </Dialog>
             </React.Fragment>
         </Box>
     );
@@ -74,5 +75,7 @@ const Transition = forwardRef(function Transition(
     },
     ref: React.Ref<unknown>,
 ) {
-    return <Slide direction="left" ref={ref} {...props} />;
+    const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+
+    return <Slide direction={ isSmallScreen ? 'up' : 'left'} ref={ref} {...props} />;
 });
