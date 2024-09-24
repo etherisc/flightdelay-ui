@@ -23,7 +23,7 @@ export const UNDEFINED_ROOT_STATE: RootState = {
     // @ts-expect-error sadf
     flightData: undefined,
     // @ts-expect-error sadf
-    myPolicies: undefined
+    policies: undefined
 };
 
 export function renderWithProviders(
@@ -58,7 +58,7 @@ export function renderWithProvidersAndDispatchMock(
             // @ts-expect-error sadf
             flightData: undefined,
             // @ts-expect-error sadf
-            myPolicies: undefined
+            policies: undefined
         },
         // Automatically create a store instance if no store was passed in
         store = setupStore(preloadedState),
