@@ -7,10 +7,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
 import { PREMIUM_TOKEN_SYMBOL } from "../../config/constants";
-import { useTranslation } from "react-i18next";
 
 export default function FlightData() {
-    const { t } = useTranslation();
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const departureTime = useSelector((state: RootState) => state.flightData.departureTime);
