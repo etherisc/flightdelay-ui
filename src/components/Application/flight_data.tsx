@@ -78,13 +78,13 @@ export default function FlightData() {
         </Grid>
         <Grid container sx={{ mt: 4 }} spacing={1} display={{ xs: 'flex', md: 'none'}}>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {departureAirport?.iata} @ {formatTime(departureTime)}
+                <FontAwesomeIcon icon={faPlaneDeparture} /><Typography ml={1} fontWeight={700} component="span">{departureAirport?.iata}</Typography> @ {formatTime(departureTime)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {arrivalAirport?.iata} @ {formatTime(arrivalTime)}
+                <FontAwesomeIcon icon={faPlaneArrival} /><Typography ml={1} fontWeight={700} component="span">{arrivalAirport?.iata}</Typography> @ {formatTime(arrivalTime)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faHandHoldingDollar} /> <Trans k="premium" /> <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {premium}</Typography>
+                <FontAwesomeIcon icon={faHandHoldingDollar} />&nbsp;&nbsp;<Trans k="premium" /> <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {premium}</Typography>
             </Grid>
         </Grid>
     </Box>;
