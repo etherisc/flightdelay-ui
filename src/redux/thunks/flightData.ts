@@ -11,7 +11,7 @@ export const fetchFlightData = createAsyncThunk(
         const response = await fetchFlightData(data.carrier, data.flightNumber, data.departureDate);
 
         // dispatch quote request
-        if (response.length === 1) {
+        if (response.flights.length === 1) {
             (thunkAPI.dispatch as AppDispatch)(fetchQuote({ carrier: data.carrier, flightNumber: data.flightNumber }));
         }
 

@@ -1,19 +1,18 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { ARRIVAL_AIRPORTS_WHITELIST, DEPARTURE_AIRPORTS_WHITELIST } from '../../config/constants';
+import { Reason } from '../../types/errors';
+import { Airport as FsAirport } from '../../types/flightstats/airport';
 import { logErrorOnBackend } from '../../utils/logger';
 import { fetchFlightData, fetchQuote } from '../thunks/flightData';
-import { Reason } from '../../types/errors';
-import { ARRIVAL_AIRPORTS_WHITELIST, DEPARTURE_AIRPORTS_WHITELIST } from '../../config/constants';
 
 export interface FlightDataState {
     carrier: string | null,
     flightNumber: string | null,
     departureDate: string | null,
-    departureAirport: string | null,
-    departureAirportWhitelisted: boolean,
-    arrivalAirport: string | null,
-    arrivalAirportWhitelisted: boolean
+    departureAirport: Airport | null,
+    arrivalAirport: Airport | null,
     departureTime: string | null,
     arrivalTime: string | null,
     loading: boolean,
@@ -26,6 +25,16 @@ export interface FlightDataState {
     ontime: number | null,
 }
 
+export interface Airport {
+    fs: string;
+    iata: string;
+    icao: string;
+    name: string;
+    utcOffsetHours: number;
+    timeZoneRegionName: string;
+    whitelisted: boolean;
+}
+
 /**
  * The signup slice contains all the data related to the signup process. This is mostly tentative data that is shown to the user to be selected or confirmed. 
  */
@@ -34,9 +43,7 @@ const initialState: FlightDataState = {
     flightNumber: null,
     departureDate: null,
     departureAirport: null,
-    departureAirportWhitelisted: true,
     arrivalAirport: null,
-    arrivalAirportWhitelisted: true,
     departureTime: null,
     arrivalTime: null,
     loading: false,
@@ -48,6 +55,7 @@ const initialState: FlightDataState = {
     premium: null,
     ontime: null,
 };
+
 
 export const flightDataSlice = createSlice({
     name: 'flightData',
@@ -69,26 +77,22 @@ export const flightDataSlice = createSlice({
             state.errorReason = null;
             state.errorData = null;
             state.departureAirport = null;
-            state.departureAirportWhitelisted = true;
             state.arrivalAirport = null;
-            state.arrivalAirportWhitelisted = true;
             state.departureTime = null;
             state.arrivalTime = null;
         });
         builder.addCase(fetchFlightData.fulfilled, (state, action) => {
             const { response } = action.payload;
             state.loading = false;
-            if (response.length === 0) {
+            if (response.flights.length === 0) {
                 state.errorReason = Reason.NO_FLIGHT_FOUND;
-            } else if (response.length > 1) {
+            } else if (response.flights.length > 1) {
                 state.errorReason = Reason.INCONSISTENT_DATA;
             } else {
-                state.departureAirport = response[0].departureAirportFsCode
-                state.departureAirportWhitelisted = DEPARTURE_AIRPORTS_WHITELIST.length > 0 ? DEPARTURE_AIRPORTS_WHITELIST.includes(response[0].departureAirportFsCode) : true;
-                state.arrivalAirport = response[0].arrivalAirportFsCode
-                state.arrivalAirportWhitelisted = ARRIVAL_AIRPORTS_WHITELIST.length > 0 ? ARRIVAL_AIRPORTS_WHITELIST.includes(response[0].arrivalAirportFsCode) : true;
-                state.departureTime = response[0].departureTime;
-                state.arrivalTime = response[0].arrivalTime;
+                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, DEPARTURE_AIRPORTS_WHITELIST);
+                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, ARRIVAL_AIRPORTS_WHITELIST);
+                state.departureTime = response.flights[0].departureTime;
+                state.arrivalTime = response.flights[0].arrivalTime;
             }
         });
         builder.addCase(fetchFlightData.rejected, (state, action) => {
@@ -108,6 +112,30 @@ export const flightDataSlice = createSlice({
         });
     },
 });
+
+function extractAirportData(airportFsCode: string, airports: FsAirport[], whitelist: string[]): Airport {
+    const ap = airports.find((a) => a.fs === airportFsCode);
+    if (ap === undefined) {
+        return {
+            fs: '',
+            iata: '',
+            icao: '',
+            name: '',
+            utcOffsetHours: 0,
+            timeZoneRegionName: '',
+            whitelisted: false,
+        } as Airport;
+    }
+    return {
+        fs: ap?.fs || '',
+        iata: ap?.iata || '',
+        icao: ap?.icao || '',
+        name: ap?.name || '',
+        utcOffsetHours: ap?.utcOffsetHours || 0,
+        timeZoneRegionName: ap?.timeZoneRegionName || '',
+        whitelisted: whitelist.length > 0 ? whitelist.includes(ap?.iata) : true,
+    } as Airport;
+}
 
 // Action creators are generated for each case reducer function
 export const { 

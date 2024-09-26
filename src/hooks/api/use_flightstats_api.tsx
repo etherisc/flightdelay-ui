@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
 import { ScheduledFlight } from "../../types/flightstats/scheduledFlight";
 import { FlightStatus } from "../../types/flightstats/flightStatus";
+import { Airport } from "../../types/flightstats/airport";
 
 export function useFlightstatsApi() {
-    async function fetchFlightData(carrier: string, flightNumber: string, departureDate: dayjs.Dayjs): Promise<ScheduledFlight[]> {
+    async function fetchFlightData(carrier: string, flightNumber: string, departureDate: dayjs.Dayjs): Promise<{ flights: ScheduledFlight[], airports: Airport[]}> {
         console.log("fetching flight data for", carrier, flightNumber, departureDate);
         const uri = `/api/flightstats/schedule/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}/${encodeURIComponent(departureDate.format('YYYY-MM-DD'))}`;
         const res = await fetch(uri);
@@ -12,16 +13,20 @@ export function useFlightstatsApi() {
             throw new Error(`Error fetching flightstats data: ${res.statusText}`);
         }
         const jsonResponse = await res.json();
+        // console.log(jsonResponse);
 
         if (jsonResponse.scheduledFlights === undefined) {
-            return [];
+            return { flights: [], airports: [] };
         }
 
         if (jsonResponse.scheduledFlights.length === 0) {
-            return [];
+            return { flights: [], airports: [] };
         }
         
-        return jsonResponse.scheduledFlights as ScheduledFlight[];
+        return {
+            flights: jsonResponse.scheduledFlights as ScheduledFlight[],
+            airports: jsonResponse.appendix.airports as Airport[],
+        };
     }
 
     async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number, ontimepercent: number}> {

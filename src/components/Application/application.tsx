@@ -19,9 +19,9 @@ export default function Application() {
     const { purchaseProtection, purchaseProtectionError } = useApplication();
     const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
-    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirportWhitelisted);
+    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || true);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
-    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirportWhitelisted);
+    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
     const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
     const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
     const flightFound = useSelector((state: RootState) => state.flightData.arrivalAirport !== null);

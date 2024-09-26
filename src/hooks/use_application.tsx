@@ -7,8 +7,8 @@ export default function useApplication() {
     const { t } = useTranslation();
     const [error, setError] = useState<string | null>(null);
     const departureAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
-    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirportWhitelisted);
-    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirportWhitelisted);
+    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || true);
+    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
     
     async function purchaseProtection() {
         setError(null);

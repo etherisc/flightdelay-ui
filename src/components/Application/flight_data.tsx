@@ -30,49 +30,47 @@ export default function FlightData() {
             <Grid size={1}>
                 <FontAwesomeIcon icon={faPlaneDeparture} />
             </Grid>
-            <Grid size={3}>
+            <Grid size={2}>
                 <Trans k="departureAirport" />
             </Grid>
-            <Grid size={1}>
-                {departureAirport}
+            <Grid size={4}>
+                <Typography fontWeight={700}>
+                    {departureAirport?.name} ({departureAirport?.iata})
+                </Typography>
             </Grid>
-            <Grid size={1}>
-                <Trans k="departureTime" />
-            </Grid>
-            <Grid size={6}>
-                {formatTime(departureTime)}
+            <Grid size={5}>
+            <Trans k="departureTime" />&nbsp;{formatTime(departureTime)}
             </Grid>
             <Grid size={1}>
                 <FontAwesomeIcon icon={faPlaneArrival} />
             </Grid>
-            <Grid size={3}>
+            <Grid size={2}>
                 <Trans k="arrivalAirport" />
             </Grid>
-            <Grid size={1}>
-                {arrivalAirport}
+            <Grid size={4}>
+                <Typography fontWeight={700}>
+                    {arrivalAirport?.name} ({arrivalAirport?.iata})
+                </Typography>
             </Grid>
-            <Grid size={1}>
-                <Trans k="arrivalTime" />
-            </Grid>
-            <Grid size={6}>
-                {formatTime(arrivalTime)}
+            <Grid size={5}>
+                <Trans k="arrivalTime" />&nbsp;{formatTime(arrivalTime)}
             </Grid>
             <Grid size={1}>
                 <FontAwesomeIcon icon={faClock} />
             </Grid>
-            <Grid size={3}>
+            <Grid size={2}>
                 <Trans k="ontimepercent" />
             </Grid>
-            <Grid size={8}>
+            <Grid size={9}>
                 {ontimepercent ? (ontimepercent * 100).toFixed(1) : ""}%
             </Grid>
             <Grid size={1}>
                 <FontAwesomeIcon icon={faHandHoldingDollar} />
             </Grid>
-            <Grid size={3}>
+            <Grid size={2}>
                 <Trans k="premium" />
             </Grid>
-            <Grid size={8}>
+            <Grid size={9}>
                 <Typography fontWeight={700}>
                     {PREMIUM_TOKEN_SYMBOL} {premium}
                 </Typography>
@@ -80,10 +78,10 @@ export default function FlightData() {
         </Grid>
         <Grid container sx={{ mt: 4 }} spacing={1} display={{ xs: 'flex', md: 'none'}}>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {departureAirport} @ {formatTime(departureTime)}
+                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {departureAirport?.iata} @ {formatTime(departureTime)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {arrivalAirport} @ {formatTime(arrivalTime)}
+                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {arrivalAirport?.iata} @ {formatTime(arrivalTime)}
             </Grid>
             <Grid size={12}>
                 <FontAwesomeIcon icon={faHandHoldingDollar} /> <Trans k="premium" /> <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {premium}</Typography>

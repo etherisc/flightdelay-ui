@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
 
     const rating = jsonResponse.ratings[0];
 
-    LOGGER.debug(`[${reqId}] Ratings: ontime ${rating.ontime}, late15 ${rating.late15}, late30 ${rating.late30}, `
+    LOGGER.debug(`[${reqId}] Ratings:ontime ${rating.ontime}, observations: ${rating.observations}, late15 ${rating.late15}, late30 ${rating.late30}, `
         + `late45 ${rating.late45}, cancelled ${rating.cancelled}, diverted ${rating.diverted} ontimepercent ${rating.ontimepercent}`);
 
     // TODO: calculate premium based on rating by calling onchain quote function (#45)
