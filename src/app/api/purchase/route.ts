@@ -14,6 +14,7 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     const flightNumber = params.flightNumber;
     LOGGER.debug(`[${reqId} purchase protection for ${carrier} ${flightNumber}`);
 
+    // TODO: 0. check balance for purchaser wallet and ensure enough tokens are available for payment
     // TODO: 1. call smart contract createPolicy function
     // TODO: 2. return nftid and policy data
 
