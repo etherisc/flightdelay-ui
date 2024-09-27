@@ -305,12 +305,28 @@
             "name": "Vietnam Airlines"
         },
         {
+            "iata": "UK",
+            "name": "Vistara"
+        },
+        {
             "iata": "W6",
             "name": "Wizz Air"
         },
         {
+            "iata": "VS",
+            "name": "Virgin Atlantic"
+        },
+        {
+            "iata": "SV",
+            "name": "Saudia"
+        },
+        {
             "iata": "WN",
             "name": "Southwest Airlines"
+        },
+        {
+            "iata": "JL",
+            "name": "Japan Airlines"
         },
         {
             "iata": "WS",
@@ -331,6 +347,38 @@
         {
             "iata": "ZH",
             "name": "Shenzhen Airlines"
+        },
+        {
+            "iata": "QF",
+            "name": "Qantas"
+        },
+        {
+            "iata": "PG",
+            "name": "Bangkok Airways"
+        },
+        {
+            "iata": "CZ",
+            "name": "China Southern Airlines"
+        },
+        {
+            "iata": "GA",
+            "name": "Garuda Indonesia"
+        },
+        {
+            "iata": "JX",
+            "name": "STARLUX Airlines"
+        },
+        {
+            "iata": "KC",
+            "name": "Air Astana"
+        },
+        {
+            "iata": "NH",
+            "name": "ANA All Nippon Airways"
+        },
+        {
+            "iata": "NZ",
+            "name": "Air New Zealand"
         }
     ]
 }
