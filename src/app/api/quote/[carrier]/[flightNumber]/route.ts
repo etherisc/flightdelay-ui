@@ -27,6 +27,7 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
         + `late45 ${rating.late45}, cancelled ${rating.cancelled}, diverted ${rating.diverted} ontimepercent ${rating.ontimepercent}`);
 
     // TODO: calculate premium based on rating by calling onchain quote function (#45)
+    // TODO: generate signature for flight rating data
 
     return Response.json({
         premium: 15, // FIXME: return actual premium 

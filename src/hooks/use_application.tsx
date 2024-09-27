@@ -22,6 +22,10 @@ export default function useApplication() {
         }
 
         console.log("purchaseProtection");
+
+        // TODO: 1. check wallet balance for payment token
+        // TODO: 2. Calculate erc20 permit signature 
+        // TODO: 3. send all data relevant for tx to the backend
     }
 
     return {

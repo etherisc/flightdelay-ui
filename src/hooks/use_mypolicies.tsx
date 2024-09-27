@@ -24,6 +24,12 @@ export function useMyPolicies(address: string) {
         dispatch(resetPolicies());
         try {
             console.log("fetching policies for address", address);
+
+            // TODO: 1. get all policy nft ids for the address and check they are valid and belong to the product
+            // TODO: 2. fetch policy data for each nft id
+            // TODO: 3. fetch flight data from the risk the policy is covering
+            // TODO: 4. fetch claim/payout data for policy nft id
+            
             // const signer = await getSigner();
             // const nftIds = await getNftIds(address, signer);
             // await fetchPolicyData(
