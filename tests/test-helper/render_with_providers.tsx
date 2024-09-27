@@ -6,6 +6,8 @@ import { AppStore, RootState, setupStore } from '../../src/redux/store'
 import { PublicEnvProvider } from 'next-runtime-env'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { AppRouterContextProviderMock } from './app-router-context-provider-mock'
+import { ThemeProvider } from '@emotion/react'
+import { customTheme } from '../../src/config/theme'
 
 
 // This type interface extends the default options for render from RTL, as well
@@ -39,7 +41,9 @@ export function renderWithProviders(
         return (
             <Provider store={store}>
                 <PublicEnvProvider>
+                    <ThemeProvider theme={customTheme}>
                     {children}
+                    </ThemeProvider>
                 </PublicEnvProvider>
             </Provider>
         );
