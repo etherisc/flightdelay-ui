@@ -361,6 +361,38 @@
             "name": "China Southern Airlines"
         },
         {
+            "iata": "GF",
+            "name": "Gulf Air"
+        },
+        {
+            "iata": "UA",
+            "name": "United Airlines"
+        },
+        {
+            "iata": "LA",
+            "name": "Latam"
+        },
+        {
+            "iata": "J2",
+            "name": "Azerbaijan Airlines"
+        },
+        {
+            "iata": "V7",
+            "name": "Volotea"
+        },
+        {
+            "iata": "XY",
+            "name": "Flynas"
+        },
+        {
+            "iata": "TO",
+            "name": "Transavia France"
+        },
+        {
+            "iata": "AT",
+            "name": "Royal Air Maroc"
+        },
+        {
             "iata": "GA",
             "name": "Garuda Indonesia"
         },
