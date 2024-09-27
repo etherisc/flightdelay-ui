@@ -1,87 +1,336 @@
 {
     "carriers": [
-    { "iata": "5J", "name": "Cebu Pacific Air" },
-    { "iata": "6E", "name": "IndiGo" },
-    { "iata": "8L", "name": "Lucky Air" },
-    { "iata": "9C", "name": "Spring Airlines" },
-    { "iata": "9E", "name": "Endeavor Air" },
-    { "iata": "A3", "name": "Aegean Airlines" },
-    { "iata": "AC", "name": "Air Canada" },
-    { "iata": "AD", "name": "Azul" },
-    { "iata": "AF", "name": "Air France" },
-    { "iata": "AI", "name": "Air India" },
-    { "iata": "AK", "name": "AirAsia" },
-    { "iata": "AY", "name": "Finnair" },
-    { "iata": "B6", "name": "JetBlue Airways" },
-    { "iata": "BA", "name": "British Airways" },
-    { "iata": "BR", "name": "EVA Air" },
-    { "iata": "CI", "name": "China Airlines" },
-    { "iata": "CM", "name": "Copa Airlines" },
-    { "iata": "CV", "name": "Cargolux" },
-    { "iata": "CX", "name": "Cathay Pacific" },
-    { "iata": "DE", "name": "Condor" },
-    { "iata": "DL", "name": "Delta Air Lines" },
-    { "iata": "EI", "name": "Aer Lingus" },
-    { "iata": "EK", "name": "Emirates" },
-    { "iata": "ET", "name": "Ethiopian Airlines" },
-    { "iata": "EW", "name": "Eurowings" },
-    { "iata": "EY", "name": "Etihad Airways" },
-    { "iata": "F9", "name": "Frontier Airlines" },
-    { "iata": "FD", "name": "Thai AirAsia" },
-    { "iata": "FM", "name": "Shanghai Airlines" },
-    { "iata": "FR", "name": "Ryanair" },
-    { "iata": "FX", "name": "FedEx" },
-    { "iata": "FZ", "name": "Flydubai" },
-    { "iata": "G3", "name": "Gol" },
-    { "iata": "G4", "name": "Allegiant Air" },
-    { "iata": "HA", "name": "Hawaiian Airlines" },
-    { "iata": "HO", "name": "Juneyao Airlines" },
-    { "iata": "HU", "name": "Hainan Airlines" },
-    { "iata": "IB", "name": "Iberia" },
-    { "iata": "JIA", "name": "PSA Airlines" },
-    { "iata": "JQ", "name": "Jetstar" },
-    { "iata": "KE", "name": "Korean Air" },
-    { "iata": "KL", "name": "KLM" },
-    { "iata": "LH", "name": "Lufthansa" },
-    { "iata": "LO", "name": "LOT - Polish Airlines" },
-    { "iata": "LS", "name": "Jet2" },
-    { "iata": "LX", "name": "Swiss" },
-    { "iata": "LY", "name": "El Al" },
-    { "iata": "MF", "name": "Xiamen Airlines" },
-    { "iata": "MH", "name": "Malaysia Airlines" },
-    { "iata": "MI", "name": "SilkAir" },
-    { "iata": "MQ", "name": "Envoy Air" },
-    { "iata": "MU", "name": "China Eastern Airlines" },
-    { "iata": "NK", "name": "Spirit Airlines" },
-    { "iata": "OS", "name": "Austrian" },
-    { "iata": "OZ", "name": "Asiana Airlines" },
-    { "iata": "PC", "name": "Pegasus" },
-    { "iata": "PO", "name": "Polar Air Cargo" },
-    { "iata": "PR", "name": "Philippine Airlines" },
-    { "iata": "QX", "name": "Horizon Air" },
-    { "iata": "QR", "name": "Qatar Airways" },
-    { "iata": "QZ", "name": "Indonesia AirAsia" },
-    { "iata": "RU", "name": "AirBridgeCargo" },
-    { "iata": "SC", "name": "Shandong Airlines" },
-    { "iata": "SG", "name": "SpiceJet" },
-    { "iata": "SQ", "name": "Singapore Airlines" },
-    { "iata": "TG", "name": "Thai Airways International" },
-    { "iata": "TK", "name": "Turkish Airlines" },
-    { "iata": "TP", "name": "TAP Air Portugal" },
-    { "iata": "TR", "name": "Scoot" },
-    { "iata": "TS", "name": "Air Transat" },
-    { "iata": "TT", "name": "Tigerair Australia" },
-    { "iata": "U2", "name": "EasyJet" },
-    { "iata": "U6", "name": "Ural Airlines" },
-    { "iata": "VA", "name": "Virgin Australia" },
-     { "iata": "VJC", "name": "VietJet Air" },
-    { "iata": "VN", "name": "Vietnam Airlines" },
-    { "iata": "W6", "name": "Wizz Air" },
-    { "iata": "WN", "name": "Southwest Airlines" },
-    { "iata": "WS", "name": "WestJet" },
-    { "iata": "XQ", "name": "SunExpress" },
-    { "iata": "Y4", "name": "Volaris" },
-    { "iata": "Z2", "name": "Philippines AirAsia" },
-    { "iata": "ZH", "name": "Shenzhen Airlines" }
-]
+        {
+            "iata": "5J",
+            "name": "Cebu Pacific Air"
+        },
+        {
+            "iata": "6E",
+            "name": "IndiGo"
+        },
+        {
+            "iata": "8L",
+            "name": "Lucky Air"
+        },
+        {
+            "iata": "9C",
+            "name": "Spring Airlines"
+        },
+        {
+            "iata": "9E",
+            "name": "Endeavor Air"
+        },
+        {
+            "iata": "A3",
+            "name": "Aegean Airlines"
+        },
+        {
+            "iata": "AC",
+            "name": "Air Canada"
+        },
+        {
+            "iata": "AD",
+            "name": "Azul"
+        },
+        {
+            "iata": "AF",
+            "name": "Air France"
+        },
+        {
+            "iata": "AI",
+            "name": "Air India"
+        },
+        {
+            "iata": "AK",
+            "name": "AirAsia"
+        },
+        {
+            "iata": "AY",
+            "name": "Finnair"
+        },
+        {
+            "iata": "B6",
+            "name": "JetBlue Airways"
+        },
+        {
+            "iata": "BA",
+            "name": "British Airways"
+        },
+        {
+            "iata": "BR",
+            "name": "EVA Air"
+        },
+        {
+            "iata": "CI",
+            "name": "China Airlines"
+        },
+        {
+            "iata": "CM",
+            "name": "Copa Airlines"
+        },
+        {
+            "iata": "CV",
+            "name": "Cargolux"
+        },
+        {
+            "iata": "CX",
+            "name": "Cathay Pacific"
+        },
+        {
+            "iata": "DE",
+            "name": "Condor"
+        },
+        {
+            "iata": "DL",
+            "name": "Delta Air Lines"
+        },
+        {
+            "iata": "EI",
+            "name": "Aer Lingus"
+        },
+        {
+            "iata": "EK",
+            "name": "Emirates"
+        },
+        {
+            "iata": "ET",
+            "name": "Ethiopian Airlines"
+        },
+        {
+            "iata": "EW",
+            "name": "Eurowings"
+        },
+        {
+            "iata": "EY",
+            "name": "Etihad Airways"
+        },
+        {
+            "iata": "F9",
+            "name": "Frontier Airlines"
+        },
+        {
+            "iata": "FD",
+            "name": "Thai AirAsia"
+        },
+        {
+            "iata": "FM",
+            "name": "Shanghai Airlines"
+        },
+        {
+            "iata": "FR",
+            "name": "Ryanair"
+        },
+        {
+            "iata": "FX",
+            "name": "FedEx"
+        },
+        {
+            "iata": "FZ",
+            "name": "Flydubai"
+        },
+        {
+            "iata": "G3",
+            "name": "Gol"
+        },
+        {
+            "iata": "G4",
+            "name": "Allegiant Air"
+        },
+        {
+            "iata": "HA",
+            "name": "Hawaiian Airlines"
+        },
+        {
+            "iata": "HO",
+            "name": "Juneyao Airlines"
+        },
+        {
+            "iata": "HU",
+            "name": "Hainan Airlines"
+        },
+        {
+            "iata": "IB",
+            "name": "Iberia"
+        },
+        {
+            "iata": "JIA",
+            "name": "PSA Airlines"
+        },
+        {
+            "iata": "JQ",
+            "name": "Jetstar"
+        },
+        {
+            "iata": "KE",
+            "name": "Korean Air"
+        },
+        {
+            "iata": "KL",
+            "name": "KLM Royal Dutch Airlines"
+        },
+        {
+            "iata": "LH",
+            "name": "Lufthansa"
+        },
+        {
+            "iata": "LO",
+            "name": "LOT - Polish Airlines"
+        },
+        {
+            "iata": "LS",
+            "name": "Jet2.com"
+        },
+        {
+            "iata": "LX",
+            "name": "Swiss International Airlines"
+        },
+        {
+            "iata": "LY",
+            "name": "El Al"
+        },
+        {
+            "iata": "MF",
+            "name": "Xiamen Airlines"
+        },
+        {
+            "iata": "MH",
+            "name": "Malaysia Airlines"
+        },
+        {
+            "iata": "MI",
+            "name": "SilkAir"
+        },
+        {
+            "iata": "MQ",
+            "name": "Envoy Air"
+        },
+        {
+            "iata": "MU",
+            "name": "China Eastern Airlines"
+        },
+        {
+            "iata": "NK",
+            "name": "Spirit Airlines"
+        },
+        {
+            "iata": "OS",
+            "name": "Austrian Airlines"
+        },
+        {
+            "iata": "OZ",
+            "name": "Asiana Airlines"
+        },
+        {
+            "iata": "PC",
+            "name": "Pegasus"
+        },
+        {
+            "iata": "PO",
+            "name": "Polar Air Cargo"
+        },
+        {
+            "iata": "PR",
+            "name": "Philippine Airlines"
+        },
+        {
+            "iata": "QX",
+            "name": "Horizon Air"
+        },
+        {
+            "iata": "QR",
+            "name": "Qatar Airways"
+        },
+        {
+            "iata": "QZ",
+            "name": "Indonesia AirAsia"
+        },
+        {
+            "iata": "RU",
+            "name": "AirBridgeCargo"
+        },
+        {
+            "iata": "SC",
+            "name": "Shandong Airlines"
+        },
+        {
+            "iata": "SG",
+            "name": "SpiceJet"
+        },
+        {
+            "iata": "SQ",
+            "name": "Singapore Airlines"
+        },
+        {
+            "iata": "TG",
+            "name": "Thai Airways International"
+        },
+        {
+            "iata": "TK",
+            "name": "Turkish Airlines"
+        },
+        {
+            "iata": "TP",
+            "name": "TAP Air Portugal"
+        },
+        {
+            "iata": "TR",
+            "name": "Scoot"
+        },
+        {
+            "iata": "TS",
+            "name": "Air Transat"
+        },
+        {
+            "iata": "TT",
+            "name": "Tigerair Australia"
+        },
+        {
+            "iata": "U2",
+            "name": "EasyJet"
+        },
+        {
+            "iata": "U6",
+            "name": "Ural Airlines"
+        },
+        {
+            "iata": "VA",
+            "name": "Virgin Australia"
+        },
+        {
+            "iata": "VJC",
+            "name": "VietJet Air"
+        },
+        {
+            "iata": "VN",
+            "name": "Vietnam Airlines"
+        },
+        {
+            "iata": "W6",
+            "name": "Wizz Air"
+        },
+        {
+            "iata": "WN",
+            "name": "Southwest Airlines"
+        },
+        {
+            "iata": "WS",
+            "name": "WestJet"
+        },
+        {
+            "iata": "XQ",
+            "name": "SunExpress"
+        },
+        {
+            "iata": "Y4",
+            "name": "Volaris"
+        },
+        {
+            "iata": "Z2",
+            "name": "Philippines AirAsia"
+        },
+        {
+            "iata": "ZH",
+            "name": "Shenzhen Airlines"
+        }
+    ]
 }
