@@ -349,6 +349,38 @@
             "name": "Shenzhen Airlines"
         },
         {
+            "iata": "3K",
+            "name": "Jetstar Asia"
+        },
+        {
+            "iata": "MK",
+            "name": "Air Mauritius"
+        },
+        {
+            "iata": "SY",
+            "name": "Sun Country Airlines"
+        },
+        {
+            "iata": "MM",
+            "name": "Peach"
+        },
+        {
+            "iata": "MX",
+            "name": "Breeze Airways"
+        },
+        {
+            "iata": "KU",
+            "name": "Kuwait Airways"
+        },
+        {
+            "iata": "G9",
+            "name": "Air Arabia"
+        },
+        {
+            "iata": "EN",
+            "name": "Air Dolomiti"
+        },
+        {
             "iata": "QF",
             "name": "Qantas"
         },
