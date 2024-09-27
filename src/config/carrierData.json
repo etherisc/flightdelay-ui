@@ -361,6 +361,62 @@
             "name": "China Southern Airlines"
         },
         {
+            "iata": "BI",
+            "name": "Royal Brunei Airlines"
+        },
+        {
+            "iata": "AZ",
+            "name": "ITA Airways"
+        },
+        {
+            "iata": "KQ",
+            "name": "Kenya Airways"
+        },
+        {
+            "iata": "AA",
+            "name": "American Airlines"
+        },
+        {
+            "iata": "SK",
+            "name": "SAS Scandinavian Airlines"
+        },
+        {
+            "iata": "JA",
+            "name": "JetSMART Airlines"
+        },
+        {
+            "iata": "BY",
+            "name": "TUI Airways"
+        },
+        {
+            "iata": "VY",
+            "name": "Vueling Airlines"
+        },
+        {
+            "iata": "PD",
+            "name": "Porter Airlines"
+        },
+        {
+            "iata": "BT",
+            "name": "airBaltic"
+        },
+        {
+            "iata": "AS",
+            "name": "Alaska Airlines"
+        },
+        {
+            "iata": "HX",
+            "name": "Hong Kong Airlines"
+        },
+        {
+            "iata": "I2",
+            "name": "Iberia Express"
+        },
+        {
+            "iata": "SA",
+            "name": "South African Airways"
+        },
+        {
             "iata": "GF",
             "name": "Gulf Air"
         },
