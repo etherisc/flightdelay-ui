@@ -49,10 +49,11 @@ export function useWallet() {
             console.log("address, balance", address, balanceEth);
             dispatch(setBalanceEth(stringifyBigInt(balanceEth)));
             const erc20TokenContractAddress = NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS;
+            // console.log("erc20TokenContractAddress", erc20TokenContractAddress);
             if (erc20TokenContractAddress !== undefined) {
-                // console.log("erc20TokenContractAddress", erc20TokenContractAddress);
+                console.log("erc20TokenContractAddress", erc20TokenContractAddress);
                 const bal = await getBalance(erc20TokenContractAddress, address, (await getSigner())!); // TODO: remove the ! when getSigner is fixed
-                console.log("address, balance", address, bal);
+                console.log("erc20 address, balance", address, bal);
                 dispatch(setBalanceUsdc(stringifyBigInt(bal)));
             }
         }
