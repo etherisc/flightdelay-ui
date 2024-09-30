@@ -25,6 +25,10 @@
     "premium": "Premium",
     "actual_arrival": "Actual arrival",
     "flight": "Flight",
+    "payout": "Payout",
+    "delayed": "Delay (>45min)",
+    "cancelled": "Cancellation",
+    "diverted": "Diversion",
     "table": {
         "header": {
             "nftId": "NftId",

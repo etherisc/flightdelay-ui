@@ -1,4 +1,4 @@
-import { faClock, faHandHoldingDollar, faPlaneArrival, faPlaneDeparture } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faHandHoldingDollar, faPlaneArrival, faPlaneDeparture, faSackDollar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
@@ -8,14 +8,17 @@ import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
 import { PREMIUM_TOKEN_SYMBOL } from "../../config/constants";
 import { formatAmount } from "../../utils/amount";
+import { useTranslation } from "react-i18next";
 
 export default function FlightData() {
+    const { t } = useTranslation();
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const departureTime = useSelector((state: RootState) => state.flightData.departureTime);
     const arrivalTime = useSelector((state: RootState) => state.flightData.arrivalTime);
     const ontimepercent = useSelector((state: RootState) => state.flightData.ontime);
     const premium = useSelector((state: RootState) => state.flightData.premium);
+    const payoutAmounts = useSelector((state: RootState) => state.flightData.payoutAmounts);
 
     function formatTime(date: string | null) {
         if (date === null) {
@@ -24,12 +27,7 @@ export default function FlightData() {
         return dayjs(date).format('HH:mm');
     }
 
-    let premiumAmount = <></>;
-
-    if (premium !== null) {
-        premiumAmount = <>{PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}</>;
-    }
-
+    
     return <Box>
         <Grid container sx={{ mt: 4 }} spacing={1} display={{ xs: 'none', md: 'flex'}}>
             <Grid size={1}>
@@ -77,8 +75,21 @@ export default function FlightData() {
             </Grid>
             <Grid size={9}>
                 <Typography fontWeight={700}>
-                    {premiumAmount}
+                    {PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}
                 </Typography>
+            </Grid>
+            <Grid size={1}>
+                <FontAwesomeIcon icon={faSackDollar} />
+            </Grid>
+            <Grid size={2}>
+                <Trans k="payout" />
+            </Grid>
+            <Grid size={9}>
+                {t('delayed')} <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.delayed)}</Typography>
+                / 
+                {t('cancelled')} <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.cancelled)}</Typography>
+                / 
+                {t('diverted')} <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.diverted)}</Typography>
             </Grid>
         </Grid>
         <Grid container sx={{ mt: 4 }} spacing={1} display={{ xs: 'flex', md: 'none'}}>
@@ -89,7 +100,15 @@ export default function FlightData() {
                 <FontAwesomeIcon icon={faPlaneArrival} /><Typography ml={1} fontWeight={700} component="span">{arrivalAirport?.iata}</Typography> @ {formatTime(arrivalTime)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faHandHoldingDollar} />&nbsp;&nbsp;<Trans k="premium" /> <Typography fontWeight={700} component="span">{premiumAmount}</Typography>
+                <FontAwesomeIcon icon={faHandHoldingDollar} />&nbsp;&nbsp;<Trans k="premium" /> <Typography fontWeight={700} component="span">{formatAmount(BigInt(premium!))}</Typography>
+            </Grid>
+            <Grid size={12}>
+                <FontAwesomeIcon icon={faSackDollar} />&nbsp;&nbsp;
+                {t('delayed')} <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.delayed)}</Typography>
+                / 
+                {t('cancelled')} <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.cancelled)}</Typography>
+                / 
+                {t('diverted')} <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.diverted)}</Typography>
             </Grid>
         </Grid>
     </Box>;

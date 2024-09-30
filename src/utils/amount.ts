@@ -3,7 +3,10 @@ import { formatUnits } from "ethers";
 /**
  * Format ERC20 amount to string with decimals. Default units is 6 (USDC) and decimals is 2.
  */
-export function formatAmount(amount: bigint | null, units = 6, decimals = 2): string {
+export function formatAmount(amount: bigint | null | undefined, units = 6, decimals = 2): string {
+    if (amount === undefined) {
+        return "";
+    }
     if (amount === null) {
         return "";
     }

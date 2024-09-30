@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "$npm_execpath run typechainOpenzeppelinTypes && $npm_execpath run typechainGif",
     "typechainOpenzeppelinTypes": "D=./node_modules/@openzeppelin/contracts/build/contracts && typechain --target ethers-v6 --out-dir src/contracts/openzeppelin-contracts $D/ERC20.json $D/IERC20.json $D/IERC20Permit.json",
-    "typechainGif": "D=./node_modules/@etherisc/gif-next/artifacts/contracts/examples/flight && typechain --target ethers-v6 --out-dir src/contracts/gif $D/FlightProduct.sol/FlightProduct.json $D/FlightLib.sol/FlightLib.json",
+    "typechainGif": "D=./node_modules/@etherisc/gif-next/artifacts/contracts/examples/flight && typechain --target ethers-v6 --out-dir src/contracts/gif $D/FlightProduct.sol/FlightProduct.json",
     "dev": "next dev",
     "build": "next build",
     "start": "next start -H ${HOST:-0.0.0.0} -p ${PORT:-3000}",
@@ -53,7 +53,7 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-    "@etherisc/gif-next": "3.0.0-8c8d199-983",
+    "@etherisc/gif-next": "3.0.0-3513123-800",
     "@hookform/devtools": "^4.3.1",
     "@openzeppelin/contracts": "5.0.2",
     "@testing-library/jest-dom": "^6.1.5",
