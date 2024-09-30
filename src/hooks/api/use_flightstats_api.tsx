@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { ScheduledFlight } from "../../types/flightstats/scheduledFlight";
 import { FlightStatus } from "../../types/flightstats/flightStatus";
 import { Airport } from "../../types/flightstats/airport";
+import { PayoutAmounts } from "../../redux/slices/flightData";
 
 export function useFlightstatsApi() {
     async function fetchFlightData(carrier: string, flightNumber: string, departureDate: dayjs.Dayjs): Promise<{ flights: ScheduledFlight[], airports: Airport[]}> {
@@ -29,7 +30,7 @@ export function useFlightstatsApi() {
         };
     }
 
-    async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number, ontimepercent: number}> {
+    async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number, ontimepercent: number, payouts: PayoutAmounts}> {
         console.log("fetching quote for", carrier, flightNumber);
         const uri = `/api/quote/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}`;
         const res = await fetch(uri);

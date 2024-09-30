@@ -22,6 +22,7 @@ export interface FlightDataState {
     errorDataQuote: unknown | null,
     premium: number | null,
     ontime: number | null,
+    payoutAmounts: PayoutAmounts | null,
 }
 
 export interface Airport {
@@ -32,6 +33,12 @@ export interface Airport {
     utcOffsetHours: number;
     timeZoneRegionName: string;
     whitelisted: boolean;
+}
+
+export interface PayoutAmounts {
+    delayed: bigint;
+    cancelled: bigint;
+    diverted: bigint;
 }
 
 /**
@@ -53,6 +60,7 @@ const initialState: FlightDataState = {
     errorDataQuote: null,
     premium: null,
     ontime: null,
+    payoutAmounts: null,
 };
 
 
@@ -108,6 +116,7 @@ export const flightDataSlice = createSlice({
             state.loadingQuote = false;
             state.premium = response.premium;
             state.ontime = response.ontimepercent;
+            state.payoutAmounts = response.payouts;
         });
     },
 });
