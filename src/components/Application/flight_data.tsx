@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
 import { PREMIUM_TOKEN_SYMBOL } from "../../config/constants";
+import { formatAmount } from "../../utils/amount";
 
 export default function FlightData() {
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
@@ -70,7 +71,7 @@ export default function FlightData() {
             </Grid>
             <Grid size={9}>
                 <Typography fontWeight={700}>
-                    {PREMIUM_TOKEN_SYMBOL} {premium}
+                    {PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}
                 </Typography>
             </Grid>
         </Grid>
