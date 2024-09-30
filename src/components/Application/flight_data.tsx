@@ -24,6 +24,12 @@ export default function FlightData() {
         return dayjs(date).format('HH:mm');
     }
 
+    let premiumAmount = <></>;
+
+    if (premium !== null) {
+        premiumAmount = <>{PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}</>;
+    }
+
     return <Box>
         <Grid container sx={{ mt: 4 }} spacing={1} display={{ xs: 'none', md: 'flex'}}>
             <Grid size={1}>
@@ -71,7 +77,7 @@ export default function FlightData() {
             </Grid>
             <Grid size={9}>
                 <Typography fontWeight={700}>
-                    {PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}
+                    {premiumAmount}
                 </Typography>
             </Grid>
         </Grid>
@@ -83,7 +89,7 @@ export default function FlightData() {
                 <FontAwesomeIcon icon={faPlaneArrival} /><Typography ml={1} fontWeight={700} component="span">{arrivalAirport?.iata}</Typography> @ {formatTime(arrivalTime)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faHandHoldingDollar} />&nbsp;&nbsp;<Trans k="premium" /> <Typography fontWeight={700} component="span">{PREMIUM_TOKEN_SYMBOL} {premium}</Typography>
+                <FontAwesomeIcon icon={faHandHoldingDollar} />&nbsp;&nbsp;<Trans k="premium" /> <Typography fontWeight={700} component="span">{premiumAmount}</Typography>
             </Grid>
         </Grid>
     </Box>;
