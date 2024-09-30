@@ -1,6 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
 import { ARRIVAL_AIRPORTS_WHITELIST, DEPARTURE_AIRPORTS_WHITELIST } from '../../config/constants';
 import { Reason } from '../../types/errors';
 import { Airport as FsAirport } from '../../types/flightstats/airport';

@@ -55,6 +55,7 @@
         "arrival_airport_not_whitelisted": "Buying protection for flights arriving into {{airport}} is currently not allowed",
         "purchase_protection_not_possible": "To purchase protection, please connect your wallet, choose a flight and departure date and try again.",
         "no_wallet_connected": "Please connect your wallet to view policies",
-        "no_policies": "No policies found"
+        "no_policies": "No policies found",
+        "insufficient_balance": "Your wallet balance is insufficient to purchase protection. Please top up your wallet and try again."
     }
 }
