@@ -34,7 +34,7 @@ export default function ApplicationForm() {
     const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
         // only send again if data is changed
         if (carrier !== stateCarrier || flightNumber !== stateFlightNumber || departureDate.toISOString() !== stateDepartureDate) {
-            dispatch(setFlight({ carrier, flightNumber, departureDate }));
+            dispatch(setFlight({ carrier, flightNumber, departureDate: departureDate.toISOString() }));
             dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
         }
     };

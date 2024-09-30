@@ -61,10 +61,10 @@ export const flightDataSlice = createSlice({
     name: 'flightData',
     initialState,
     reducers: {
-        setFlight(state, action: PayloadAction<{carrier: string, flightNumber: string; departureDate: dayjs.Dayjs}>) {
+        setFlight(state, action: PayloadAction<{carrier: string, flightNumber: string; departureDate: string}>) {
             state.carrier = action.payload.carrier;
             state.flightNumber = action.payload.flightNumber;
-            state.departureDate = action.payload.departureDate.toISOString();
+            state.departureDate = action.payload.departureDate;
         },
         reset(state) {
             // assign initial state

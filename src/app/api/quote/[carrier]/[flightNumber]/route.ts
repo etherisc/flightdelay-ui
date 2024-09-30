@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     // TODO: generate signature for flight rating data
 
     return Response.json({
-        premium: 15, // FIXME: return actual premium 
+        premium: 30, // FIXME: return actual premium 
         ontimepercent: rating.ontimePercent,
     }, { status: 200 });
 }
