@@ -1,10 +1,11 @@
-import { nanoid } from "nanoid";
-import { LOGGER } from "../../../utils/logger_backend";
-import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
-import { getApplicationSenderSigner } from "../_utils/chain";
-import { FlightProduct__factory } from "../../../contracts/gif";
+import { encodeBytes32String } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
-import { encodeBytes32String, ethers } from "ethers";
+import { nanoid } from "nanoid";
+import { FlightProduct__factory } from "../../../contracts/gif";
+import { TransactionFailedException } from "../../../types/errors";
+import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
+import { LOGGER } from "../../../utils/logger_backend";
+import { getApplicationSenderSigner } from "../_utils/chain";
 
 /**
  * purchase protection for a flight
@@ -21,12 +22,18 @@ export async function POST(request: Request) {
     const permit = preparePermitData(jsonBody.permit);
     const applicationData = prepareApplicationData(jsonBody.application);
 
-    await createPolicy(permit, applicationData);
+    try {
+        await createPolicy(permit, applicationData);
 
-    // TODO: 2. return nftid and policy data
+        // TODO: 2. return nftid and policy data
 
-    return Response.json({
-    }, { status: 200 });
+        return Response.json({
+        }, { status: 200 });
+    } catch (err) {
+        return Response.json({
+            error: "error occured",
+        }, { status: 500 });
+    }
 }
 
 function preparePermitData(permit: PermitData) {
@@ -86,14 +93,3 @@ async function createPolicy(
     }
 }
 
-/**
- * Exception thrown when a transaction fails. Contains the transaction receipt in field `transaction`.
- */
-export class TransactionFailedException extends Error {
-    transaction: ethers.ContractTransactionReceipt | null;
-
-    constructor(tx: ethers.ContractTransactionReceipt| null) {
-        super(`Transaction failed: ${tx?.hash}`);
-        this.transaction = tx;
-    }
-}
