@@ -1,5 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { ARRIVAL_AIRPORTS_WHITELIST, DEPARTURE_AIRPORTS_WHITELIST } from '../../config/constants';
 import { Reason } from '../../types/errors';
 import { Airport as FsAirport } from '../../types/flightstats/airport';
@@ -13,7 +16,9 @@ export interface FlightDataState {
     departureAirport: Airport | null;
     arrivalAirport: Airport | null;
     departureTime: string | null;
+    departureTimeUTC: string | null;
     arrivalTime: string | null;
+    arrivalTimeUTC: string | null;
     loading: boolean;
     loadingQuote: boolean;
     errorReason: Reason | null;
@@ -53,7 +58,9 @@ const initialState: FlightDataState = {
     departureAirport: null,
     arrivalAirport: null,
     departureTime: null,
+    departureTimeUTC: null,
     arrivalTime: null,
+    arrivalTimeUTC: null,
     loading: false,
     loadingQuote: false,
     errorReason: null,
@@ -102,7 +109,9 @@ export const flightDataSlice = createSlice({
                 state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, DEPARTURE_AIRPORTS_WHITELIST);
                 state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, ARRIVAL_AIRPORTS_WHITELIST);
                 state.departureTime = response.flights[0].departureTime;
+                state.departureTimeUTC = adjustToUtc(response.flights[0].departureTime, state.departureAirport.timeZoneRegionName);
                 state.arrivalTime = response.flights[0].arrivalTime;
+                state.arrivalTimeUTC = adjustToUtc(response.flights[0].arrivalTime, state.arrivalAirport.timeZoneRegionName);
             }
         });
         builder.addCase(fetchFlightData.rejected, (state, action) => {
@@ -153,6 +162,14 @@ function extractAirportData(airportFsCode: string, airports: FsAirport[], whitel
         timeZoneRegionName: ap?.timeZoneRegionName || '',
         whitelisted: whitelist.length > 0 ? whitelist.includes(ap?.iata) : true,
     } as Airport;
+}
+
+function adjustToUtc(time: string, tzRegionName: string): string {
+    // convert to UTC
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    return dayjs.tz(time, tzRegionName).utc().toISOString();
+
 }
 
 // Action creators are generated for each case reducer function

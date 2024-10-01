@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "$npm_execpath run typechainOpenzeppelinTypes && $npm_execpath run typechainGif",
     "typechainOpenzeppelinTypes": "D=./node_modules/@openzeppelin/contracts/build/contracts && typechain --target ethers-v6 --out-dir src/contracts/openzeppelin-contracts $D/ERC20.json $D/IERC20.json $D/IERC20Permit.json",
-    "typechainGif": "D=./node_modules/@etherisc/gif-next/artifacts/contracts/examples/flight && typechain --target ethers-v6 --out-dir src/contracts/gif $D/FlightProduct.sol/FlightProduct.json",
+    "typechainGif": "D=./node_modules/@etherisc/gif-next/artifacts/contracts/examples/flight && typechain --target ethers-v6 --out-dir src/contracts/gif $D/FlightProduct.sol/FlightProduct.json $D/FlightUSD.sol/FlightUSD.json $D/FlightOracle.sol/FlightOracle.json $D/FlightPool.sol/FlightPool.json",
     "dev": "next dev",
     "build": "next build",
     "start": "next start -H ${HOST:-0.0.0.0} -p ${PORT:-3000}",

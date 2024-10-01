@@ -1,7 +1,7 @@
 import { encodeBytes32String } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
-import { FlightProduct__factory } from "../../../contracts/gif";
+import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/gif";
 import { TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
         return Response.json({
         }, { status: 200 });
     } catch (err) {
+        LOGGER.error(err);
         return Response.json({
             error: "error occured",
         }, { status: 500 });
@@ -66,6 +67,8 @@ async function createPolicy(
     applicationData: { flightData: string; departureTime: number; arrivalTime: number; premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
 }) {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
+    LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
+    LOGGER.debug(`applicationData: ${JSON.stringify(applicationData)}`);
     const signer = await getApplicationSenderSigner();
     const productAddress = process.env.NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!;
 
@@ -85,7 +88,11 @@ async function createPolicy(
             throw new TransactionFailedException(tx);
         }
     } catch (err) {
-        const errorDecoder = ErrorDecoder.create([FlightProduct__factory.createInterface()]);
+        const errorDecoder = ErrorDecoder.create([
+            FlightProduct__factory.createInterface(), 
+            FlightUSD__factory.createInterface(),
+            FlightOracle__factory.createInterface(),
+        ]);
         const decodedError = await errorDecoder.decode(err);
         LOGGER.error(`Decoded error reason: ${decodedError.reason}`);
         LOGGER.error(`Decoded error args: ${decodedError.args}`);

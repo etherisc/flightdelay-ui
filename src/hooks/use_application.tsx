@@ -28,6 +28,8 @@ export default function useApplication() {
     const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
     const premium = useSelector((state: RootState) => state.flightData.premium);
     const statistics = useSelector((state: RootState) => state.flightData.statistics);
+    const departureDateUTC = useSelector((state: RootState) => state.flightData.departureTimeUTC);
+    const arrivalDateUTC = useSelector((state: RootState) => state.flightData.arrivalTimeUTC);
     
     async function purchaseProtection() {
         setError(null);
@@ -69,8 +71,8 @@ export default function useApplication() {
             departureAirport: "FRA",
             arrivalAirport: "JFK",
             departureDate: "2022-01-01",
-            departureTime: 0,
-            arrivalTime: 0,
+            departureTime: dayjs.utc(departureDateUTC).unix(),
+            arrivalTime: dayjs.utc(arrivalDateUTC).unix(),
             premiumAmount: BigInt(premium!),
             statistics: statistics!,
             v: signature.v,
