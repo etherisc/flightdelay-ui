@@ -21,7 +21,7 @@ export function useLocalApi() {
         });
         
         if (! res.ok) {
-            throw new Error(`Error fetching quote data: ${res.statusText}`);
+            throw new Error(`Error executing purchase: ${res.statusText}`);
         }
 
         return await res.json();
