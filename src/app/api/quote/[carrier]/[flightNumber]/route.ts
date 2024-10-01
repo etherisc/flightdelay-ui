@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
-import { FlightProduct__factory } from "../../../../../contracts/gif";
+import { FlightProduct__factory } from "../../../../../contracts/flight";
 import { PayoutAmounts } from "../../../../../redux/slices/flightData";
 import { Rating } from "../../../../../types/flightstats/rating";
 import { LOGGER } from "../../../../../utils/logger_backend";

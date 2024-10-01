@@ -1,5 +1,5 @@
 import { Signer } from "ethers";
-import { FlightProduct__factory } from "../../contracts/gif";
+import { FlightProduct__factory } from "../../contracts/flight";
 
 export function useFlightDelayProductContract(productContractAddress: string) {
 

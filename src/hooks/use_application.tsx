@@ -70,7 +70,7 @@ export default function useApplication() {
             flightNumber: "1234",
             departureAirport: "FRA",
             arrivalAirport: "JFK",
-            departureDate: "2022-01-01",
+            departureDate: dayjs.utc(departureDateUTC).format('YYYYMMDD'),
             departureTime: dayjs.utc(departureDateUTC).unix(),
             arrivalTime: dayjs.utc(arrivalDateUTC).unix(),
             premiumAmount: BigInt(premium!),
@@ -96,7 +96,7 @@ export default function useApplication() {
         const name = await getName(signer);
         // get the current nonce for the deployer address
         const nonce = await getNonce(signer);
-    
+
         // set the domain parameters
         const domain = {
             name,
@@ -127,19 +127,18 @@ export default function useApplication() {
             name: "deadline",
             type: "uint256"
             },
-        ],
-        };
+        ]};
 
         const owner = await resolveAddress(signer);
         const spender = await getProductTokenHandlerAddress(signer);
-    
+        console.log(deadline);
         // set the Permit type values
         const values = {
             owner,
             spender,
             value: amount,
-            nonce: nonce,
-            deadline: deadline,
+            nonce,
+            deadline: deadline * 1000,
         };
     
         // sign the Permit type data with the deployer's private key

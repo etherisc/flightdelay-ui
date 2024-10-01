@@ -1,11 +1,14 @@
 import { encodeBytes32String } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
-import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/gif";
+import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
+import { IPolicyService__factory } from "../../../contracts/gif";
 import { TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
 import { getApplicationSenderSigner } from "../_utils/chain";
+import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
+import { IPricingService__factory } from "../../../contracts/gif/factories/product";
 
 /**
  * purchase protection for a flight
@@ -77,6 +80,7 @@ async function createPolicy(
 
     try {
         const txResp = await flightProduct.createPolicyWithPermit(permit, applicationData);
+        LOGGER.debug(``);
         const tx = await txResp.wait();
         LOGGER.debug(`createPolicy tx: ${tx!.hash}`);
 
@@ -92,6 +96,10 @@ async function createPolicy(
             FlightProduct__factory.createInterface(), 
             FlightUSD__factory.createInterface(),
             FlightOracle__factory.createInterface(),
+            IPolicyService__factory.createInterface(),
+            IPoolService__factory.createInterface(),
+            IBundleService__factory.createInterface(),
+            IPricingService__factory.createInterface(),
         ]);
         const decodedError = await errorDecoder.decode(err);
         LOGGER.error(`Decoded error reason: ${decodedError.reason}`);
