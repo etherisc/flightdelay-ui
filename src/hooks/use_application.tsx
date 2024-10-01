@@ -10,20 +10,24 @@ import { ethers, resolveAddress } from "ethers";
 import dayjs from "dayjs";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { Erc20PermitSignature } from "../types/erc20permitsignature";
+import { useLocalApi } from "./api/use_local_api";
+import { ApplicationData, PermitData } from "../types/purchase_request";
 
 export default function useApplication() {
     const { t } = useTranslation();
     const { NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS } = useEnvContext();
 
+    const { getSigner } = useWallet();
     const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, PREMIUM_TOKEN_DECIMALS);
     const { getProductTokenHandlerAddress } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { getSigner } = useWallet();
+    const { sendPurchaseProtectionRequest } = useLocalApi();
     
     const [error, setError] = useState<string | null>(null);
     const departureAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || true);
     const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
     const premium = useSelector((state: RootState) => state.flightData.premium);
+    const statistics = useSelector((state: RootState) => state.flightData.statistics);
     
     async function purchaseProtection() {
         setError(null);
@@ -49,7 +53,33 @@ export default function useApplication() {
         const signature = await calculateErc20PermitSignature(BigInt(premium!));
         console.log("signature", signature);
 
-        // TODO: 3. send all data relevant for tx to the backend
+        // 3. send all data relevant for tx to the backend
+        const permit = {
+            owner: signature.owner,
+            spender: signature.spender,
+            value: signature.value,
+            deadline: signature.deadline,
+            v: signature.v,
+            r: signature.r,
+            s: signature.s
+        } as PermitData;
+        const application = {
+            carrier: "LH",
+            flightNumber: "1234",
+            departureAirport: "FRA",
+            arrivalAirport: "JFK",
+            departureDate: "2022-01-01",
+            departureTime: 0,
+            arrivalTime: 0,
+            premiumAmount: BigInt(premium!),
+            statistics: statistics!,
+            v: signature.v,
+            r: signature.r,
+            s: signature.s
+        } as ApplicationData;
+
+        console.log("purchase request data", permit, application);
+        await sendPurchaseProtectionRequest(permit, application);
     }
 
     async function calculateErc20PermitSignature(amount: bigint): Promise<Erc20PermitSignature> {
