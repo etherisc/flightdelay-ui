@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     const rating = jsonResponse.ratings[0];
 
     LOGGER.debug(`[${reqId}] Ratings:ontime ${rating.ontime}, observations: ${rating.observations}, late15 ${rating.late15}, late30 ${rating.late30}, `
-        + `late45 ${rating.late45}, cancelled ${rating.cancelled}, diverted ${rating.diverted} ontimepercent ${rating.ontimepercent}`);
+        + `late45 ${rating.late45}, cancelled ${rating.cancelled}, diverted ${rating.diverted} ontimepercent ${rating.ontimePercent}`);
 
     const signer = await getBackendVoidSigner();
     
@@ -54,5 +54,6 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
         premium, 
         payouts,
         ontimepercent: rating.ontimePercent,
+        statistics: [rating.observations, rating.late15, rating.late30, rating.late45, rating.cancelled, rating.diverted],
     }, { status: 200 });
 }

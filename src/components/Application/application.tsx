@@ -24,7 +24,7 @@ export default function Application() {
     const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
     const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
     const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
-    const flightFound = useSelector((state: RootState) => state.flightData.arrivalAirport !== null);
+    const flightFound = useSelector((state: RootState) => !state.flightData.loading && !state.flightData.loadingQuote && state.flightData.arrivalAirport !== null && state.flightData.premium !== null);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.address !== null);
     
     let error = <></>;

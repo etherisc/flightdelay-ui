@@ -30,7 +30,7 @@ export function useFlightstatsApi() {
         };
     }
 
-    async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number, ontimepercent: number, payouts: PayoutAmounts}> {
+    async function fetchQuote(carrier: string, flightNumber: string): Promise<{premium: number, ontimepercent: number, payouts: PayoutAmounts, statistics: bigint[]}> {
         console.log("fetching quote for", carrier, flightNumber);
         const uri = `/api/quote/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}`;
         const res = await fetch(uri);

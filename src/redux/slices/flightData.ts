@@ -7,22 +7,24 @@ import { logErrorOnBackend } from '../../utils/logger';
 import { fetchFlightData, fetchQuote } from '../thunks/flightData';
 
 export interface FlightDataState {
-    carrier: string | null,
-    flightNumber: string | null,
-    departureDate: string | null,
-    departureAirport: Airport | null,
-    arrivalAirport: Airport | null,
-    departureTime: string | null,
-    arrivalTime: string | null,
-    loading: boolean,
-    loadingQuote: boolean,
-    errorReason: Reason | null,
-    errorData: unknown | null,
-    errorReasonQuote: Reason | null,
-    errorDataQuote: unknown | null,
-    premium: number | null,
-    ontime: number | null,
-    payoutAmounts: PayoutAmounts | null,
+    carrier: string | null;
+    flightNumber: string | null;
+    departureDate: string | null;
+    departureAirport: Airport | null;
+    arrivalAirport: Airport | null;
+    departureTime: string | null;
+    arrivalTime: string | null;
+    loading: boolean;
+    loadingQuote: boolean;
+    errorReason: Reason | null;
+    errorData: unknown | null;
+    errorReasonQuote: Reason | null;
+    errorDataQuote: unknown | null;
+    premium: number | null;
+    ontime: number | null;
+    /** this is a list of 6 values: [observations, late15, late30, late45, cancelled, diverted] */
+    statistics: bigint[] | null;
+    payoutAmounts: PayoutAmounts | null;
 }
 
 export interface Airport {
@@ -60,6 +62,7 @@ const initialState: FlightDataState = {
     errorDataQuote: null,
     premium: null,
     ontime: null,
+    statistics: null,
     payoutAmounts: null,
 };
 
@@ -117,6 +120,13 @@ export const flightDataSlice = createSlice({
             state.premium = response.premium;
             state.ontime = response.ontimepercent;
             state.payoutAmounts = response.payouts;
+            state.statistics = response.statistics;
+        });
+        builder.addCase(fetchQuote.rejected, (state, action) => {
+            state.loadingQuote = false;
+            state.errorReasonQuote = Reason.COMM_ERROR;
+            state.errorDataQuote = action.error;
+            logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'flightData/fetchQuote');
         });
     },
 });
