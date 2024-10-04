@@ -3,13 +3,23 @@ import { useDispatch } from "react-redux";
 import { resetPolicies } from "../redux/slices/policies";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
+import { useERC721Contract } from "./onchain/use_erc721_contract";
+import { useEnvContext } from "next-runtime-env";
+import { useRegistryContract } from "./onchain/use_registry_contract";
+import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 
-export function useMyPolicies(address: string) {
+const NFT_ID_TYPE_POLICY = BigInt(21);
+
+export function useMyPolicies() {
     const [ loading, setLoading ] = useState(false);
     const [ error, setError ] = useState<Error | undefined>(undefined);
+    const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS } = useEnvContext();
     // const router = useRouter();
 
     const dispatch = useDispatch();
+    const { getNftIds } = useERC721Contract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getObjectInfos } = useRegistryContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getNftId } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
 
     // const { getSigner } = useWallet();
     // // const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_NFT_CONTRACT_ADDRESS } = useEnvContext();
@@ -23,27 +33,21 @@ export function useMyPolicies(address: string) {
         setLoading(true);
         dispatch(resetPolicies());
         try {
-            console.log("fetching policies for address", address);
+            console.log("fetching policies");
 
-            // TODO: 1. get all policy nft ids for the address and check they are valid and belong to the product
+            // 1. get all policy nft ids for the address and check they are valid and belong to the product
+            const productNftId = await getNftId();
+            const nftIds = await getNftIds();
+            let objectInfos = await getObjectInfos(nftIds);
+            // only keep nft ids that are policies and belong to the product
+            objectInfos = objectInfos.filter(info => info.parentNftId === productNftId && info.objectType === NFT_ID_TYPE_POLICY);
+
+            console.log("found policy object infos", objectInfos);
+
             // TODO: 2. fetch policy data for each nft id
             // TODO: 3. fetch flight data from the risk the policy is covering
             // TODO: 4. fetch claim/payout data for policy nft id
             
-            // const signer = await getSigner();
-            // const nftIds = await getNftIds(address, signer);
-            // await fetchPolicyData(
-            //     nftIds, 
-            //     signer,
-            //     async (policy: PolicyData) => { 
-            //         try {
-            //             const cityData = await getCity(policy.locationId);
-            //             policy.locationName = cityData.name.local;
-            //             dispatch(addOrUpdatePolicy(policy)); 
-            //         } catch (err) {
-            //             handleError(err);
-            //         }
-            //     });
         } catch(err) {
             handleError(err);
         } finally {
@@ -57,34 +61,9 @@ export function useMyPolicies(address: string) {
         setError(error); 
     }
 
-    async function fetchPolicy(/*nftId: bigint*/) {
-        setLoading(true);
-        try {
-            console.log("fetching policies for address", address);
-            // const signer = await getSigner();
-            // await fetchPolicyData(
-            //     [nftId], 
-            //     signer,
-            //     async (policy: PolicyData) => { 
-            //         try {
-            //             const cityData = await getCity(policy.locationId);
-            //             policy.locationName = cityData.name.local;
-            //             dispatch(addOrUpdatePolicy(policy)); 
-            //         } catch (err) {
-            //             handleError(err);
-            //         }
-            //     });
-        } catch(err) {
-            handleError(err);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     return {
         loading,
         error,
         fetchPolicies,
-        fetchPolicy,
     }
 }
