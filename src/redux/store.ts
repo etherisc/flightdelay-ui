@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import commonReducer from './slices/common';
 import flightDataReducer from './slices/flightData';
 import policiesReducer from './slices/policies';
+import purchaseReducer from './slices/purchase';
 import walletReducer from './slices/wallet';
 
 // Create the root reducer separately so we can extract the RootState type
@@ -10,6 +11,7 @@ const rootReducer = combineReducers({
     wallet: walletReducer,
     flightData: flightDataReducer,
     policies: policiesReducer,
+    purchase: purchaseReducer,
 })
 
 export const setupStore = (preloadedState?: RootState) => {

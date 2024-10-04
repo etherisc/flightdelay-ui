@@ -1,4 +1,5 @@
 import { ApplicationData, PermitData } from "../../types/purchase_request";
+import { PurchaseFailedError } from "../../utils/error";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -8,7 +9,7 @@ BigInt.prototype.toJSON = function () {
 
 export function useLocalApi() {
 
-    async function sendPurchaseProtectionRequest(permit: PermitData, application: ApplicationData): Promise<void> {
+    async function sendPurchaseProtectionRequest(permit: PermitData, application: ApplicationData): Promise<{ riskId: string, policyNftId: string }> {
         console.log("purchasing protection api call");
         const uri = `/api/purchase`;
         const res = await fetch(uri, {
@@ -21,8 +22,15 @@ export function useLocalApi() {
         });
         
         if (! res.ok) {
-            throw new Error(`Error executing purchase: ${res.statusText}`);
-        }
+            const result = await res.json();
+            if (result.error == "TX_FAILED") {
+                throw new PurchaseFailedError(result.transaction, result.decodedError);
+            } else {
+                throw new Error(`Error sending purchase protection request: ${result.statusText}`);
+            }   
+        } 
+
+        console.log("purchase protection response", res);
 
         return await res.json();
     }

@@ -1,3 +1,5 @@
+import { DecodedError } from "ethers-decode-error";
+
 export function ensureError(value: unknown): Error {
     if (value instanceof Error) return value;
 
@@ -26,5 +28,19 @@ export class BaseError extends Error {
 
         this.code = code;
         this.context = context;
+    }
+}
+
+
+export class PurchaseFailedError extends Error {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    transaction: any;
+    decodedError: DecodedError | null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(transaction: any | null, decodedError: DecodedError | null) {
+        super(`Transaction failed: ${transaction?.hash}`);
+        this.transaction = transaction;
+        this.decodedError = decodedError;
     }
 }

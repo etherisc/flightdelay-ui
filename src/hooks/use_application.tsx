@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useTranslation } from "react-i18next";
 import { useERC20Contract } from "./onchain/use_erc20_contract";
@@ -12,6 +12,8 @@ import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product
 import { Erc20PermitSignature } from "../types/erc20permitsignature";
 import { useLocalApi } from "./api/use_local_api";
 import { ApplicationData, PermitData } from "../types/purchase_request";
+import { setExecuting, setPolicy, setPurchaseError } from "../redux/slices/purchase";
+import { PurchaseFailedError } from "../utils/error";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -21,6 +23,7 @@ export default function useApplication() {
     const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, PREMIUM_TOKEN_DECIMALS);
     const { getProductTokenHandlerAddress } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { sendPurchaseProtectionRequest } = useLocalApi();
+    const dispatch = useDispatch();
     
     const [error, setError] = useState<string | null>(null);
     const departureAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
@@ -50,38 +53,51 @@ export default function useApplication() {
         }
 
         console.log("purchaseProtection");
+        dispatch(setExecuting(true));
 
-        // 2. Calculate erc20 permit signature 
-        const signature = await calculateErc20PermitSignature(BigInt(premium!));
-        console.log("signature", signature);
+        try {
+            // 2. Calculate erc20 permit signature 
+            const signature = await calculateErc20PermitSignature(BigInt(premium!));
+            console.log("signature", signature);
 
-        // 3. send all data relevant for tx to the backend
-        const permit = {
-            owner: signature.owner,
-            spender: signature.spender,
-            value: signature.value,
-            deadline: signature.deadline,
-            v: signature.v,
-            r: signature.r,
-            s: signature.s
-        } as PermitData;
-        const application = {
-            carrier: "LH",
-            flightNumber: "1234",
-            departureAirport: "FRA",
-            arrivalAirport: "JFK",
-            departureDate: dayjs.utc(departureDateUTC).format('YYYYMMDD'),
-            departureTime: dayjs.utc(departureDateUTC).unix(),
-            arrivalTime: dayjs.utc(arrivalDateUTC).unix(),
-            premiumAmount: BigInt(premium!),
-            statistics: statistics!,
-            v: signature.v,
-            r: signature.r,
-            s: signature.s
-        } as ApplicationData;
+            // 3. send all data relevant for tx to the backend
+            const permit = {
+                owner: signature.owner,
+                spender: signature.spender,
+                value: signature.value,
+                deadline: signature.deadline,
+                v: signature.v,
+                r: signature.r,
+                s: signature.s
+            } as PermitData;
+            const application = {
+                carrier: "LH",
+                flightNumber: "1234",
+                departureAirport: "FRA",
+                arrivalAirport: "JFK",
+                departureDate: dayjs.utc(departureDateUTC).format('YYYYMMDD'),
+                departureTime: dayjs.utc(departureDateUTC).unix(),
+                arrivalTime: dayjs.utc(arrivalDateUTC).unix(),
+                premiumAmount: BigInt(premium!),
+                statistics: statistics!,
+                v: signature.v,
+                r: signature.r,
+                s: signature.s
+            } as ApplicationData;
 
-        console.log("purchase request data", permit, application);
-        await sendPurchaseProtectionRequest(permit, application);
+            console.log("purchase request data", permit, application);
+            const result = await sendPurchaseProtectionRequest(permit, application);
+            console.log("purchase result", result);
+
+            dispatch(setPolicy({policyNftId: result.policyNftId, riskId: result.riskId}));
+        } catch (err) {
+            if (err instanceof PurchaseFailedError) {
+                console.log("purchase failed", err);
+                dispatch(setPurchaseError(err.decodedError?.reason || "unknown error"));
+            }
+        } finally {
+            dispatch(setExecuting(false));
+        }
     }
 
     async function calculateErc20PermitSignature(amount: bigint): Promise<Erc20PermitSignature> {

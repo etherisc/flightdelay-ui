@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { DecodedError } from "ethers-decode-error";
 
 export enum Reason {
     COMM_ERROR,
@@ -11,9 +12,12 @@ export enum Reason {
  */
 export class TransactionFailedException extends Error {
     transaction: ethers.ContractTransactionReceipt | null;
+    decodedError: DecodedError | null;
 
-    constructor(tx: ethers.ContractTransactionReceipt| null) {
+    constructor(tx: ethers.ContractTransactionReceipt| null, decodedError: DecodedError | null) {
         super(`Transaction failed: ${tx?.hash}`);
         this.transaction = tx;
+        this.decodedError = decodedError;
     }
+
 }
