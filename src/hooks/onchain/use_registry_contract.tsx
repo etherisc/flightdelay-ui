@@ -6,7 +6,7 @@ export function useRegistryContract(productAddress: string) {
     const { getSigner } = useWallet();
 
     async function getObjectInfos(nftIds: bigint[]): Promise<IRegistry.ObjectInfoStruct[]> {
-        const registry = await getRegistry();2
+        const registry = await getRegistry();
         // execute above loop in parallel
         return await Promise.all(nftIds.map(async (nftId) => {
             return await registry["getObjectInfo(uint96)"](nftId);

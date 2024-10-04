@@ -19,7 +19,7 @@ export function useMyPolicies() {
     const dispatch = useDispatch();
     const { getNftIds } = useERC721Contract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { getObjectInfos } = useRegistryContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { getNftId } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getNftId, getPolicyInfos, getRiskInfos } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
 
     // const { getSigner } = useWallet();
     // // const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_NFT_CONTRACT_ADDRESS } = useEnvContext();
@@ -44,8 +44,16 @@ export function useMyPolicies() {
 
             console.log("found policy object infos", objectInfos);
 
-            // TODO: 2. fetch policy data for each nft id
+            // 2. fetch policy data for each nft id
+            const policyInfos = await getPolicyInfos(nftIds)
+            console.log("found policy infos", policyInfos);
+
             // TODO: 3. fetch flight data from the risk the policy is covering
+            const riskIDs = policyInfos.map(info => info.riskId).filter((item, i, ar) => ar.indexOf(item) === i);
+            console.log("found risk ids", riskIDs);
+            const riskInfos = await getRiskInfos(riskIDs);
+            console.log("found risk infos", riskInfos);
+
             // TODO: 4. fetch claim/payout data for policy nft id
             
         } catch(err) {
