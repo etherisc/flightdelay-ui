@@ -63,6 +63,7 @@
         "purchase_protection_not_possible": "To purchase protection, please connect your wallet, choose a flight and departure date and try again.",
         "no_wallet_connected": "Please connect your wallet to view policies",
         "no_policies": "No policies found",
-        "insufficient_balance": "Your wallet balance is insufficient to purchase protection. Please top up your wallet and try again."
+        "insufficient_balance": "Your wallet balance is insufficient to purchase protection. Please top up your wallet and try again.",
+        "purchase_currently_not_possible": "Protection for this flight is not possible at the moment. Please try again later."
     }
 }

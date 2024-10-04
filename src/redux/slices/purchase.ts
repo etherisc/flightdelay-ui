@@ -5,14 +5,12 @@ export interface PurchaseState {
     isExecuting: boolean,
     policyNftId: string | null,
     riskNftId: string | null,
-    purchaseError: string | null,
 }
 
 const initialState: PurchaseState = {
     isExecuting: false,
     policyNftId: null,
     riskNftId: null,
-    purchaseError: null,
 }
 
 export const purchaseSlice = createSlice({
@@ -26,9 +24,6 @@ export const purchaseSlice = createSlice({
             state.policyNftId = action.payload.policyNftId;
             state.riskNftId = action.payload.riskId;
         },
-        setPurchaseError(state, action: PayloadAction<string>) {
-            state.purchaseError = action.payload;
-        },
         resetPurchase(state) {
             Object.assign(state, initialState);
         }
@@ -40,7 +35,6 @@ export const {
     setExecuting,
     setPolicy,
     resetPurchase,
-    setPurchaseError,
 } = purchaseSlice.actions;
 
 export default purchaseSlice.reducer;

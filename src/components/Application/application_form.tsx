@@ -54,12 +54,10 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
 
     const formValues = watch();
     useEffect(() => {
-        console.log(formValues);
         if (formState.isValid) {
             debouncedFetchFlightData(formValues.carrier, formValues.flightNumber, formValues.departureDate);
         }
     }, [formValues, debouncedFetchFlightData, formState.isValid]);
-
 
     const onSubmit: SubmitHandler<IApplicationFormValues> = (data) => {
         // do nothing, just log for now

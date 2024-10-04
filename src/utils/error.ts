@@ -44,3 +44,9 @@ export class PurchaseFailedError extends Error {
         this.decodedError = decodedError;
     }
 }
+
+export class PurchaseNotPossibleError extends Error {
+    constructor() {
+        super("Purchase not possible");
+    }
+}

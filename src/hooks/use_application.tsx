@@ -12,8 +12,8 @@ import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product
 import { Erc20PermitSignature } from "../types/erc20permitsignature";
 import { useLocalApi } from "./api/use_local_api";
 import { ApplicationData, PermitData } from "../types/purchase_request";
-import { setExecuting, setPolicy, setPurchaseError } from "../redux/slices/purchase";
-import { PurchaseFailedError } from "../utils/error";
+import { resetPurchase, setExecuting, setPolicy } from "../redux/slices/purchase";
+import { PurchaseFailedError, PurchaseNotPossibleError } from "../utils/error";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -39,6 +39,7 @@ export default function useApplication() {
     
     async function purchaseProtection() {
         setError(null);
+        dispatch(resetPurchase());
         // do nothing, just log for now
 
         const canPurchase = departureAirport !== null && isDepartureAirportWhiteListed && isArrivalAirportWhiteListed && premium !== null;
@@ -96,7 +97,12 @@ export default function useApplication() {
         } catch (err) {
             if (err instanceof PurchaseFailedError) {
                 console.log("purchase failed", err);
-                dispatch(setPurchaseError(err.decodedError?.reason || "unknown error"));
+                setError(err.decodedError?.reason || "unknown error");
+            } else if (err instanceof PurchaseNotPossibleError) {
+                setError(t("error.purchase_currently_not_possible"));
+            } else {
+                console.error("purchase failed", err);
+                setError("unknown error");
             }
         } finally {
             dispatch(setExecuting(false));

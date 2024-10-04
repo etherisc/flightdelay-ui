@@ -80,7 +80,10 @@ export default function Application() {
     }
 
     const executePurchase = 
-        <Box><CircularProgress /> <Trans k="purchasing" /></Box>
+        <Box sx={{ p: 2 }}>
+            <CircularProgress sx={{ verticalAlign: 'middle'}} />
+            <Box component="span" sx={{ ml: 2 }}><Trans k="purchasing" /></Box>
+        </Box>;
 
     return (<>
         <Card>

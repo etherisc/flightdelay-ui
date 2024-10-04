@@ -1,4 +1,4 @@
-import { encodeBytes32String } from "ethers";
+import { encodeBytes32String, parseUnits, Signer } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
@@ -17,17 +17,17 @@ import { getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
 export async function POST(request: Request) {
     const jsonBody = await request.json() as PurchaseRequest;
     
-
     const reqId = nanoid();
     LOGGER.debug(`[${reqId} purchase protection for flight ${jsonBody.application.carrier} ${jsonBody.application.flightNumber} ${jsonBody.application.departureDate}`);
 
-    // TODO: 0. check balance for purchaser wallet and ensure enough tokens are available for payment
-
-    const permit = preparePermitData(jsonBody.permit);
-    const applicationData = prepareApplicationData(jsonBody.application);
-
+    const signer = await getApplicationSenderSigner();
     try {
-        const { policyNftId, riskId } = await createPolicy(permit, applicationData);
+        await checkSignerBalance(signer);
+
+        const permit = preparePermitData(jsonBody.permit);
+        const applicationData = prepareApplicationData(jsonBody.application);
+
+        const { policyNftId, riskId } = await createPolicy(signer, permit, applicationData);
         return Response.json({
             policyNftId,
             riskId,
@@ -41,10 +41,28 @@ export async function POST(request: Request) {
                 decodedError: err.decodedError,
             }, { status: 500 });
         } else {
-            return Response.json({
-                error: "unpected error occured",
-            }, { status: 500 });
+            // @ts-expect-error balance error
+            if (err.message === "BALANCE_ERROR") {
+                return Response.json({
+                    error: "BALANCE_ERROR"
+                }, { status: 500 });
+            } else {
+                return Response.json({
+                    error: "unexpected error occured",
+                    // @ts-expect-error unknown error
+                    message: err.message,
+                }, { status: 500 });
+            }
         }
+    }
+}
+
+async function checkSignerBalance(signer: Signer) {
+    const balance = await signer.provider?.getBalance(signer.getAddress());
+    LOGGER.debug(`balance for application sender signer: ${balance}`);
+    if (balance === undefined || balance < parseUnits(process.env.APPLICATION_SENDER_MIN_BALANCE! || "1", "wei")) {
+        LOGGER.error(`insufficient balance for application sender signer: ${balance}`);
+        throw new Error("BALANCE_ERROR");
     }
 }
 
@@ -74,13 +92,13 @@ function prepareApplicationData(application: ApplicationData) {
 }
 
 async function createPolicy(
+    signer: Signer,
     permit: { owner: string; spender: string; value: bigint; deadline: number; v: number; r: string; s: string; }, 
     applicationData: { flightData: string; departureTime: number; arrivalTime: number; premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
 }) {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
     LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
     LOGGER.debug(`applicationData: ${JSON.stringify(applicationData)}`);
-    const signer = await getApplicationSenderSigner();
     const productAddress = process.env.NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!;
 
     const flightProduct = FlightProduct__factory.connect(productAddress, signer);
