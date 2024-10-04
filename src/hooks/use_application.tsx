@@ -97,7 +97,7 @@ export default function useApplication() {
         } catch (err) {
             if (err instanceof PurchaseFailedError) {
                 console.log("purchase failed", err);
-                setError(err.decodedError?.reason || "unknown error");
+                setError(`${t('error.purchase_failed')} (${err.decodedError?.reason || "unknown error"})`);
             } else if (err instanceof PurchaseNotPossibleError) {
                 setError(t("error.purchase_currently_not_possible"));
             } else {
