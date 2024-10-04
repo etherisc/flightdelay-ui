@@ -1,6 +1,6 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
+import { Alert, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import ApplicationForm from "./application_form";
 import FlightData from "./flight_data";
+import PurchaseSuccess from "./purchase_success";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -26,6 +27,8 @@ export default function Application() {
     const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
     const flightFound = useSelector((state: RootState) => !state.flightData.loading && !state.flightData.loadingQuote && state.flightData.arrivalAirport !== null && state.flightData.premium !== null);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.address !== null);
+    const purchaseSuccessful = useSelector((state: RootState) => state.purchase.policyNftId !== null);
+    const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
     
     let error = <></>;
 
@@ -61,7 +64,7 @@ export default function Application() {
     </Button>;
     if (walletIsConnected) {
         const buttonText = isSmallScreen ? t('action.purchase_short') : t('action.purchase');
-        button = <Button color="primary" fullwidth onClick={purchaseProtection}>
+        button = <Button color="primary" fullwidth onClick={purchaseProtection} disabled={purchaseSuccessful}>
             <SvgIcon sx={{ mr: 1 }} fontSize="small">
                 <FontAwesomeIcon icon={faCartShopping} />
             </SvgIcon>
@@ -76,6 +79,9 @@ export default function Application() {
         </Box>;
     }
 
+    const executePurchase = 
+        <Box><CircularProgress /> <Trans k="purchasing" /></Box>
+
     return (<>
         <Card>
             <CardHeader
@@ -85,14 +91,16 @@ export default function Application() {
                 title={isSmallScreen ? t('app.title.short') : t('app.title')}
                 />
             <CardContent>
-                <ApplicationForm />
+                <ApplicationForm disableForm={purchaseSuccessful} />
                 {error}
                 {flightDataLoading}
                 {flightData}
                 {purchaseProtectionErrorMsg}
             </CardContent>
-            <CardActions>
-                {button}
+            <CardActions sx={{ flexDirection: 'column'}}>
+                {(!executingPurchase && !purchaseSuccessful) && button}
+                {executingPurchase && executePurchase}
+                {(!executingPurchase && purchaseSuccessful) && <PurchaseSuccess />}
             </CardActions>
         </Card>
     </>);

@@ -83,7 +83,7 @@ export const flightDataSlice = createSlice({
             state.flightNumber = action.payload.flightNumber;
             state.departureDate = action.payload.departureDate;
         },
-        reset(state) {
+        resetFlightData(state) {
             // assign initial state
             Object.assign(state, initialState);
         },
@@ -175,7 +175,7 @@ function adjustToUtc(time: string, tzRegionName: string): string {
 // Action creators are generated for each case reducer function
 export const { 
     setFlight,
-    reset,
+    resetFlightData,
 } = flightDataSlice.actions;
 
 export default flightDataSlice.reducer;

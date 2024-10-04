@@ -21,7 +21,7 @@ export type IApplicationFormValues = {
     departureDate: dayjs.Dayjs;
 };
 
-export default function ApplicationForm() {
+export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
     const { t } = useTranslation();
     const dispatch = useDispatch() as AppDispatch;
     const stateCarrier = useSelector((state: RootState) => state.flightData.carrier);
@@ -89,6 +89,7 @@ export default function ApplicationForm() {
                                     <TextField 
                                         {...field}
                                         {...params} 
+                                        disabled={disableForm}
                                         label={<Trans k="carrier" />} 
                                         error={formState.errors.carrier !== undefined}
                                         slotProps={{
@@ -118,6 +119,7 @@ export default function ApplicationForm() {
                                 {...field} 
                                 variant={INPUT_VARIANT}
                                 fullWidth
+                                disabled={disableForm}
                                 data-testid="flightNumber"
                                 error={formState.errors.flightNumber !== undefined}
                                 slotProps={{
@@ -142,6 +144,7 @@ export default function ApplicationForm() {
                                 {...field} 
                                 label={<Trans k="departureDate" />}
                                 format="YYYY-MM-DD"
+                                disabled={disableForm}
                                 slotProps={{ 
                                     textField: { 
                                         variant: INPUT_VARIANT,

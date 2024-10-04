@@ -26,13 +26,16 @@ export default function useApplication() {
     const dispatch = useDispatch();
     
     const [error, setError] = useState<string | null>(null);
-    const departureAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
+    const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
+    const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || true);
     const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
     const premium = useSelector((state: RootState) => state.flightData.premium);
     const statistics = useSelector((state: RootState) => state.flightData.statistics);
     const departureDateUTC = useSelector((state: RootState) => state.flightData.departureTimeUTC);
     const arrivalDateUTC = useSelector((state: RootState) => state.flightData.arrivalTimeUTC);
+    const carrier = useSelector((state: RootState) => state.flightData.carrier);
+    const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     
     async function purchaseProtection() {
         setError(null);
@@ -71,10 +74,10 @@ export default function useApplication() {
                 s: signature.s
             } as PermitData;
             const application = {
-                carrier: "LH",
-                flightNumber: "1234",
-                departureAirport: "FRA",
-                arrivalAirport: "JFK",
+                carrier,
+                flightNumber,
+                departureAirport: departureAirport.iata,
+                arrivalAirport: arrivalAirport!.iata,
                 departureDate: dayjs.utc(departureDateUTC).format('YYYYMMDD'),
                 departureTime: dayjs.utc(departureDateUTC).unix(),
                 arrivalTime: dayjs.utc(arrivalDateUTC).unix(),

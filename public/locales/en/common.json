@@ -29,6 +29,9 @@
     "delayed": "Delay (>45min)",
     "cancelled": "Cancellation",
     "diverted": "Diversion",
+    "purchase_success": "Flight delay protection is now active for flight {{carrier}} {{flightNumber}} on {{departureDate}}. Policy ID: {{policyNftId}}",
+    "purchase_another": "Protect another flight",
+    "purchasing": "Please wait a moment while we issue your policy",
     "table": {
         "header": {
             "nftId": "NftId",
