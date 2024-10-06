@@ -55,7 +55,7 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-    "@etherisc/gif-next": "3.0.0-52e15cf-819",
+    "@etherisc/gif-next": "3.0.0-d6ff88d-936",
     "@hookform/devtools": "^4.3.1",
     "@openzeppelin/contracts": "5.0.2",
     "@testing-library/jest-dom": "^6.1.5",

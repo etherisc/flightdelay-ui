@@ -34,7 +34,7 @@
     "purchasing": "Please wait a moment while we issue your policy",
     "table": {
         "header": {
-            "nftId": "NftId",
+            "nftId": "Policy ID",
             "carrier": "Airline",
             "flightNumber": "Number",
             "departureDate": "Departure date",

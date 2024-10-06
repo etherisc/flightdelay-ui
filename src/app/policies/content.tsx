@@ -25,6 +25,7 @@ export function Content() {
 
     const address = useSelector((state: RootState) => (state.wallet.address));
     const policies = useSelector((state: RootState) => state.policies.policies);
+    const risks = useSelector((state: RootState) => state.policies.risks);
     const loading = useSelector((state: RootState) => state.policies.loading);
 
     const { fetchPolicies } = useMyPolicies();
@@ -52,8 +53,8 @@ export function Content() {
     return (<Card>
         <CardHeader title={t('policies', { ns: 'common'})} />
         <CardContent>
-            {isMobile && <PoliciesListMobile policies={policies} loading={loading} />}
-            {!isMobile && <PoliciesList policies={policies} loading={loading} />}
+            {isMobile && <PoliciesListMobile policies={policies} risks={risks} loading={loading} />}
+            {!isMobile && <PoliciesList policies={policies} risks={risks} loading={loading} />}
         </CardContent>
     </Card>);   
 }
