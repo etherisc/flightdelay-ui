@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, LinearProgress, Typography } from "@mui/material";
 import { blue, green, grey } from "@mui/material/colors";
 import Grid from '@mui/material/Grid2';
-import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
-import { FlightPlan } from "../../types/flight_plan";
 
 export default function PoliciesListMobile({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
 
@@ -65,12 +64,12 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
         </Typography>;
     }
 
-    function formatTime(date: string | null | undefined) {
-        if (date === undefined || date === null) {
-            return '';
-        }
-        return dayjs(date).format('HH:mm');
-    }
+    // function formatTime(date: string | null | undefined) {
+    //     if (date === undefined || date === null) {
+    //         return '';
+    //     }
+    //     return dayjs(date).format('HH:mm');
+    // }
 
     if (risk === undefined) {
         return (<Box sx={{ pb: 1, mb: 1, borderBottom: '1px solid', borderBottomColor: grey[300] }}>
@@ -88,13 +87,19 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
                 {t("table.header.nftId")}: {policy.nftId}
             </Grid>
             <Grid size={6} sx={{ textAlign: 'right'}}>
-                {t('flight')}: {risk.carrier} {risk.flightNumber}
+                <b>{t('flight')}: {risk.carrier} {risk.flightNumber}</b>
             </Grid>
-            <Grid size={12}>
+            {/* <Grid size={12}>
                 <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {risk.flightPlan?.departureAirportFsCode} @ {formatTime(risk.flightPlan?.departureTimeUtc)}
             </Grid>
             <Grid size={12}>
                 <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {risk.flightPlan?.arrivalAirportFsCode} @ {formatTime(risk.flightPlan?.arrivalTimeUtc)}
+            </Grid> */}
+            <Grid size={6}>
+                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} <b>{risk.flightPlan?.departureAirportFsCode}</b>
+            </Grid>
+            <Grid size={6}>
+                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} <b>{risk.flightPlan?.arrivalAirportFsCode}</b> 
             </Grid>
             <Grid size={12}>
                 {formatState(risk.flightPlan!)}

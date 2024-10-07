@@ -1,14 +1,13 @@
 import { Alert, Box, Container, LinearProgress, Typography } from "@mui/material";
 import { blue, green, grey } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
-import dayjs from "dayjs";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
-import { FlightPlan } from "../../types/flight_plan";
 
 export default function PoliciesList({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
     const { t } = useTranslation();
@@ -154,12 +153,12 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
         if (value.delay > 15) {
             return <Box>
                 {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-                {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')}
+                {/* {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')} */}
             </Box>;
         }
         return <Box>
             {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-            {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')}
+            {/* {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')} */}
         </Box>;
     }
 

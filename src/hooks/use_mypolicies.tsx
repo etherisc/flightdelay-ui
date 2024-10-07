@@ -1,8 +1,10 @@
-import { hexlify, toUtf8String } from "ethers";
+import { BytesLike, hexlify, toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { IRisk } from "../contracts/gif/instance/InstanceReader";
 import { addOrUpdatePolicy, addOrUpdateRisk, resetPolicies } from "../redux/slices/policies";
+import { RiskData } from "../types/risk_data";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
 import { useERC721Contract } from "./onchain/use_erc721_contract";
@@ -27,6 +29,8 @@ export function useMyPolicies() {
     async function fetchPolicies() {
         setLoading(true);
         dispatch(resetPolicies());
+
+
         try {
             console.log("fetching policies");
 
@@ -43,34 +47,18 @@ export function useMyPolicies() {
             console.log("found policy object infos", objectInfos);
 
             // 2. fetch policy data for each nft id
-            const policyInfos = await getPolicyInfos(nftIds, (nftId, info) => dispatch(addOrUpdatePolicy({
-                nftId: nftId.toString(),
-                riskId: hexlify(info.riskId),
-            })));
+            const policyInfos = await getPolicyInfos(nftIds, (nftId, info) => 
+                dispatch(addOrUpdatePolicy({
+                    nftId: nftId.toString(),
+                    riskId: hexlify(info.riskId),
+                })));
             console.log("found policy infos", policyInfos);
 
             // TODO: 3. fetch flight data from the risk the policy is covering
             const riskIDs = policyInfos.map(info => info.riskId).filter((item, i, ar) => ar.indexOf(item) === i);
             console.log("found risk ids", riskIDs);
             const riskInfos = await getRiskInfos(riskIDs, async (riskId, info) => {
-                const flightRiskData = await decodeRiskData(info.data);
-                const flightDataTokens = toUtf8String(flightRiskData.flightData).split(" ");
-                dispatch(addOrUpdateRisk({
-                    riskId: hexlify(riskId),
-                    carrier: flightDataTokens[0],
-                    flightNumber: flightDataTokens[1],
-                    departureDate: flightDataTokens[4],
-                    flightPlan: {
-                        status: 'S',
-                        departureAirportFsCode: flightDataTokens[2],
-                        arrivalAirportFsCode: flightDataTokens[3],
-                        departureTimeUtc: null, // TODO: from flight risk data
-                        departureTimeLocal: null, // TODO: from flight risk data
-                        arrivalTimeUtc: null, // TODO: from flight risk data
-                        arrivalTimeLocal: null, // TODO: from flight risk data
-                        delay: 0, // TODO: from flight risk data
-                    }
-                }));
+                dispatch(addOrUpdateRisk(await convertRiskData(riskId, info)));
             });
             console.log("found risk infos", riskInfos);
 
@@ -81,6 +69,28 @@ export function useMyPolicies() {
         } finally {
             setLoading(false);
         }
+    }
+
+    async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
+        const flightRiskData = await decodeRiskData(info.data);
+        const flightDataTokens = toUtf8String(flightRiskData.flightData).split(" ");
+        return {
+            riskId: hexlify(riskId),
+            carrier: flightDataTokens[0],
+            flightNumber: flightDataTokens[1],
+            departureDate: flightDataTokens[4],
+            flightPlan: {
+                status: 'S',
+                departureAirportFsCode: flightDataTokens[2],
+                arrivalAirportFsCode: flightDataTokens[3],
+                // TODO: get departure and arrival times from risk data 
+                departureTimeUtc: null,
+                departureTimeLocal: null,
+                arrivalTimeUtc: null,
+                arrivalTimeLocal: null, 
+                delay: 0, // TODO: from flight risk data
+            }
+        };
     }
 
     function handleError(err: unknown) {
