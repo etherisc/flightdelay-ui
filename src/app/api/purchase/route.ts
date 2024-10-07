@@ -1,4 +1,4 @@
-import { encodeBytes32String, parseUnits, Signer } from "ethers";
+import { encodeBytes32String, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
@@ -9,8 +9,8 @@ import { TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
-import { getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
 import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
+import { getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
 
 /**
  * purchase protection for a flight
@@ -68,6 +68,7 @@ async function checkSignerBalance(signer: Signer) {
 }
 
 function preparePermitData(permit: PermitData) {
+    LOGGER.debug(`preparePermitData`);
     return {
         owner: permit.owner,
         spender: permit.spender,
@@ -80,10 +81,13 @@ function preparePermitData(permit: PermitData) {
 }
 
 function prepareApplicationData(application: ApplicationData) {
+    LOGGER.debug(`prepareApplicationData`);
     return {
         flightData: encodeBytes32String(`${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`),
         departureTime: application.departureTime,
+        departureTimeLocal: hexlify(toUtf8Bytes(application.departureTimeLocal)),
         arrivalTime: application.arrivalTime,
+        arrivalTimeLocal: hexlify(toUtf8Bytes(application.arrivalTimeLocal)),
         premiumAmount: application.premiumAmount,
         statistics: application.statistics,
         v: application.v,
@@ -95,7 +99,7 @@ function prepareApplicationData(application: ApplicationData) {
 async function createPolicy(
     signer: Signer,
     permit: { owner: string; spender: string; value: bigint; deadline: number; v: number; r: string; s: string; }, 
-    applicationData: { flightData: string; departureTime: number; arrivalTime: number; premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
+    applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
 }) {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
     LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
