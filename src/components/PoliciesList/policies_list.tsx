@@ -142,6 +142,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
                 </Alert>
             </Container>);
         }
+        // TODO: don't show while loading
         return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
                 <Alert variant="standard" severity="info">
                     <Trans i18nKey="error.no_policies" t={t} />
