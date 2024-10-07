@@ -6,9 +6,9 @@ import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { FlightStatus } from "../../types/flightstats/flightStatus";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
+import { FlightPlan } from "../../types/flight_plan";
 
 export default function PoliciesList({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
     const { t } = useTranslation();
@@ -22,10 +22,10 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
         loadingIndicator = <LinearProgress />;
     }
 
-    function formatState(flightData: FlightStatus) {
+    function formatState(flightData: FlightPlan) {
         let text;
         let color = grey[900] as string;
-        let additional = undefined;
+        const additional = undefined;
         const state = flightData.status;
         switch (state) {
             case 'S': // scheduled
@@ -38,7 +38,8 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             case 'L': // landed
                 text = t('flight_state.punctual');
                 color = green[600];
-                additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
+                // TODO: fixme
+                // additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
                 break;
             // TODO: implement by reading delay
             // case 'L':
@@ -117,7 +118,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
                 if (params.value === null) {
                     return '';
                 }
-                return <FlightData value={params.value.flightData as FlightStatus} />
+                return <FlightData value={params.value.flightPlan as FlightPlan} />
             }
         },
         {
@@ -129,7 +130,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
                 if (params.value === null) {
                     return '';
                 }
-                return formatState(params.value.flightData as FlightStatus)
+                return formatState(params.value.flightPlan as FlightPlan)
             }
         }
     ];
@@ -149,16 +150,16 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             </Container>);
     }
 
-    function FlightData({ value }: { value: FlightStatus }) {
+    function FlightData({ value }: { value: FlightPlan }) {
         if (value.delay > 15) {
             return <Box>
                 {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-                {dayjs(value.publishedDepartureTime).format('HH:mm')} - {dayjs(value.publishedArrivalTime).format('HH:mm')}
+                {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')}
             </Box>;
         }
         return <Box>
             {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-            {dayjs(value.publishedDepartureTime).format('HH:mm')} - {dayjs(value.publishedArrivalTime).format('HH:mm')}
+            {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')}
         </Box>;
     }
 

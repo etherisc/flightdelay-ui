@@ -1,4 +1,4 @@
-import { FlightStatus } from "./flightstats/flightStatus";
+import { FlightPlan } from "./flight_plan";
 
 // **Important**: only serializeable data here (no bigint, etc.)
 export type RiskData = {
@@ -6,6 +6,6 @@ export type RiskData = {
     carrier: string;
     flightNumber: string;
     departureDate: string;
-    flightData: FlightStatus | null;
+    flightPlan: FlightPlan | null;
 }
 

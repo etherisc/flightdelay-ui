@@ -5,9 +5,9 @@ import { blue, green, grey } from "@mui/material/colors";
 import Grid from '@mui/material/Grid2';
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import { FlightStatus } from "../../types/flightstats/flightStatus";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
+import { FlightPlan } from "../../types/flight_plan";
 
 export default function PoliciesListMobile({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
 
@@ -27,10 +27,10 @@ export default function PoliciesListMobile({ policies, risks, loading }: { polic
 function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefined }) {
     const { t } = useTranslation();
 
-    function formatState(flightData: FlightStatus) {
+    function formatState(flightData: FlightPlan) {
         let text;
         let color = grey[900] as string;
-        let additional = undefined;
+        const additional = undefined;
         const state = flightData.status;
         switch (state) {
             case 'S': // scheduled
@@ -43,7 +43,8 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
             case 'L': // landed
                 text = t('flight_state.punctual');
                 color = green[600];
-                additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
+                // TODO: fixme
+                // additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
                 break;
             // TODO: implement by reading delay
             // case 'L':
@@ -90,13 +91,13 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
                 {t('flight')}: {risk.carrier} {risk.flightNumber}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {risk.flightData?.departureAirportFsCode} @ {formatTime(risk.flightData?.publishedDepartureTime)}
+                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {risk.flightPlan?.departureAirportFsCode} @ {formatTime(risk.flightPlan?.departureTimeUtc)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {risk.flightData?.arrivalAirportFsCode} @ {formatTime(risk.flightData?.publishedArrivalTime)}
+                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {risk.flightPlan?.arrivalAirportFsCode} @ {formatTime(risk.flightPlan?.arrivalTimeUtc)}
             </Grid>
             <Grid size={12}>
-                {formatState(risk.flightData!)}
+                {formatState(risk.flightPlan!)}
             </Grid>
         </Grid>
     </Box>);

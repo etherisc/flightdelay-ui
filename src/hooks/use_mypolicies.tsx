@@ -60,13 +60,14 @@ export function useMyPolicies() {
                     carrier: flightDataTokens[0],
                     flightNumber: flightDataTokens[1],
                     departureDate: flightDataTokens[4],
-                    flightData: {
+                    flightPlan: {
                         status: 'S',
                         departureAirportFsCode: flightDataTokens[2],
                         arrivalAirportFsCode: flightDataTokens[3],
-                        publishedDepartureTime: null, // TODO: from flight risk data
-                        publishedArrivalTime: null, // TODO: from flight risk data
-                        actualArrivalTime: null, // TODO: from flight risk data
+                        departureTimeUtc: null, // TODO: from flight risk data
+                        departureTimeLocal: null, // TODO: from flight risk data
+                        arrivalTimeUtc: null, // TODO: from flight risk data
+                        arrivalTimeLocal: null, // TODO: from flight risk data
                         delay: 0, // TODO: from flight risk data
                     }
                 }));
