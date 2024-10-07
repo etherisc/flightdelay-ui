@@ -15,6 +15,13 @@ export async function getApplicationSenderSigner(): Promise<Signer> {
     return signer;
 }
 
+export async function getOracleSigner(): Promise<Signer> {
+    const provider = new JsonRpcProvider(process.env.RPC_NODE_URL);
+    const signer = Wallet.fromPhrase(process.env.ORACLE_MNEMONIC || "").connect(provider);
+    LOGGER.debug(`getOracleSigner ${signer.address}`);
+    return signer;
+}
+
 export function getTxOpts() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const opts = {} as any;
