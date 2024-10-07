@@ -1,14 +1,15 @@
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { getNumber, parseUnits, Signer } from "ethers";
 import { nanoid } from "nanoid";
+import { FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory } from "../../../contracts/flight";
+import { IInstance__factory, InstanceReader, InstanceReader__factory } from "../../../contracts/gif";
 import { TransactionFailedException } from "../../../types/errors";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
 import { LOGGER } from "../../../utils/logger_backend";
-import { getOracleSigner } from "../_utils/chain";
-import { FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory } from "../../../contracts/flight";
-import { IInstance__factory, InstanceReader, InstanceReader__factory } from "../../../contracts/gif";
 import { ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+import { getOracleSigner } from "../_utils/chain";
 
 /**
  * purchase protection for a flight
@@ -33,11 +34,18 @@ export async function POST(request: Request) {
         const requestIds = await collectActiveRequestIds(reqId, flightOracle);
 
         await Promise.all(requestIds.map(async requestId => {
-            const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId);
-            if (response === null) {
-                return;
+            try {
+                const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId);
+                if (response === null) {
+                    return;
+                }
+                // TODO: FlightOracle.respondWithFlightStatus(...)
+            } catch (err) {
+                // @ts-expect-error error handling
+                LOGGER.error(err.message);
+                // @ts-expect-error error handling
+                LOGGER.error(err.stack);
             }
-            // TODO: FlightOracle.respondWithFlightStatus(...)
         }));
         
         // TODO: after oracle has completed
@@ -91,18 +99,21 @@ async function processOracleRequest(
     instanceReader: InstanceReader, 
     requestId: bigint
 ): Promise<{ requestId: bigint } | null> {
+    // this needs to be done per thread
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
     LOGGER.debug(`[${reqId}] processing request ${requestId}`);
     const requestInfo = await instanceReader.getRequestInfo(requestId);
-    LOGGER.debug(requestInfo.requestData);
+    // LOGGER.debug(JSON.stringify(requestInfo.requestData));
     const requestData = await flightOracle.decodeFlightStatusRequestData(requestInfo.requestData);
-    LOGGER.debug(2);
+    // LOGGER.debug(JSON.stringify(requestData));
     const riskInfo = await instanceReader.getRiskInfo(requestData.riskId);
-    LOGGER.debug(3);
+    // LOGGER.debug(JSON.stringify(riskInfo));
     const flightRisk = await flightProduct.decodeFlightRiskData(riskInfo.data);
-    LOGGER.debug(4);
+    // LOGGER.debug(JSON.stringify(flightRisk));
     const arrivalTimeUtc = flightRisk.arrivalTime;
-    const nowUtc = dayjs.extend(utc).utc().unix();
-    LOGGER.debug(`[${reqId}] arrivalTime(utc): ${arrivalTimeUtc}, now(utc): ${nowUtc}`);
+    const nowUtc = dayjs.utc().unix();
+    LOGGER.debug(`[${reqId}] arrivalTime(utc): ${arrivalTimeUtc} (${dayjs.unix(getNumber(arrivalTimeUtc)).format()}) < now(utc): ${nowUtc} (${dayjs.unix(nowUtc).format()})`);
     if (nowUtc < arrivalTimeUtc) {
         LOGGER.debug(`[${reqId}] request ${requestId} not yet due`);
         return null;
