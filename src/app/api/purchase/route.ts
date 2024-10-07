@@ -121,7 +121,7 @@ async function createPolicy(
         const logs = tx.logs;
         const policyNftId = getFieldFromLogs(logs, IPolicyService__factory.createInterface(), "LogPolicyServicePolicyCreated", "policyNftId");
         const riskId = getFieldFromLogs(logs, IApplicationService__factory.createInterface(), "LogApplicationServiceApplicationCreated", "riskId");
-        LOGGER.info(`policy created - policyNftId: ${policyNftId} riskId: ${riskId}`);
+        LOGGER.info(`policy created - policyNftId: ${policyNftId} riskId: ${riskId} tx: ${tx.hash}`);
         return { policyNftId, riskId };
     } catch (err) {
         const errorDecoder = ErrorDecoder.create([

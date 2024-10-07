@@ -5,7 +5,7 @@ import { PayoutAmounts } from "../../../../../redux/slices/flightData";
 import { Rating } from "../../../../../types/flightstats/rating";
 import { LOGGER } from "../../../../../utils/logger_backend";
 import { getBackendVoidSigner } from "../../../_utils/chain";
-import { FLIGHTSTATS_BASE_URL } from "../../../_utils/config";
+import { FLIGHTSTATS_BASE_URL, PREMIUM } from "../../../_utils/config";
 import { sendRequestAndReturnResponse } from "../../../_utils/proxy";
 
 // @ts-expect-error BigInt is not defined in the global scope
@@ -22,7 +22,8 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     const reqId = nanoid();
     const carrier = params.carrier;
     const flightNumber = params.flightNumber;
-    const premium = BigInt(process.env.PREMIUM || '0');
+    // TODO: sensible default for premium
+    const premium = BigInt(PREMIUM);
 
     // fetch rating data from flightstats
     const rating = await fetchFlightstatsRating(reqId, carrier, flightNumber);
