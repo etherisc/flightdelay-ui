@@ -10,6 +10,7 @@ import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/pur
 import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
 import { getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
+import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 
 /**
  * purchase protection for a flight
@@ -99,7 +100,7 @@ async function createPolicy(
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
     LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
     LOGGER.debug(`applicationData: ${JSON.stringify(applicationData)}`);
-    const productAddress = process.env.NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!;
+    const productAddress = PRODUCT_CONTRACT_ADDRESS;
 
     const flightProduct = FlightProduct__factory.connect(productAddress, signer);
     LOGGER.debug(`=> createPolicyWithPermit`);
