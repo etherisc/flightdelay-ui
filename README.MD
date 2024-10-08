@@ -13,6 +13,7 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted departure airports
 - `NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted arrival airports
 - `PREMIUM`: Set the premium in wei
+- `ORACLE_ARRIVAL_CHECK_DELAY_SECONDS`: The delay in seconds for the oracle to check the arrival status after the exected arrival time
 - `NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL`: The symbol of the premium token
 - `NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS`: The number of decimals of the premium token
 

@@ -9,7 +9,7 @@ import { IBundleService__factory, IInstance__factory, InstanceReader, InstanceRe
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
 import { LOGGER } from "../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
+import { FLIGHTSTATS_BASE_URL, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { getOracleSigner } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 
@@ -102,10 +102,10 @@ async function processOracleRequest(
     // LOGGER.debug(JSON.stringify(flightRisk));
     const arrivalTimeUtc = flightRisk.arrivalTime;
     const nowUtc = dayjs.utc().unix();
-    LOGGER.debug(`[${reqId}] arrivalTime(utc): ${arrivalTimeUtc} (${dayjs.unix(getNumber(arrivalTimeUtc)).format()}) < now(utc): ${nowUtc} (${dayjs.unix(nowUtc).format()})`);
+    LOGGER.debug(`[${reqId}] arrivalTime(utc): ${arrivalTimeUtc} (${dayjs.unix(getNumber(arrivalTimeUtc)).format()}) < now(utc): ${nowUtc} (${dayjs.unix(nowUtc).format()}) | delay ${ORACLE_ARRIVAL_CHECK_DELAY_SECONDS}s`);
 
     // 2. check flight should have arrives
-    // FIXME: deactivated for testing if (nowUtc < arrivalTimeUtc + randomDelay) {
+    // FIXME: deactivated for testing if (nowUtc < (getNumber(arrivalTimeUtc) + ORACLE_ARRIVAL_CHECK_DELAY_SECONDS)) {
     //     LOGGER.debug(`[${reqId}] request ${requestId} not yet due`);
     //     return null;
     // }
@@ -114,12 +114,6 @@ async function processOracleRequest(
     const {status, delay} = await fetchFlightStatus(reqId, flightRisk);
     // LOGGER.debug(`[${reqId}] flight status: ${JSON.stringify(flightstatus)}`);
     LOGGER.info(`[${reqId}] flight status: ${status}, delay: ${delay}`);
-    //     InstanceReader.getRequestInfo(requestId)
-    //     FlightOracle.decodeFlightStatusRequestData(requestInfo.requestData)
-    //     fetch and decode riskinfo and FlightRisk from riskId FlightStatusRequest
-    //     check if now > arrivalTime + N (configurable) -> if not, continue to next request
-    //     TODO: call flightstats with info from flightData
-    //     TODO: check response -> landed/cancelled/diverted, gate arrival delay
 
     switch (status) {
         case 'S': // scheduled
