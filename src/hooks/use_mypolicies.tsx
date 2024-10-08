@@ -1,4 +1,4 @@
-import { BytesLike, hexlify, toUtf8String } from "ethers";
+import { BytesLike, decodeBytes32String, hexlify } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -73,7 +73,7 @@ export function useMyPolicies() {
 
     async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
         const flightRiskData = await decodeRiskData(info.data);
-        const flightDataTokens = toUtf8String(flightRiskData.flightData).split(" ");
+        const flightDataTokens = decodeBytes32String(flightRiskData.flightData).split(" ");
         return {
             riskId: hexlify(riskId),
             carrier: flightDataTokens[0],

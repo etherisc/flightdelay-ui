@@ -5,7 +5,7 @@ const LOG_API_PROXY = process.env.LOG_API_PROXY ?? "false";
 
 export async function sendRequestAndReturnResponse(reqId: string, url: string, method?: string, body?: string, headers? : AxiosHeaders) {
     if (LOG_API_PROXY.toLowerCase() === "true") {
-        LOGGER.info(`proxy request ==> ${method ?? 'GET'} ${url}`, { reqId });
+        LOGGER.debug(`proxy request ==> ${method ?? 'GET'} ${url}`, { reqId });
     }
     const before = Date.now();
     const proxyResponse = await axios({
@@ -16,7 +16,7 @@ export async function sendRequestAndReturnResponse(reqId: string, url: string, m
     });
     const after = Date.now();
     if (LOG_API_PROXY.toLowerCase() === "true") {
-        LOGGER.info(`proxy response <== ${proxyResponse.status}`, { reqId, proxyRequestDuration: after - before });
+        LOGGER.debug(`proxy response <== ${proxyResponse.status}`, { reqId, proxyRequestDuration: after - before });
     }
     const respJson = await proxyResponse.data;
     return Response.json(
