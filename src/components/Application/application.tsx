@@ -94,7 +94,7 @@ export default function Application() {
                 title={isSmallScreen ? t('app.title.short') : t('app.title')}
                 />
             <CardContent>
-                <ApplicationForm disableForm={purchaseSuccessful} />
+                <ApplicationForm disableForm={executingPurchase || purchaseSuccessful} />
                 {error}
                 {flightDataLoading}
                 {flightData}
