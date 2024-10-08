@@ -55,7 +55,6 @@ export async function POST(request: Request) {
                 LOGGER.error(`[${reqId}] ${err.message}`);
                 // @ts-expect-error error handling
                 LOGGER.error(`[${reqId}] ${err.stack}`);
-                return null;
             }
         }
 
