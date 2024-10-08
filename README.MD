@@ -12,7 +12,13 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS`: The maximum number of days in the future for the departure date
 - `NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted departure airports
 - `NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted arrival airports
+- `PREMIUM`: Set the premium in wei
+- `ORACLE_ARRIVAL_CHECK_DELAY_SECONDS`: The delay in seconds for the oracle to check the arrival status after the exected arrival time
+- `NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL`: The symbol of the premium token
+- `NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS`: The number of decimals of the premium token
 
+- `NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS`: The address of the product contract 
+- `NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS`: The address of the flight oracle contract
 - `FLIGHTSTATS_BASE_URL`: The base URL for the Flightstats API
 - `FLIGHTSTATS_APP_ID`: The Flightstats API application ID
 - `FLIGHTSTATS_APP_KEY`: The Flightstats API application key
@@ -31,6 +37,12 @@ npm run dev
 ```
 
 **Important**: This project requires a fontawesome pro license. Please set your auth token in the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
+
+### Trigger oracle via curl
+
+```
+curl -X POST http://localhost:3000/api/oracle -H "Content-Type: application/json" -d {} -w " %{http_code}\n"
+```
 
 ### Test
 

@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
 import { LOGGER } from "../../../../../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL } from "../../../../../_utils/config";
+import { FLIGHTSTATS_BASE_URL } from "../../../../../_utils/api_constants";
 import { sendRequestAndReturnResponse } from "../../../../../_utils/proxy";
 
 /** 

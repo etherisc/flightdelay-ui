@@ -33,7 +33,9 @@ export default function useApplication() {
     const premium = useSelector((state: RootState) => state.flightData.premium);
     const statistics = useSelector((state: RootState) => state.flightData.statistics);
     const departureDateUTC = useSelector((state: RootState) => state.flightData.departureTimeUTC);
+    const departureTimeLocal = useSelector((state: RootState) => state.flightData.departureTime);
     const arrivalDateUTC = useSelector((state: RootState) => state.flightData.arrivalTimeUTC);
+    const arrivalTimeLocal = useSelector((state: RootState) => state.flightData.arrivalTime);
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
     const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     
@@ -81,7 +83,9 @@ export default function useApplication() {
                 arrivalAirport: arrivalAirport!.iata,
                 departureDate: dayjs.utc(departureDateUTC).format('YYYYMMDD'),
                 departureTime: dayjs.utc(departureDateUTC).unix(),
+                departureTimeLocal: `${departureTimeLocal} ${departureAirport.timeZoneRegionName}`,
                 arrivalTime: dayjs.utc(arrivalDateUTC).unix(),
+                arrivalTimeLocal: `${arrivalTimeLocal} ${arrivalAirport!.timeZoneRegionName}`,
                 premiumAmount: BigInt(premium!),
                 statistics: statistics!,
                 v: signature.v,
