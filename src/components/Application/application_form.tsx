@@ -28,8 +28,8 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
     const stateFlightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     const stateDepartureDate = useSelector((state: RootState) => state.flightData.departureDate);
 
-    const departureDateMin = (DEPARTURE_DATE_DATE_FROM !== '') ? dayjs(DEPARTURE_DATE_DATE_FROM) : dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd');
-    const departureDateMax = (DEPARTURE_DATE_DATE_TO !== '') ? dayjs(DEPARTURE_DATE_DATE_TO) : dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd');
+    const departureDateMin = (DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(DEPARTURE_DATE_DATE_FROM) : dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd');
+    const departureDateMax = (DEPARTURE_DATE_DATE_TO !== undefined) ? dayjs(DEPARTURE_DATE_DATE_TO) : dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd');
 
     const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
         // only send again if data is changed
