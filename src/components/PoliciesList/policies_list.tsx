@@ -2,12 +2,15 @@ import { Alert, Box, Container, LinearProgress, Typography } from "@mui/material
 import { blue, green, grey } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
+import { dayjs } from "../../utils/date";
+import { useTranslation } from "react-i18next";
+import Trans from "../Trans/trans";
+
 
 export default function PoliciesList({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
     const { t } = useTranslation();
@@ -138,28 +141,29 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
         if (! isConnected) {
             return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
                 <Alert variant="standard" severity="info">
-                    <Trans i18nKey="error.no_wallet_connected" t={t} />
+                    <Trans k="error.no_wallet_connected" />
                 </Alert>
             </Container>);
         }
         // TODO: don't show while loading
         return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
                 <Alert variant="standard" severity="info">
-                    <Trans i18nKey="error.no_policies" t={t} />
+                    <Trans k="error.no_policies" />
                 </Alert>
             </Container>);
     }
 
     function FlightData({ value }: { value: FlightPlan }) {
-        if (value.delay > 15) {
-            return <Box>
-                {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-                {/* {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')} */}
-            </Box>;
+        const departue = dayjs.tz(value.departureTimeLocal, value.departureTimeLocalTimezone!);
+        const arrival = dayjs.tz(value.arrivalTimeLocal, value.arrivalTimeLocalTimezone!);
+        let day = <></>;
+        if (departue.date() !== arrival.date()) {
+            day = <>(+1 <Trans k="day" />)</>;
         }
+
         return <Box>
             {value.departureAirportFsCode} - {value.arrivalAirportFsCode} <br />
-            {/* {dayjs(value.departureTimeUtc).format('HH:mm')} - {dayjs(value.arrivalTimeUtc).format('HH:mm')} */}
+            {departue.format('HH:mm')} - {arrival.format('HH:mm')} {day}
         </Box>;
     }
 

@@ -1,4 +1,4 @@
-import { BytesLike, decodeBytes32String, hexlify } from "ethers";
+import { BytesLike, decodeBytes32String, getNumber, hexlify, toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -74,6 +74,8 @@ export function useMyPolicies() {
     async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
         const flightRiskData = await decodeRiskData(info.data);
         const flightDataTokens = decodeBytes32String(flightRiskData.flightData).split(" ");
+        const departureTimeLocal = toUtf8String(flightRiskData.departureTimeLocal);
+        const arrivalTimeLocal = toUtf8String(flightRiskData.arrivalTimeLocal);
         return {
             riskId: hexlify(riskId),
             carrier: flightDataTokens[0],
@@ -83,12 +85,13 @@ export function useMyPolicies() {
                 status: 'S',
                 departureAirportFsCode: flightDataTokens[2],
                 arrivalAirportFsCode: flightDataTokens[3],
-                // TODO: get departure and arrival times from risk data 
-                departureTimeUtc: null,
-                departureTimeLocal: null,
-                arrivalTimeUtc: null,
-                arrivalTimeLocal: null, 
-                delay: 0, // TODO: from flight risk data
+                departureTimeUtc: getNumber(flightRiskData.departureTime),
+                departureTimeLocal: departureTimeLocal.split(" ")[0],
+                departureTimeLocalTimezone: departureTimeLocal.split(" ")[1],
+                arrivalTimeUtc: getNumber(flightRiskData.arrivalTime),
+                arrivalTimeLocal: arrivalTimeLocal.split(" ")[0],
+                arrivalTimeLocalTimezone: arrivalTimeLocal.split(" ")[1],
+                delay: getNumber(flightRiskData.delayMinutes), 
             }
         };
     }
