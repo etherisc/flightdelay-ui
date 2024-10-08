@@ -8,4 +8,4 @@ export const DEPARTURE_DATE_DATE_TO = process.env.NEXT_PUBLIC_DEPARTURE_DATE_DAT
 export const PREMIUM_TOKEN_SYMBOL = process.env.NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL || 'FUSD';
 export const PREMIUM_TOKEN_DECIMALS = parseInt(process.env.NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS || '6');
 
-
+export const EXPECTED_CHAIN_NAME = process.env.NEXT_PUBLIC_EXPECTED_CHAIN_NAME || 'mainnet';

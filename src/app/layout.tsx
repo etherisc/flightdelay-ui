@@ -5,13 +5,12 @@ import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
 import { config } from "@fortawesome/fontawesome-svg-core";
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { Box, Container } from '@mui/material';
 import type { Metadata } from 'next';
 import { PublicEnvProvider } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import React from 'react';
 import ThemeRegistry from '../components/ThemeRegistry/ThemeRegistry';
-import TopBar from '../components/TopBar/topbar';
+import { AppBaseLayout } from './app_base_layout';
 import './layout.css';
 
 config.autoAddCss = false;
@@ -49,19 +48,3 @@ export default function RootLayout({
     )
 }
 
-function AppBaseLayout({
-    children,
-}: {
-    children: React.ReactNode,
-}) {
-    return (
-        <Box>
-            <Container disableGutters maxWidth={false}>
-                <TopBar />
-            </Container>
-            <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
-                {children}
-            </Container>
-        </Box>
-    )
-}
