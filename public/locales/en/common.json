@@ -4,13 +4,13 @@
     "app.title.short": "Flightdelay Protection",
     "policies": "Policies",
     "nav": {
-        "apply": "Apply for protection",
+        "apply": "Purchase protection",
         "policies": "Policies"
     },
     "action": {
         "connect": "Connect wallet",
         "connect_short": "Connect",
-        "purchase": "Buy flight delay protection",
+        "purchase": "Purchase protection",
         "purchase_short": "Buy protection",
         "refresh": "Refresh"
     },

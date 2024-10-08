@@ -55,10 +55,12 @@ export async function POST(request: Request) {
         oracleResponses = oracleResponses.filter(response => response !== null);
         LOGGER.debug(`[${reqId}] responses: ${JSON.stringify(oracleResponses)}`);
 
-        oracleResponses.forEach(async (response) => {
-            if (response === null) { return }
+        for (const response of oracleResponses) {
+            if (response === null) {
+                continue;
+            }
             await sendOracleResponse(reqId, flightOracle, response.requestId, response.status, response.delay);
-        });
+        }
         
         // TODO: after oracle has completed
         // TODO: if InstanceReader.policiesForRisk() > 0
@@ -122,7 +124,8 @@ async function processOracleRequest(
             
         case 'L': // landed
             if (delay === undefined) {
-                throw new Error("FLIGHT_STATUS_DELAY_UNKNOWN");
+                LOGGER.info(`[${reqId}] flight landed without delay`);
+                return { requestId, status, delay: 0 };
             }
             return { requestId, status, delay };
 
@@ -162,7 +165,7 @@ async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.Flight
     const year = departureDate.substring(0, 4);
     const month = departureDate.substring(4, 6);
     // FIXME: const day = departureDate.substring(6, 8);
-    const day = "06";
+    const day = "07";
     const statusUrl = FLIGHTSTATS_BASE_URL + '/flightstatus/rest/v2/json/flight/status';
     const url = `${statusUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
         + `/dep/${encodeURIComponent(year)}/${encodeURIComponent(month)}/${encodeURIComponent(day)}`
@@ -203,7 +206,7 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
             return;
         }
 
-        LOGGER.info(`[${reqId}] send oracle response to request ${requestId} with status ${status} and delay ${delay}`);
+        LOGGER.info(`[${reqId}] finished oracle response to request ${requestId} with status ${status} and delay ${delay}`);
     } catch (err) {
         const errorDecoder = ErrorDecoder.create([
             FlightProduct__factory.createInterface(), 
