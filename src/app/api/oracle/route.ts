@@ -41,13 +41,15 @@ export async function POST(request: Request) {
         const instanceReader = InstanceReader__factory.connect(instanceReaderAddress, signer);
         const requestIds = await collectActiveRequestIds(reqId, flightOracle);
 
-        let oracleResponses = await Promise.all(requestIds.map(async requestId => {
+        // let oracleResponses = await Promise.all(requestIds.map(async requestId => {
+        let oracleResponses = [] as { requestId: bigint, status: string, delay: number }[];
+        for (const requestId of requestIds) {
             try {
                 const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId);
                 if (response === null) {
-                    return null;
+                    continue;
                 }
-                return response;
+                oracleResponses.push(response);
             } catch (err) {
                 // @ts-expect-error error handling
                 LOGGER.error(`[${reqId}] ${err.message}`);
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
                 LOGGER.error(`[${reqId}] ${err.stack}`);
                 return null;
             }
-        }));
+        }
 
         // filter out null responses
         oracleResponses = oracleResponses.filter(response => response !== null);
