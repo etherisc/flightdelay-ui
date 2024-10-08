@@ -22,7 +22,6 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     const reqId = nanoid();
     const carrier = params.carrier;
     const flightNumber = params.flightNumber;
-    // TODO: sensible default for premium
     const premium = BigInt(PREMIUM);
 
     // fetch rating data from flightstats
