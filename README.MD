@@ -24,6 +24,7 @@ The webapp is configured via environment variables. The following variables are 
 - `FLIGHTSTATS_APP_KEY`: The Flightstats API application key
 
 - `LOG_API_PROXY`: set the `true` to log proxy requests on the backend
+- `LOG_LEVEL`: The log level for the backend api (debug, info, warn, error)
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`: The Google Analytics measurement ID. No tracking is done if this value is not set
 - `NEXT_PUBLIC_GA_ENVIRONMENT_ID`: The Google Analytics environment identifier 
 - `CSP_ENABLED`: Set to `true` to enable the Content Security Policy
