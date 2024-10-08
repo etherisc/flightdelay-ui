@@ -13,6 +13,12 @@ import { FLIGHTSTATS_BASE_URL, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRA
 import { getOracleSigner } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 
+// @ts-expect-error BigInt is not defined in the global scope
+BigInt.prototype.toJSON = function () {
+    const int = Number.parseInt(this.toString());
+    return int ?? this.toString();
+};
+
 /**
  * purchase protection for a flight
  */
@@ -107,10 +113,10 @@ async function processOracleRequest(
     LOGGER.debug(`[${reqId}] arrivalTime(utc): ${arrivalTimeUtc} (${dayjs.unix(getNumber(arrivalTimeUtc)).format()}) < now(utc): ${nowUtc} (${dayjs.unix(nowUtc).format()}) | delay ${ORACLE_ARRIVAL_CHECK_DELAY_SECONDS}s`);
 
     // 2. check flight should have arrives
-    // FIXME: deactivated for testing if (nowUtc < (getNumber(arrivalTimeUtc) + ORACLE_ARRIVAL_CHECK_DELAY_SECONDS)) {
-    //     LOGGER.debug(`[${reqId}] request ${requestId} not yet due`);
-    //     return null;
-    // }
+    if (nowUtc < (getNumber(arrivalTimeUtc) + ORACLE_ARRIVAL_CHECK_DELAY_SECONDS)) {
+        LOGGER.debug(`[${reqId}] request ${requestId} not yet due`);
+        return null;
+    }
 
     // 3. fetch flight status 
     const {status, delay} = await fetchFlightStatus(reqId, flightRisk);
@@ -164,8 +170,7 @@ async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.Flight
     
     const year = departureDate.substring(0, 4);
     const month = departureDate.substring(4, 6);
-    // FIXME: const day = departureDate.substring(6, 8);
-    const day = "07";
+    const day = departureDate.substring(6, 8);
     const statusUrl = FLIGHTSTATS_BASE_URL + '/flightstatus/rest/v2/json/flight/status';
     const url = `${statusUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
         + `/dep/${encodeURIComponent(year)}/${encodeURIComponent(month)}/${encodeURIComponent(day)}`
