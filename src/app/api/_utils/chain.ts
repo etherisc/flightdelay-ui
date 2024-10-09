@@ -10,14 +10,14 @@ export async function getBackendVoidSigner(): Promise<Signer> {
 
 export async function getApplicationSenderSigner(): Promise<Signer> {
     const provider = new JsonRpcProvider(process.env.RPC_NODE_URL);
-    const signer = Wallet.fromPhrase(process.env.APPLICATION_SENDER_MNEMONIC || "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat").connect(provider);
+    const signer = Wallet.fromPhrase(process.env.APPLICATION_SENDER_MNEMONIC || "").connect(provider);
     LOGGER.debug(`getApplicationSenderSigner ${signer.address}`);
     return signer;
 }
 
 export async function getOracleSigner(): Promise<Signer> {
     const provider = new JsonRpcProvider(process.env.RPC_NODE_URL);
-    const signer = Wallet.fromPhrase(process.env.ORACLE_MNEMONIC || "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat").connect(provider);
+    const signer = Wallet.fromPhrase(process.env.ORACLE_MNEMONIC || "").connect(provider);
     LOGGER.debug(`getOracleSigner ${signer.address}`);
     return signer;
 }
