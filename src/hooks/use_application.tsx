@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { useTranslation } from "react-i18next";
-import { useERC20Contract } from "./onchain/use_erc20_contract";
-import { useEnvContext } from "next-runtime-env";
-import { useWallet } from "./onchain/use_wallet";
-import { ethers, resolveAddress } from "ethers";
 import dayjs from "dayjs";
-import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
-import { Erc20PermitSignature } from "../types/erc20permitsignature";
-import { useLocalApi } from "./api/use_local_api";
-import { ApplicationData, PermitData } from "../types/purchase_request";
+import { ethers, resolveAddress } from "ethers";
+import { useEnvContext } from "next-runtime-env";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { resetErrors, setError } from "../redux/slices/flightData";
 import { resetPurchase, setExecuting, setPolicy } from "../redux/slices/purchase";
+import { RootState } from "../redux/store";
+import { Erc20PermitSignature } from "../types/erc20permitsignature";
+import { ApplicationData, PermitData } from "../types/purchase_request";
 import { PurchaseFailedError, PurchaseNotPossibleError } from "../utils/error";
+import { useLocalApi } from "./api/use_local_api";
+import { useERC20Contract } from "./onchain/use_erc20_contract";
+import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
+import { useWallet } from "./onchain/use_wallet";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -24,7 +24,6 @@ export default function useApplication() {
     const { sendPurchaseProtectionRequest } = useLocalApi();
     const dispatch = useDispatch();
     
-    const [error, setError] = useState<string | null>(null);
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || false);
@@ -39,7 +38,7 @@ export default function useApplication() {
     const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     
     async function purchaseProtection() {
-        setError(null);
+        dispatch(resetErrors());
         dispatch(resetPurchase());
         // do nothing, just log for now
 
@@ -48,16 +47,16 @@ export default function useApplication() {
         // 0. Check if purchase is possible (blacklisted airports, etc.)
         if (!canPurchase) {
             if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
-                setError(t("error.change_flight"));    
+                dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
             } else {
-                setError(t("error.purchase_protection_not_possible"));
+                dispatch(setError({ message: t("error.purchase_protection_not_possible"), level: "error" }));
             }
             return;
         }
 
         // 1. Check if user has enough balance
         if (! await hasBalance(BigInt(premium!), (await getSigner())!)) {
-            setError(t("error.insufficient_balance"));
+            dispatch(setError({ message: t("error.insufficient_balance"), level: "warning" }));
             return;
         }
 
@@ -104,12 +103,12 @@ export default function useApplication() {
         } catch (err) {
             if (err instanceof PurchaseFailedError) {
                 console.log("purchase failed", err);
-                setError(`${t('error.purchase_failed')} (${err.decodedError?.reason || "unknown error"})`);
+                dispatch(setError({ message: `t("error.purchase_failed") (${err.decodedError?.reason || "unknown error"})`, level: "error" }));
             } else if (err instanceof PurchaseNotPossibleError) {
-                setError(t("error.purchase_currently_not_possible"));
+                dispatch(setError({ message: t("error.purchase_currently_not_possible"), level: "error" }));
             } else {
                 console.error("purchase failed", err);
-                setError("unknown error");
+                dispatch(setError({ message: t("error.unknown_error"), level: "error" }));
             }
         } finally {
             dispatch(setExecuting(false));
@@ -191,13 +190,7 @@ export default function useApplication() {
         }
     }
 
-    function resetPurchaseProtectionError() {
-        setError(null);
-    }
-
     return {
         purchaseProtection,
-        resetPurchaseProtectionError,
-        purchaseProtectionError: error,
     }
 }

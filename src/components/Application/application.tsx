@@ -1,6 +1,6 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
+import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,20 +20,28 @@ export default function Application() {
     const { t } = useTranslation();
     const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
-    const { purchaseProtection, purchaseProtectionError } = useApplication();
-    const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
-    const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
-    const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
-    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || false);
-    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || false);
-    const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
-    const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
-    const flightFound = useSelector((state: RootState) => !state.flightData.loading && !state.flightData.loadingQuote && state.flightData.arrivalAirport !== null && state.flightData.premium !== null);
+    const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST } = useEnvContext();
+    const dispatch = useDispatch();
+    const { purchaseProtection } = useApplication();
+
+    const flightDataState = useSelector((state: RootState) => state.flightData);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.address !== null);
     const purchaseSuccessful = useSelector((state: RootState) => state.purchase.policyNftId !== null);
     const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
-    const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST } = useEnvContext();
-    const dispatch = useDispatch();
+
+    // prepare data
+    const departureAirport = flightDataState.departureAirport;
+    const arrivalAirport = flightDataState.arrivalAirport;
+    const isDepartureAirportWhiteListed = flightDataState.departureAirport?.whitelisted || false;
+    const isArrivalAirportWhiteListed = flightDataState.arrivalAirport?.whitelisted || false;
+    const loadingFlightData = flightDataState.loading;
+    const loadingQuote = flightDataState.loadingQuote;
+    const flightFound = ! flightDataState.loading && !flightDataState.loadingQuote && flightDataState.arrivalAirport !== null && flightDataState.premium !== null;
+
+    // errors
+    const errorMessage = useSelector((state: RootState) => state.flightData.errorMessage);
+    const errorLevel = useSelector((state: RootState) => state.flightData.errorLevel);
+    const errorReasonApi = useSelector((state: RootState) => state.flightData.errorReasonApi);
 
     useEffect(() => {
         const departureAirportWhitelist = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
@@ -43,9 +51,13 @@ export default function Application() {
     
     let error = <></>;
 
-    if (errorReason !== null) {
+    if (errorReasonApi !== null) {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
+        </Box>;
+    } else if (errorMessage !== null) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity={errorLevel as AlertColor || 'error'}>{errorMessage}</Alert>
         </Box>;
     } else if (flightFound && ! isDepartureAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>
@@ -63,6 +75,7 @@ export default function Application() {
     }
 
     let flightData = <></>;
+    console.log("flightFound", flightFound);
     if (flightFound) {
         flightData = <FlightData />;
     }
@@ -83,13 +96,6 @@ export default function Application() {
         </Button>;
     }
 
-    let purchaseProtectionErrorMsg = <></>;
-    if (purchaseProtectionError !== null) {
-        purchaseProtectionErrorMsg = <Box sx={{ py: 2 }}>
-            <Alert severity="warning">{purchaseProtectionError}</Alert>
-        </Box>;
-    }
-
     const executePurchase = 
         <Box sx={{ p: 2 }}>
             <CircularProgress sx={{ verticalAlign: 'middle'}} />
@@ -106,10 +112,9 @@ export default function Application() {
                 />
             <CardContent>
                 <ApplicationForm disableForm={executingPurchase || purchaseSuccessful} />
-                {error}
                 {flightDataLoading}
                 {flightData}
-                {purchaseProtectionErrorMsg}
+                {error}
             </CardContent>
             <CardActions sx={{ flexDirection: 'column'}}>
                 {(!executingPurchase && !purchaseSuccessful) && button}

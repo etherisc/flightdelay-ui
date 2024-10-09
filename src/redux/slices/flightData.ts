@@ -22,10 +22,10 @@ export interface FlightDataState {
     arrivalTimeUTC: string | null;
     loading: boolean;
     loadingQuote: boolean;
-    errorReason: Reason | null;
-    errorData: unknown | null;
-    errorReasonQuote: Reason | null;
-    errorDataQuote: unknown | null;
+    errorMessage: string | null;
+    errorLevel: string | null;
+    errorReasonApi: Reason | null;
+    errorDataApi: unknown | null;
     premium: number | null;
     ontime: number | null;
     /** this is a list of 6 values: [observations, late15, late30, late45, cancelled, diverted] */
@@ -66,10 +66,10 @@ const initialState: FlightDataState = {
     arrivalTimeUTC: null,
     loading: false,
     loadingQuote: false,
-    errorReason: null,
-    errorData: null,
-    errorReasonQuote: null,
-    errorDataQuote: null,
+    errorMessage: null,
+    errorLevel: null,
+    errorReasonApi: null,
+    errorDataApi: null,
     premium: null,
     ontime: null,
     statistics: null,
@@ -90,22 +90,28 @@ export const flightDataSlice = createSlice({
             state.flightNumber = action.payload.flightNumber;
             state.departureDate = action.payload.departureDate;
         },
+        setError(state, action: PayloadAction<{message: string, level: string}>) {
+            state.errorMessage = action.payload.message;
+            state.errorLevel = action.payload.level;
+        },
         resetFlightData(state) {
             // assign initial state
             Object.assign(state, initialState);
         },
         resetErrors(state) {
-            state.errorReason = null;
-            state.errorData = null;
-            state.errorReasonQuote = null;
-            state.errorDataQuote = null;
+            state.errorReasonApi = null;
+            state.errorDataApi = null;
+            state.errorMessage = null;
+            state.errorLevel = null
         }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchFlightData.pending, (state, /*action*/) => {
             state.loading = true;
-            state.errorReason = null;
-            state.errorData = null;
+            state.errorReasonApi = null;
+            state.errorDataApi = null;
+            state.errorMessage = null;
+            state.errorLevel = null;
             state.departureAirport = null;
             state.arrivalAirport = null;
             state.departureTime = null;
@@ -115,9 +121,9 @@ export const flightDataSlice = createSlice({
             const { response } = action.payload;
             state.loading = false;
             if (response.flights.length === 0) {
-                state.errorReason = Reason.NO_FLIGHT_FOUND;
+                state.errorReasonApi = Reason.NO_FLIGHT_FOUND;
             } else if (response.flights.length > 1) {
-                state.errorReason = Reason.INCONSISTENT_DATA;
+                state.errorReasonApi = Reason.INCONSISTENT_DATA;
             } else {
                 state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.departureAirportWhitelist);
                 state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.arrivalAirportWhitelist);
@@ -129,8 +135,8 @@ export const flightDataSlice = createSlice({
         });
         builder.addCase(fetchFlightData.rejected, (state, action) => {
             state.loading = false;
-            state.errorReason = Reason.COMM_ERROR;
-            state.errorData = action.error;
+            state.errorReasonApi = Reason.COMM_ERROR;
+            state.errorDataApi = action.error;
             logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'flightData/fetchFlightData');
         });
         builder.addCase(fetchQuote.pending, (state, /*action*/) => {
@@ -146,8 +152,8 @@ export const flightDataSlice = createSlice({
         });
         builder.addCase(fetchQuote.rejected, (state, action) => {
             state.loadingQuote = false;
-            state.errorReasonQuote = Reason.COMM_ERROR;
-            state.errorDataQuote = action.error;
+            state.errorReasonApi = Reason.COMM_ERROR;
+            state.errorDataApi = action.error;
             logErrorOnBackend(`${action.error.message}`, JSON.stringify(action.error), 'flightData/fetchQuote');
         });
     },
@@ -189,6 +195,7 @@ function adjustToUtc(time: string, tzRegionName: string): string {
 export const { 
     setAirportWhitelist,
     setFlight,
+    setError,
     resetErrors,
     resetFlightData,
 } = flightDataSlice.actions;
