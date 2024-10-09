@@ -82,7 +82,7 @@ export function useMyPolicies() {
             flightNumber: flightDataTokens[1],
             departureDate: flightDataTokens[4],
             flightPlan: {
-                status: 'S',
+                status: toUtf8String(flightRiskData.status),
                 departureAirportFsCode: flightDataTokens[2],
                 arrivalAirportFsCode: flightDataTokens[3],
                 departureTimeUtc: getNumber(flightRiskData.departureTime),

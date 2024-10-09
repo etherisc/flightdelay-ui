@@ -107,8 +107,16 @@ export default function useApplication() {
             } else if (err instanceof PurchaseNotPossibleError) {
                 dispatch(setError({ message: t("error.purchase_currently_not_possible"), level: "error" }));
             } else {
-                console.error("purchase failed", err);
-                dispatch(setError({ message: t("error.unknown_error"), level: "error" }));
+                // @ts-expect-error code is custom field for metamask error
+                if (err.code !== undefined) {
+                    // @ts-expect-error code is custom field for metamask error
+                    if (err.code === "ACTION_REJECTED") {
+                        dispatch(setError({ message: t("error.user_rejected"), level: "error" }));
+                    }
+                } else {
+                    console.error("purchase failed", err);
+                    dispatch(setError({ message: t("error.unknown_error"), level: "error" }));
+                }
             }
         } finally {
             dispatch(setExecuting(false));

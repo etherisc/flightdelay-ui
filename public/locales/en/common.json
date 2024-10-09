@@ -68,6 +68,7 @@
         "purchase_failed": "Protection for this flight could not be issued",
         "wrong_chain": "Unexpected network - please switch to '{{chain}}'",
         "change_flight": "Please choose another flight to continue",
-        "unknown_error": "An unknown error occurred. Please try again later."
+        "unknown_error": "An unknown error occurred. Please try again later.",
+        "user_rejected": "The transaction was cancelled"
     }
 }
