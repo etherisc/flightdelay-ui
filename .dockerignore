@@ -39,3 +39,4 @@ Dockerfile
 
 .git/
 .devcontainer/
+.env*
