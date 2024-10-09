@@ -22,7 +22,9 @@ export default function Wallet({
     const { disconnectWallet, refreshBalance } = useWallet();
     const address = useSelector((state: RootState) => state.wallet.address) || '';
     const balanceUsdc = useSelector((state: RootState) => state.wallet.balanceUsdc) || '0';
-    const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL: symbol } = useEnvContext();
+    const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
+
+    const symbol = NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL || 'FUSD';
 
 
     async function disconnect() {
