@@ -499,6 +499,10 @@
         {
             "iata": "NZ",
             "name": "Air New Zealand"
+        },
+        {
+            "iata": "WK",
+            "name": "Edelweiss Air"
         }
     ]
 }

@@ -10,7 +10,7 @@ import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
 import { LOGGER } from "../../../utils/logger_backend";
 import { FLIGHTSTATS_BASE_URL, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
-import { getOracleSigner } from "../_utils/chain";
+import { getOracleSigner, getTxOpts } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 import { getFieldFromLogs } from "../../../utils/chain";
 
@@ -197,10 +197,14 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
     LOGGER.debug(`[${reqId}] responding to request ${requestId} with status ${status} and delay ${delay}`);
 
     try {
+        const txOpts = getTxOpts();
+        txOpts['gasLimit'] = 5000000;
+
         const txResp = await flightOracle.respondWithFlightStatus(
             requestId, 
             hexlify(toUtf8Bytes(status)), 
-            delay);
+            delay,
+            txOpts);
         
         LOGGER.debug(`[${reqId}] waiting for tx: ${txResp.hash}`);
         const tx = await txResp.wait();

@@ -153,7 +153,7 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
                                             ? t(`error.field.departureDate`)  : ""
                                     }
                                 }}
-                                disablePast={true}
+                                disablePast={! departureDateMin.isBefore(dayjs())}
                                 data-testid="departureDate"
                                 minDate={departureDateMin}
                                 maxDate={departureDateMax}
