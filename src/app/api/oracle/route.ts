@@ -10,7 +10,7 @@ import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
 import { LOGGER } from "../../../utils/logger_backend";
 import { FLIGHTSTATS_BASE_URL, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
-import { getOracleSigner, getTxOpts } from "../_utils/chain";
+import { checkSignerBalance, getOracleSigner, getTxOpts } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 import { getFieldFromLogs } from "../../../utils/chain";
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     const signer = await getOracleSigner();
     try {
-        await checkSignerBalance(signer);
+        await hasBalance(signer);
 
         const flightProduct = FlightProduct__factory.connect(PRODUCT_CONTRACT_ADDRESS, signer);
         const flightOracle = FlightOracle__factory.connect(ORACLE_CONTRACT_ADDRESS, signer);
@@ -289,11 +289,9 @@ async function processPayoutsAndClosePolicies(reqId: string, flightProduct: Flig
 }
 
 
-async function checkSignerBalance(signer: Signer) {
-    const balance = await signer.provider?.getBalance(signer.getAddress());
-    LOGGER.debug(`balance for application sender signer: ${balance}`);
-    if (balance === undefined || balance < parseUnits(process.env.ORACLE_MIN_BALANCE! || "1", "wei")) {
-        LOGGER.error(`insufficient balance for application sender signer: ${balance}`);
+async function hasBalance(signer: Signer) {
+    const minBalance = parseUnits(process.env.ORACLE_MIN_BALANCE! || "1", "wei");
+    if (! await checkSignerBalance(signer, minBalance)) {
         throw new Error("BALANCE_ERROR");
     }
 }

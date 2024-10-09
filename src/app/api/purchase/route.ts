@@ -10,7 +10,7 @@ import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/pur
 import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
 import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
-import { getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
+import { checkSignerBalance, getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
 
 /**
  * purchase protection for a flight
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     const signer = await getApplicationSenderSigner();
     try {
-        await checkSignerBalance(signer);
+        await hasBalance(signer);
 
         const permit = preparePermitData(jsonBody.permit);
         const applicationData = prepareApplicationData(jsonBody.application);
@@ -58,11 +58,9 @@ export async function POST(request: Request) {
     }
 }
 
-async function checkSignerBalance(signer: Signer) {
-    const balance = await signer.provider?.getBalance(signer.getAddress());
-    LOGGER.debug(`balance for application sender signer: ${balance}`);
-    if (balance === undefined || balance < parseUnits(process.env.APPLICATION_SENDER_MIN_BALANCE! || "1", "wei")) {
-        LOGGER.error(`insufficient balance for application sender signer: ${balance}`);
+async function hasBalance(signer: Signer) {
+    const minBalance = parseUnits(process.env.APPLICATION_SENDER_MIN_BALANCE! || "1", "wei");
+    if (! await checkSignerBalance(signer, minBalance)) {
         throw new Error("BALANCE_ERROR");
     }
 }

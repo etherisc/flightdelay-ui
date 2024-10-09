@@ -1,4 +1,4 @@
-import { ethers, JsonRpcProvider, Signer, Wallet } from "ethers";
+import { ethers, JsonRpcProvider, resolveAddress, Signer, Wallet } from "ethers";
 import { LOGGER } from "../../../utils/logger_backend";
 
 const GAS_PRICE = process.env.GAS_PRICE !== undefined ? parseInt(process.env.GAS_PRICE) : undefined;
@@ -30,4 +30,15 @@ export function getTxOpts() {
     }
 
     return opts;
+}
+
+
+export async function checkSignerBalance(signer: Signer, minBalance: bigint): Promise<boolean> {
+    const balance = await signer.provider?.getBalance(signer.getAddress());
+    LOGGER.debug(`balance for signer (${await resolveAddress(signer)}): ${balance} min: ${minBalance}`);
+    if (balance === undefined || balance < minBalance) {
+        LOGGER.error(`insufficient balance for signer (${await resolveAddress(signer)}): ${balance}`);
+        return false;
+    }
+    return true;
 }
