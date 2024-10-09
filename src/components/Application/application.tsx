@@ -14,6 +14,7 @@ import FlightData from "./flight_data";
 import PurchaseSuccess from "./purchase_success";
 import { useEnvContext } from "next-runtime-env";
 import { setAirportWhitelist } from "../../redux/slices/flightData";
+import { useEffect } from "react";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -22,9 +23,9 @@ export default function Application() {
     const { purchaseProtection, purchaseProtectionError } = useApplication();
     const errorReason = useSelector((state: RootState) => state.flightData.errorReason);
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
-    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || true);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
-    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
+    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || false);
+    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || false);
     const loadingFlightData = useSelector((state: RootState) => state.flightData.loading);
     const loadingQuote = useSelector((state: RootState) => state.flightData.loadingQuote);
     const flightFound = useSelector((state: RootState) => !state.flightData.loading && !state.flightData.loadingQuote && state.flightData.arrivalAirport !== null && state.flightData.premium !== null);
@@ -34,9 +35,11 @@ export default function Application() {
     const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST } = useEnvContext();
     const dispatch = useDispatch();
 
-    const departureAirportWhitelist = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
-    const arrivalAirportWhitelist = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
-    dispatch(setAirportWhitelist({ departure: departureAirportWhitelist, arrival: arrivalAirportWhitelist}));
+    useEffect(() => {
+        const departureAirportWhitelist = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
+        const arrivalAirportWhitelist = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
+        dispatch(setAirportWhitelist({ departure: departureAirportWhitelist, arrival: arrivalAirportWhitelist}));
+    }, [NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST, dispatch]);
     
     let error = <></>;
 
@@ -46,11 +49,11 @@ export default function Application() {
         </Box>;
     } else if (! isDepartureAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.departure_airport_not_whitelisted" values={{ airport: departureAirport }} /></Alert>
+            <Alert severity="error"><Trans k="error.departure_airport_not_whitelisted" values={{ airport: departureAirport?.iata }} /></Alert>
         </Box>;
     } else if (! isArrivalAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.arrival_airport_not_whitelisted" values={{ airport: arrivalAirport }} /></Alert>
+            <Alert severity="error"><Trans k="error.arrival_airport_not_whitelisted" values={{ airport: arrivalAirport?.iata }} /></Alert>
         </Box>;
     } 
 

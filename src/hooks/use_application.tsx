@@ -27,8 +27,8 @@ export default function useApplication() {
     const [error, setError] = useState<string | null>(null);
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
-    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || true);
-    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || true);
+    const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || false);
+    const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || false);
     const premium = useSelector((state: RootState) => state.flightData.premium);
     const statistics = useSelector((state: RootState) => state.flightData.statistics);
     const departureDateUTC = useSelector((state: RootState) => state.flightData.departureTimeUTC);
@@ -47,7 +47,11 @@ export default function useApplication() {
 
         // 0. Check if purchase is possible (blacklisted airports, etc.)
         if (!canPurchase) {
-            setError(t("error.purchase_protection_not_possible"));
+            if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
+                setError(t("error.change_flight"));    
+            } else {
+                setError(t("error.purchase_protection_not_possible"));
+            }
             return;
         }
 
