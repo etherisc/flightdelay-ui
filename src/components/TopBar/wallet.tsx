@@ -12,7 +12,7 @@ import { PATH_MYPOLICIES, PATH_APPLICATION } from '../../utils/paths';
 import { JazziconAvatar } from '../(basic_widgets)/Jazzicon/jazzicon_avatar';
 import Button from '../Button/button';
 import Trans from '../Trans/trans';
-import { PREMIUM_TOKEN_SYMBOL } from '../../config/constants';
+import { useEnvContext } from 'next-runtime-env';
 
 export default function Wallet({
     onDisconnect,
@@ -22,7 +22,7 @@ export default function Wallet({
     const { disconnectWallet, refreshBalance } = useWallet();
     const address = useSelector((state: RootState) => state.wallet.address) || '';
     const balanceUsdc = useSelector((state: RootState) => state.wallet.balanceUsdc) || '0';
-    const symbol = PREMIUM_TOKEN_SYMBOL;
+    const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL: symbol } = useEnvContext();
 
 
     async function disconnect() {

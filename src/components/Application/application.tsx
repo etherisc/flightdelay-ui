@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
 import { RootState } from "../../redux/store";
@@ -12,6 +12,8 @@ import Trans from "../Trans/trans";
 import ApplicationForm from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseSuccess from "./purchase_success";
+import { useEnvContext } from "next-runtime-env";
+import { setAirportWhitelist } from "../../redux/slices/flightData";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -29,6 +31,12 @@ export default function Application() {
     const walletIsConnected = useSelector((state: RootState) => state.wallet.address !== null);
     const purchaseSuccessful = useSelector((state: RootState) => state.purchase.policyNftId !== null);
     const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
+    const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST } = useEnvContext();
+    const dispatch = useDispatch();
+
+    const departureAirportWhitelist = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
+    const arrivalAirportWhitelist = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
+    dispatch(setAirportWhitelist({ departure: departureAirportWhitelist, arrival: arrivalAirportWhitelist}));
     
     let error = <></>;
 

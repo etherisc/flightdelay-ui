@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
-import { ARRIVAL_AIRPORTS_WHITELIST, DEPARTURE_AIRPORTS_WHITELIST } from '../../config/constants';
 import { Reason } from '../../types/errors';
 import { Airport as FsAirport } from '../../types/flightstats/airport';
 import { logErrorOnBackend } from '../../utils/logger';
@@ -15,6 +14,8 @@ export interface FlightDataState {
     departureDate: string | null;
     departureAirport: Airport | null;
     arrivalAirport: Airport | null;
+    departureAirportWhitelist: string[];
+    arrivalAirportWhitelist: string[];
     departureTime: string | null;
     departureTimeUTC: string | null;
     arrivalTime: string | null;
@@ -57,6 +58,8 @@ const initialState: FlightDataState = {
     departureDate: null,
     departureAirport: null,
     arrivalAirport: null,
+    departureAirportWhitelist: [],
+    arrivalAirportWhitelist: [],
     departureTime: null,
     departureTimeUTC: null,
     arrivalTime: null,
@@ -78,6 +81,10 @@ export const flightDataSlice = createSlice({
     name: 'flightData',
     initialState,
     reducers: {
+        setAirportWhitelist(state, action: PayloadAction<{departure: string[], arrival: string[]}>) {
+            state.departureAirportWhitelist = action.payload.departure;
+            state.arrivalAirportWhitelist = action.payload.arrival;
+        },
         setFlight(state, action: PayloadAction<{carrier: string, flightNumber: string; departureDate: string}>) {
             state.carrier = action.payload.carrier;
             state.flightNumber = action.payload.flightNumber;
@@ -106,8 +113,8 @@ export const flightDataSlice = createSlice({
             } else if (response.flights.length > 1) {
                 state.errorReason = Reason.INCONSISTENT_DATA;
             } else {
-                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, DEPARTURE_AIRPORTS_WHITELIST);
-                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, ARRIVAL_AIRPORTS_WHITELIST);
+                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.departureAirportWhitelist);
+                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.arrivalAirportWhitelist);
                 state.departureTime = response.flights[0].departureTime;
                 state.departureTimeUTC = adjustToUtc(response.flights[0].departureTime, state.departureAirport.timeZoneRegionName);
                 state.arrivalTime = response.flights[0].arrivalTime;
@@ -174,6 +181,7 @@ function adjustToUtc(time: string, tzRegionName: string): string {
 
 // Action creators are generated for each case reducer function
 export const { 
+    setAirportWhitelist,
     setFlight,
     resetFlightData,
 } = flightDataSlice.actions;

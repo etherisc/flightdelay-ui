@@ -13,7 +13,7 @@ import { setFlight } from "../../redux/slices/flightData";
 import { AppDispatch, RootState } from "../../redux/store";
 import { fetchFlightData } from "../../redux/thunks/flightData";
 import Trans from "../Trans/trans";
-import { DEPARTURE_DATE_DATE_FROM, DEPARTURE_DATE_DAYS_MIN, DEPARTURE_DATE_DATE_TO, DEPARTURE_DATE_DAYS_MAX } from "../../config/constants";
+import { useEnvContext } from "next-runtime-env";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -27,9 +27,10 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
     const stateCarrier = useSelector((state: RootState) => state.flightData.carrier);
     const stateFlightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     const stateDepartureDate = useSelector((state: RootState) => state.flightData.departureDate);
+    const { NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS, NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO } = useEnvContext();
 
-    const departureDateMin = (DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(DEPARTURE_DATE_DATE_FROM) : dayjs().add(DEPARTURE_DATE_DAYS_MIN, 'd');
-    const departureDateMax = (DEPARTURE_DATE_DATE_TO !== undefined) ? dayjs(DEPARTURE_DATE_DATE_TO) : dayjs().add(DEPARTURE_DATE_DAYS_MAX, 'd');
+    const departureDateMin = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS || '14'), 'd');
+    const departureDateMax = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS || '60'), 'd');
 
     const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
         // only send again if data is changed

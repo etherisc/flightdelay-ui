@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useTranslation } from "react-i18next";
 import { useERC20Contract } from "./onchain/use_erc20_contract";
-import { PREMIUM_TOKEN_DECIMALS } from "../config/constants";
 import { useEnvContext } from "next-runtime-env";
 import { useWallet } from "./onchain/use_wallet";
 import { ethers, resolveAddress } from "ethers";
@@ -17,10 +16,10 @@ import { PurchaseFailedError, PurchaseNotPossibleError } from "../utils/error";
 
 export default function useApplication() {
     const { t } = useTranslation();
-    const { NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS } = useEnvContext();
+    const { NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS } = useEnvContext();
 
     const { getSigner } = useWallet();
-    const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, PREMIUM_TOKEN_DECIMALS);
+    const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, parseInt(NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS || '6'));
     const { getProductTokenHandlerAddress } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { sendPurchaseProtectionRequest } = useLocalApi();
     const dispatch = useDispatch();
