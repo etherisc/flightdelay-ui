@@ -29,9 +29,15 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
         let color = grey[900] as string;
         const additional = undefined;
         const state = flightData.status;
+        const nowUtc = dayjs.utc().unix();
+        
         switch (state) {
             case 'S': // scheduled
-                text = t('flight_state.scheduled');
+                if (flightData.departureTimeUtc !== null && flightData.departureTimeUtc < nowUtc) {
+                    text = t('flight_state.en_route');
+                } else {
+                    text = t('flight_state.scheduled');
+                }
                 break;
             case 'A': // active
                 text = t('flight_state.en_route');
