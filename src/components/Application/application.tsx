@@ -47,11 +47,11 @@ export default function Application() {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
         </Box>;
-    } else if (! isDepartureAirportWhiteListed) {
+    } else if (flightFound && ! isDepartureAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.departure_airport_not_whitelisted" values={{ airport: departureAirport?.iata }} /></Alert>
         </Box>;
-    } else if (! isArrivalAirportWhiteListed) {
+    } else if (flightFound && ! isArrivalAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>
             <Alert severity="error"><Trans k="error.arrival_airport_not_whitelisted" values={{ airport: arrivalAirport?.iata }} /></Alert>
         </Box>;

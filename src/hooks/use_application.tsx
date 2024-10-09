@@ -191,8 +191,13 @@ export default function useApplication() {
         }
     }
 
+    function resetPurchaseProtectionError() {
+        setError(null);
+    }
+
     return {
         purchaseProtection,
+        resetPurchaseProtectionError,
         purchaseProtectionError: error,
     }
 }

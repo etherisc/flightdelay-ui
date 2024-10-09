@@ -9,11 +9,12 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import carrierData from "../../config/carrierData.json";
 import { INPUT_VARIANT } from "../../config/theme";
-import { setFlight } from "../../redux/slices/flightData";
+import { resetErrors, setFlight } from "../../redux/slices/flightData";
 import { AppDispatch, RootState } from "../../redux/store";
 import { fetchFlightData } from "../../redux/thunks/flightData";
 import Trans from "../Trans/trans";
 import { useEnvContext } from "next-runtime-env";
+import useApplication from "../../hooks/use_application";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -28,6 +29,7 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
     const stateFlightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     const stateDepartureDate = useSelector((state: RootState) => state.flightData.departureDate);
     const { NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS, NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO } = useEnvContext();
+    const { resetPurchaseProtectionError } = useApplication();
 
     const departureDateMin = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS || '14'), 'd');
     const departureDateMax = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS || '60'), 'd');
@@ -35,6 +37,8 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
     const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
         // only send again if data is changed
         if (carrier !== stateCarrier || flightNumber !== stateFlightNumber || departureDate.toISOString() !== stateDepartureDate) {
+            resetPurchaseProtectionError();
+            dispatch(resetErrors());
             dispatch(setFlight({ carrier, flightNumber, departureDate: departureDate.toISOString() }));
             dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
         }

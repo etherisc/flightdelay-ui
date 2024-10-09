@@ -94,6 +94,12 @@ export const flightDataSlice = createSlice({
             // assign initial state
             Object.assign(state, initialState);
         },
+        resetErrors(state) {
+            state.errorReason = null;
+            state.errorData = null;
+            state.errorReasonQuote = null;
+            state.errorDataQuote = null;
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchFlightData.pending, (state, /*action*/) => {
@@ -183,6 +189,7 @@ function adjustToUtc(time: string, tzRegionName: string): string {
 export const { 
     setAirportWhitelist,
     setFlight,
+    resetErrors,
     resetFlightData,
 } = flightDataSlice.actions;
 
