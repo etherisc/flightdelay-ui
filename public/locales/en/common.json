@@ -1,7 +1,7 @@
 {
     "app_name": "Flightdelay", 
-    "app.title": "Etherisc Flightdelay Protection",
-    "app.title.short": "Flightdelay Protection",
+    "app.title": "Etherisc Flight Delay Protection",
+    "app.title.short": "Flight Delay Protection",
     "policies": "Policies",
     "nav": {
         "apply": "Purchase protection",
