@@ -3,7 +3,7 @@ import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { IRisk } from "../contracts/gif/instance/InstanceReader";
-import { addOrUpdatePolicy, addOrUpdateRisk, resetPolicies } from "../redux/slices/policies";
+import { addOrUpdatePolicy, addOrUpdateRisk, resetPolicies, setLoading } from "../redux/slices/policies";
 import { RiskData } from "../types/risk_data";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
@@ -15,7 +15,6 @@ import { useRegistryContract } from "./onchain/use_registry_contract";
 const NFT_ID_TYPE_POLICY = BigInt(21);
 
 export function useMyPolicies() {
-    const [ loading, setLoading ] = useState(false);
     const [ error, setError ] = useState<Error | undefined>(undefined);
     const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS } = useEnvContext();
     // const router = useRouter();
@@ -27,9 +26,8 @@ export function useMyPolicies() {
     const { getPolicyInfos, getRiskInfos } = useInstanceReaderContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
 
     async function fetchPolicies() {
-        setLoading(true);
         dispatch(resetPolicies());
-
+        dispatch(setLoading(true));
 
         try {
             console.log("fetching policies");
@@ -67,7 +65,7 @@ export function useMyPolicies() {
         } catch(err) {
             handleError(err);
         } finally {
-            setLoading(false);
+            dispatch(setLoading(false));
         }
     }
 
@@ -103,7 +101,6 @@ export function useMyPolicies() {
     }
 
     return {
-        loading,
         error,
         fetchPolicies,
     }

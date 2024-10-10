@@ -12,9 +12,12 @@ import { useTranslation } from "react-i18next";
 import Trans from "../Trans/trans";
 
 
-export default function PoliciesList({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
+export default function PoliciesList() {
     const { t } = useTranslation();
     const isConnected = useSelector((state: RootState) => state.wallet.address !== null);
+    const loading = useSelector((state: RootState) => state.policies.loading);
+    const policies = useSelector((state: RootState) => state.policies.policies);
+    const risks = useSelector((state: RootState) => state.policies.risks);
     
     const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 });
 
@@ -83,7 +86,15 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             headerName: t('table.header.carrier'),
             flex: 0.4,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
-            sortComparator: (v1, v2) => v1.carrier.localeCompare(v2.carrier),
+            sortComparator: (v1, v2) => {
+                if (v1 === null || v1.carrier === null) {
+                    return -1;
+                }
+                if (v2 === null || v2.carrier === null) {
+                    return 1;
+                }
+                return v1.carrier.localeCompare(v2.carrier);
+            },
             renderCell: (params) => {
                 if (params.value === null) {
                     return '';
@@ -97,7 +108,15 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             headerName: t('table.header.flightNumber'),
             flex: 0.4,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
-            sortComparator: (v1, v2) => v1.flightNumber.localeCompare(v2.flightNumber),
+            sortComparator: (v1, v2) => {
+                if (v1 === null || v1.flightNumber === null) {
+                    return -1;
+                }
+                if (v2 === null || v2.flightNumber === null) {
+                    return 1;
+                }
+                return v1.flightNumber.localeCompare(v2.flightNumber);
+            },
             renderCell: (params) => {
                 if (params.value === null) {
                     return '';
@@ -111,7 +130,15 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             headerName: t('table.header.departureDate'),
             flex: 0.7,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
-            sortComparator: (v1, v2) => v1.departureDate.localeCompare(v2.departureDate),
+            sortComparator: (v1, v2) => {
+                if (v1 === null || v1.departureDate === null) {
+                    return -1;
+                }
+                if (v2 === null || v2.departureDate === null) {
+                    return 1;
+                }
+                return v1.departureDate.localeCompare(v2.departureDate);
+            },
             renderCell: (params) => {
                 if (params.value === null) {
                     return '';
@@ -182,7 +209,6 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
         {loadingIndicator}
 
         <DataGrid 
-            autoHeight
             rows={policies} 
             columns={columns} 
             getRowId={(row: PolicyData) => row.nftId}

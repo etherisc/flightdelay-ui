@@ -54,7 +54,7 @@ export function Content() {
         <CardHeader title={t('policies', { ns: 'common'})} />
         <CardContent>
             {isMobile && <PoliciesListMobile policies={policies} risks={risks} loading={loading} />}
-            {!isMobile && <PoliciesList policies={policies} risks={risks} loading={loading} />}
+            {!isMobile && <PoliciesList />}
         </CardContent>
     </Card>);   
 }
