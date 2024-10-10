@@ -9,7 +9,7 @@ import { IBundleService__factory, IInstance__factory, InstanceReader, InstanceRe
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
 import { LOGGER } from "../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
+import { FLIGHTSTATS_BASE_URL, GAS_LIMIT, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getOracleSigner, getTxOpts } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 import { getFieldFromLogs } from "../../../utils/chain";
@@ -40,22 +40,38 @@ export async function POST(request: Request) {
         const instance = IInstance__factory.connect(instanceAddress, signer);
         const instanceReaderAddress = await instance.getInstanceReader();
         const instanceReader = InstanceReader__factory.connect(instanceReaderAddress, signer);
+
         const requestIds = await collectActiveRequestIds(reqId, flightOracle);
 
-        // let oracleResponses = await Promise.all(requestIds.map(async requestId => {
-        let oracleResponses = [] as { requestId: bigint, status: string, delay: number, riskId: string }[];
+        // if status == null and request id !== null => resend request
+        let oracleResponses = [] as { requestId: bigint, status: string | null, delay: number, riskId: string | null }[];
         for (const requestId of requestIds) {
-            try {
-                const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId);
-                if (response === null) {
-                    continue;
+            const requestState = await flightOracle.getRequestState(requestId);
+
+            if (requestState.readyForResponse === false && requestState.waitingForResend === false) {
+                continue;
+            }
+
+            if (requestState.readyForResponse) {
+                LOGGER.debug(`[${reqId}] request ${requestId} is ready for response`);
+                try {
+                    const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId);
+                    if (response === null) {
+                        continue;
+                    }
+                    oracleResponses.push(response);
+                } catch (err) {
+                    // @ts-expect-error error handling
+                    LOGGER.error(`[${reqId}] ${err.message}`);
+                    // @ts-expect-error error handling
+                    LOGGER.error(`[${reqId}] ${err.stack}`);
+                } finally {
+                    // sleep 100ms to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
-                oracleResponses.push(response);
-            } catch (err) {
-                // @ts-expect-error error handling
-                LOGGER.error(`[${reqId}] ${err.message}`);
-                // @ts-expect-error error handling
-                LOGGER.error(`[${reqId}] ${err.stack}`);
+            } else if (requestState.waitingForResend) {
+                LOGGER.debug(`[${reqId}] request ${requestId} is waiting for resend`);
+                oracleResponses.push({ requestId, status: null, delay: 0, riskId: null });
             }
         }
 
@@ -64,16 +80,23 @@ export async function POST(request: Request) {
         LOGGER.debug(`[${reqId}] responses: ${JSON.stringify(oracleResponses)}`);
 
         for (const response of oracleResponses) {
-            if (response === null) {
-                continue;
-            }
-            let policiesRemaining = await sendOracleResponse(reqId, flightOracle, response.requestId, response.status, response.delay);
-            LOGGER.debug(`[${reqId}] policies remaining: ${policiesRemaining}`);
+            let policiesRemaining = BigInt(0);
 
+            if (response.status !== null) {
+                policiesRemaining = await sendOracleResponse(reqId, flightOracle, response.requestId, response.status, response.delay);
+            } else {
+                policiesRemaining = await resendRequest(reqId, flightProduct, response.requestId);
+            }
+
+            LOGGER.debug(`[${reqId}] policies remaining: ${policiesRemaining}`);
+    
             while (policiesRemaining !== null && policiesRemaining > 0) {
-                policiesRemaining = await processPayoutsAndClosePolicies(reqId, flightProduct, response.riskId);
+                policiesRemaining = await processPayoutsAndClosePolicies(reqId, flightProduct, response.riskId!);
                 LOGGER.debug(`[${reqId}] policies remaining: ${policiesRemaining}`);
             }
+
+            // sleep 100ms to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
         
         return Response.json({
@@ -133,16 +156,13 @@ async function processOracleRequest(
             return null;
             
         case 'L': // landed
+        case 'C': // cancelled
+        case 'D': // diverted
             if (delay === undefined) {
-                LOGGER.info(`[${reqId}] flight landed without delay`);
+                LOGGER.debug(`[${reqId}] flight without delay information`);
                 return { requestId, status, delay: 0, riskId };
             }
             return { requestId, status, delay, riskId };
-
-        case 'C': // cancelled
-        case 'D': // diverted
-            // this case might not include a delay
-            return { requestId, status, delay: delay || 0, riskId }; 
 
         default:
             LOGGER.error(`[${reqId}] unknown flight status: ${status}`);
@@ -154,9 +174,9 @@ async function readFlightRisk(instanceReader: InstanceReader, flightProduct: Fli
     const requestInfo = await instanceReader.getRequestInfo(requestId);
     // LOGGER.debug(JSON.stringify(requestInfo.requestData));
     const requestData = await flightOracle.decodeFlightStatusRequestData(requestInfo.requestData);
-    LOGGER.debug(JSON.stringify(requestData));
+    // LOGGER.debug(JSON.stringify(requestData));
     const riskInfo = await instanceReader.getRiskInfo(requestData.riskId);
-    LOGGER.debug(JSON.stringify(riskInfo));
+    // LOGGER.debug(JSON.stringify(riskInfo));
     const risk = await flightProduct.decodeFlightRiskData(riskInfo.data);
     // LOGGER.debug(JSON.stringify(risk));
     return { riskId: requestData.riskId, risk };
@@ -198,7 +218,7 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
 
     try {
         const txOpts = getTxOpts();
-        txOpts['gasLimit'] = 5000000;
+        txOpts['gasLimit'] = GAS_LIMIT;
 
         const txResp = await flightOracle.respondWithFlightStatus(
             requestId, 
@@ -244,11 +264,60 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
     }
 }
 
+async function resendRequest(reqId: string, flightProduct: FlightProduct, requestId: bigint): Promise<bigint> {
+    LOGGER.debug(`[${reqId}] resending request ${requestId}`);
+
+    try {
+        const txOpts = getTxOpts();
+        txOpts['gasLimit'] = GAS_LIMIT;
+
+        const txResp = await flightProduct.resendRequest(requestId, getTxOpts());
+        
+        LOGGER.debug(`[${reqId}] waiting for tx: ${txResp.hash}`);
+        const tx = await txResp.wait();
+        LOGGER.debug(`[${reqId}] respondWithFlightStatus tx: ${tx!.hash}`);
+
+        if (tx === null) {
+            LOGGER.error(`[${reqId}] transaction failed`);
+            return BigInt(0);
+        }
+
+        if (tx.status !== 1) {
+            LOGGER.error(`[${reqId}] transaction failed. ${JSON.stringify(tx)}`);
+            return BigInt(0);
+        }
+
+        LOGGER.info(`[${reqId}] resend request ${requestId}`);
+
+        return getFieldFromLogs(tx.logs, FlightProduct__factory.createInterface(), "LogFlightPoliciesProcessed", "policiesRemaining") as bigint;
+    } catch (err) {
+        const errorDecoder = ErrorDecoder.create([
+            FlightProduct__factory.createInterface(), 
+            FlightUSD__factory.createInterface(),
+            IOracleService__factory.createInterface(),
+            IPolicyService__factory.createInterface(),
+            IPoolService__factory.createInterface(),
+            IBundleService__factory.createInterface(),
+        ]);
+        const decodedError = await errorDecoder.decode(err);
+        if (decodedError.reason !== null) {
+            LOGGER.error(`[${reqId}] Decoded error reason: ${decodedError.reason}`);
+            LOGGER.error(`[${reqId}] Decoded error args: ${decodedError.args}`);
+        } else {
+            LOGGER.error(`[${reqId}] unexpected error: ${err}`);
+        }
+        return BigInt(0);
+    }
+}
+
 async function processPayoutsAndClosePolicies(reqId: string, flightProduct: FlightProduct, riskId: string): Promise<bigint> {
     LOGGER.debug(`[${reqId}] processsing payouts for risk ${riskId}`);
 
     try {
-        const txResp = await flightProduct.processPayoutsAndClosePolicies(riskId, 5);
+        const txOpts = getTxOpts();
+        txOpts['gasLimit'] = GAS_LIMIT;
+
+        const txResp = await flightProduct.processPayoutsAndClosePolicies(riskId, 2, txOpts);
         
         LOGGER.debug(`[${reqId}] waiting for tx: ${txResp.hash}`);
         const tx = await txResp.wait();
