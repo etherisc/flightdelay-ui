@@ -83,6 +83,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             headerName: t('table.header.carrier'),
             flex: 0.4,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
+            sortComparator: (v1, v2) => v1.carrier.localeCompare(v2.carrier),
             renderCell: (params) => {
                 if (params.value === null) {
                     return '';
@@ -96,6 +97,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             headerName: t('table.header.flightNumber'),
             flex: 0.4,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
+            sortComparator: (v1, v2) => v1.flightNumber.localeCompare(v2.flightNumber),
             renderCell: (params) => {
                 if (params.value === null) {
                     return '';
@@ -109,6 +111,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             headerName: t('table.header.departureDate'),
             flex: 0.7,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
+            sortComparator: (v1, v2) => v1.departureDate.localeCompare(v2.departureDate),
             renderCell: (params) => {
                 if (params.value === null) {
                     return '';
@@ -121,6 +124,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             field: 'flightData',
             headerName: t('table.header.flightData'),
             flex: 1,
+            sortable: false,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
             renderCell: (params) => {
                 if (params.value === null) {
@@ -133,6 +137,7 @@ export default function PoliciesList({ policies, risks, loading }: { policies: P
             field: 'flightState',
             headerName: t('table.header.flightState'),
             flex: 0.9,
+            sortable: false,
             valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
             renderCell: (params) => {
                 if (params.value === null) {
