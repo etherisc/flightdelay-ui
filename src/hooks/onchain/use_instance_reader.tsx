@@ -34,9 +34,29 @@ export function useInstanceReaderContract(productContractAddress: string) {
         }));
     }
 
+    async function getPayoutAmount(policyId: bigint): Promise<bigint | null> {
+        const product = FlightProduct__factory.connect(productContractAddress, await getSigner());
+        const instanceAddress = await product.getInstance();
+        const instance = IInstance__factory.connect(instanceAddress, await getSigner());
+        const instanceReaderAddress = await instance.getInstanceReader();
+        const instanceReader = InstanceReader__factory.connect(instanceReaderAddress, await getSigner());
+
+        const policyInfo = await instanceReader.getPolicyInfo(policyId);
+        if (policyInfo.productNftId === BigInt(0)) {
+            return null;
+        }
+
+        // no payouts on the policy
+        if (policyInfo.claimsCount === BigInt(0)) {
+            return null;
+        }
+
+        return policyInfo.payoutAmount;
+    }
     return {
         getPolicyInfos,
         getRiskInfos,
+        getPayoutAmount,
     }
 
 }

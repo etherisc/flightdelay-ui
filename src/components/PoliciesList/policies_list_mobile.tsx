@@ -9,6 +9,8 @@ import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
 import { dayjs } from "../../utils/date";
 import Trans from "../Trans/trans";
+import { useEnvContext } from "next-runtime-env";
+import { formatAmount } from "../../utils/amount";
 
 export default function PoliciesListMobile({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
 
@@ -27,6 +29,7 @@ export default function PoliciesListMobile({ policies, risks, loading }: { polic
 
 function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefined }) {
     const { t } = useTranslation();
+    const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
 
     function formatState(flightPlan: FlightPlan) {
         let text;
@@ -40,6 +43,7 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
             case 'S': // scheduled
                 if (flightPlan.departureTimeUtc !== null && flightPlan.departureTimeUtc < nowUtc) {
                     text = t('flight_state.en_route');
+                    color = blue[600];
                 } else {
                     text = t('flight_state.scheduled');
                 }
@@ -72,12 +76,17 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
         </Typography>;
     }
 
-    // function formatTime(date: string | null | undefined) {
-    //     if (date === undefined || date === null) {
-    //         return '';
-    //     }
-    //     return dayjs(date).format('HH:mm');
-    // }
+    function formatPayoutAmount(payoutAmount: string, status: string): JSX.Element {
+        if (status == 'S') {
+            return <></>;
+        }
+        const amount = BigInt(payoutAmount);
+        if (amount > 0) {
+            return <><b>{NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(amount, 6)}</b> <Trans k="payout" /></>;
+        } else {
+            return <Typography color={grey[500]} variant="body2"><Trans k="no_payout" /></Typography>;
+        }
+    }
 
     if (risk === undefined) {
         return (<Box sx={{ pb: 1, mb: 1, borderBottom: '1px solid', borderBottomColor: grey[300] }}>
@@ -113,6 +122,7 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
             </Grid>
             <Grid size={12}>
                 {formatState(risk.flightPlan!)}
+                {formatPayoutAmount(policy.payoutAmount, risk.flightPlan?.status || 'S')}
             </Grid>
         </Grid>
     </Box>);

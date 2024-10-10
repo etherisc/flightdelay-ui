@@ -3,4 +3,5 @@
 export type PolicyData = {
     nftId: string;
     riskId: string;
+    payoutAmount: string;
 }

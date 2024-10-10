@@ -32,6 +32,7 @@
     "purchase_success": "Flight delay protection is now active for flight {{carrier}} {{flightNumber}} on {{departureDate}}. Policy ID: {{policyNftId}}",
     "purchase_another": "Protect another flight",
     "purchasing": "Please wait a moment while we issue your policy",
+    "no_payout": "No payout",
     "table": {
         "header": {
             "nftId": "Policy ID",
@@ -44,7 +45,7 @@
     },
     "flight_state": {
         "scheduled": "Scheduled",
-        "en_route": "En route",
+        "en_route": "Active",
         "punctual": "Punctual",
         "delayed": "Delayed",
         "cancelled": "Cancelled",

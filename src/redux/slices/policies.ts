@@ -38,6 +38,12 @@ export const policiesSlice = createSlice({
             }
             state.risks.push(action.payload);
         },
+        setPayoutAmount(state, action: PayloadAction<{policyNftId: string, payoutAmount: string}>) {
+            const index = state.policies.findIndex(policy => policy.nftId === action.payload.policyNftId);
+            if (index >= 0) {
+                state.policies[index].payoutAmount = action.payload.payoutAmount;
+            }
+        },
         resetPolicies(state) {
             Object.assign(state, initialState);
         },
@@ -49,6 +55,7 @@ export const {
     setLoading,
     addOrUpdatePolicy,
     addOrUpdateRisk,
+    setPayoutAmount,
     resetPolicies,
 } = policiesSlice.actions;
 

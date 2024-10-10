@@ -1,14 +1,16 @@
 import { Alert, Box, Container, LinearProgress, Typography } from "@mui/material";
 import { blue, green, grey, red } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
+import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
+import { formatAmount } from "../../utils/amount";
 import { dayjs } from "../../utils/date";
-import { useTranslation } from "react-i18next";
 import Trans from "../Trans/trans";
 
 
@@ -18,11 +20,13 @@ export default function PoliciesList() {
     const loading = useSelector((state: RootState) => state.policies.loading);
     const policies = useSelector((state: RootState) => state.policies.policies);
     const risks = useSelector((state: RootState) => state.policies.risks);
+    const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
+
     
     const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 });
 
     
-    let loadingIndicator = undefined;
+    let loadingIndicator = <></>;
     if (loading) {
         loadingIndicator = <LinearProgress />;
     }
@@ -38,6 +42,7 @@ export default function PoliciesList() {
             case 'S': // scheduled
                 if (flightData.departureTimeUtc !== null && flightData.departureTimeUtc < nowUtc) {
                     text = t('flight_state.en_route');
+                    color = blue[600];
                 } else {
                     text = t('flight_state.scheduled');
                 }
@@ -49,7 +54,9 @@ export default function PoliciesList() {
             case 'L': // landed
                 if (delay !== null && delay > 0) {
                     text = <>{t('flight_state.delayed')} {delay} <Trans k="minutes" /></> ;
-                    color = red[500];
+                    if (delay > 45) {
+                        color = red[500];
+                    }
                 } else {
                     text = t('flight_state.punctual');
                     color = green[600];
@@ -71,6 +78,18 @@ export default function PoliciesList() {
 
     function findRisk(riskId: string): RiskData | null {
         return risks.find(risk => risk.riskId === riskId) || null;
+    }
+
+    function formatPayoutAmount(payoutAmount: string, status: string): JSX.Element {
+        if (status == 'S') {
+            return <></>;
+        }
+        const amount = BigInt(payoutAmount);
+        if (amount > 0) {
+            return <><b>{NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(amount, 6)}</b> <Trans k="payout" /></>;
+        } else {
+            return <Typography color={grey[500]} variant="body2"><Trans k="no_payout" /></Typography>;
+        }
     }
 
     const columns: GridColDef[] = [
@@ -163,12 +182,16 @@ export default function PoliciesList() {
             headerName: t('table.header.flightState'),
             flex: 0.9,
             sortable: false,
-            valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
+            valueGetter: (_value, row: PolicyData) => row,
             renderCell: (params) => {
-                if (params.value === null) {
+                const risk = findRisk(params.value.riskId)
+                if (risk === null) {
                     return '';
                 }
-                return formatState(params.value.flightPlan as FlightPlan)
+                return <>
+                    {formatState(risk.flightPlan as FlightPlan)}
+                    {formatPayoutAmount(params.value.payoutAmount, risk.flightPlan?.status || 'S')}
+                </>;
             }
         }
     ];

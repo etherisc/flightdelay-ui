@@ -3,7 +3,7 @@ import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { IRisk } from "../contracts/gif/instance/InstanceReader";
-import { addOrUpdatePolicy, addOrUpdateRisk, resetPolicies, setLoading } from "../redux/slices/policies";
+import { addOrUpdatePolicy, addOrUpdateRisk, resetPolicies, setLoading, setPayoutAmount } from "../redux/slices/policies";
 import { RiskData } from "../types/risk_data";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
@@ -23,7 +23,7 @@ export function useMyPolicies() {
     const { getNftIds } = useERC721Contract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { getObjectInfos } = useRegistryContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { getNftId, decodeRiskData } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { getPolicyInfos, getRiskInfos } = useInstanceReaderContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getPolicyInfos, getRiskInfos, getPayoutAmount } = useInstanceReaderContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
 
     async function fetchPolicies() {
         dispatch(resetPolicies());
@@ -35,20 +35,21 @@ export function useMyPolicies() {
             // 1. get all policy nft ids for the address and check they are valid and belong to the product
             const productNftId = await getNftId();
             console.log("found product nft id", productNftId);
-            let nftIds = await getNftIds();
-            let objectInfos = await getObjectInfos(nftIds);
+            let policyNftIds = await getNftIds();
+            let objectInfos = await getObjectInfos(policyNftIds);
             // only keep nft ids that are policies and belong to the product
             objectInfos = objectInfos.filter(info => info.parentNftId === productNftId && info.objectType === NFT_ID_TYPE_POLICY);
             // only keep the nft id where there was a match for the objectinfo (i.e. it is a valid policy and same product)
-            nftIds = nftIds.filter((_, i) => objectInfos.find(info => info.nftId === nftIds[i]) !== undefined);
+            policyNftIds = policyNftIds.filter((_, i) => objectInfos.find(info => info.nftId === policyNftIds[i]) !== undefined);
 
             console.log("found policy object infos", objectInfos);
 
             // 2. fetch policy data for each nft id
-            const policyInfos = await getPolicyInfos(nftIds, (nftId, info) => 
+            const policyInfos = await getPolicyInfos(policyNftIds, (nftId, info) => 
                 dispatch(addOrUpdatePolicy({
                     nftId: nftId.toString(),
                     riskId: hexlify(info.riskId),
+                    payoutAmount: BigInt(0).toString(),
                 })));
             console.log("found policy infos", policyInfos);
 
@@ -61,6 +62,13 @@ export function useMyPolicies() {
             console.log("found risk infos", riskInfos);
 
             // TODO: 4. fetch claim/payout data for policy nft id
+            policyNftIds.forEach(async policyNftId => {
+                const payoutAmount = await getPayoutAmount(policyNftId);
+                if (payoutAmount !== null && payoutAmount > BigInt(0)) {
+                    dispatch(setPayoutAmount({ policyNftId: policyNftId.toString(), payoutAmount: payoutAmount.toString() }));
+                }
+            });
+
             
         } catch(err) {
             handleError(err);
