@@ -120,6 +120,10 @@ export const flightDataSlice = createSlice({
         builder.addCase(fetchFlightData.fulfilled, (state, action) => {
             const { response } = action.payload;
             state.loading = false;
+            if (response.carrier !== state.carrier || response.flightNumber !== state.flightNumber) {
+                // this is a response for a different flight, ignore it
+                return;
+            }
             if (response.flights.length === 0) {
                 state.errorReasonApi = Reason.NO_FLIGHT_FOUND;
             } else if (response.flights.length > 1) {
@@ -144,6 +148,10 @@ export const flightDataSlice = createSlice({
         });
         builder.addCase(fetchQuote.fulfilled, (state, action) => {
             const { response } = action.payload;
+            if (state.carrier !== response.carrier || state.flightNumber !== response.flightNumber) {
+                // this is a quote for a different flight, ignore it
+                return;
+            }
             state.loadingQuote = false;
             state.premium = response.premium;
             state.ontime = response.ontimepercent;

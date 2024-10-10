@@ -26,6 +26,10 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
 
     // fetch rating data from flightstats
     const rating = await fetchFlightstatsRating(reqId, carrier, flightNumber);
+
+    if (rating === null) {
+        return Response.json({ error: 'No rating data found' }, { status: 404 });
+    }
     
     // calculate payout amounts via smart contract call
     const payouts = await calculatePayoutAmounts(reqId, premium, rating);
@@ -55,7 +59,7 @@ async function calculatePayoutAmounts(reqId: string, premium: bigint, rating: Ra
     return payouts;
 }
 
-async function fetchFlightstatsRating(reqId: string, carrier: string, flightNumber: string): Promise<Rating> {
+async function fetchFlightstatsRating(reqId: string, carrier: string, flightNumber: string): Promise<Rating|null> {
     LOGGER.debug(`[${reqId}] fetching quote for ${carrier} ${flightNumber}`);
 
     const scheduleUrl = FLIGHTSTATS_BASE_URL + '/ratings/rest/v1/json/flight';
@@ -64,6 +68,10 @@ async function fetchFlightstatsRating(reqId: string, carrier: string, flightNumb
 
     const response = await sendRequestAndReturnResponse(reqId, url);
     const jsonResponse = await response.json();
+
+    if (jsonResponse.ratings === undefined || jsonResponse.ratings.length === 0) {
+        return null;
+    }
 
     const rating = jsonResponse.ratings[0] as Rating;
 
