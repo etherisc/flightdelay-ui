@@ -1,13 +1,14 @@
 import { faPlaneArrival, faPlaneDeparture } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, LinearProgress, Typography } from "@mui/material";
-import { blue, green, grey } from "@mui/material/colors";
+import { blue, green, grey, red } from "@mui/material/colors";
 import Grid from '@mui/material/Grid2';
 import { useTranslation } from "react-i18next";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { RiskData } from "../../types/risk_data";
 import { dayjs } from "../../utils/date";
+import Trans from "../Trans/trans";
 
 export default function PoliciesListMobile({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
 
@@ -32,31 +33,37 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
         let color = grey[900] as string;
         const additional = undefined;
         const state = flightPlan.status;
+        const delay = flightPlan.delay;
+        const nowUtc = dayjs.utc().unix();
+
         switch (state) {
             case 'S': // scheduled
-                text = t('flight_state.scheduled');
+                if (flightPlan.departureTimeUtc !== null && flightPlan.departureTimeUtc < nowUtc) {
+                    text = t('flight_state.en_route');
+                } else {
+                    text = t('flight_state.scheduled');
+                }
                 break;
             case 'A': // active
                 text = t('flight_state.en_route');
                 color = blue[600];
                 break;
             case 'L': // landed
-                text = t('flight_state.punctual');
-                color = green[600];
-                // TODO: fixme
-                // additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
+                if (delay !== null && delay > 0) {
+                    text = <>{t('flight_state.delayed')} {delay} <Trans k="minutes" /></> ;
+                    color = red[500];
+                } else {
+                    text = t('flight_state.punctual');
+                    color = green[600];
+                }
                 break;
-            // TODO: implement by reading delay
-            // case 'L':
-            //     text = t('flight_state.delayed');
-            //     additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
-            //     color = red[500];
-            //     break;
             case 'C': // cancelled
                 text = t('flight_state.cancelled');
+                color = red[500];
                 break;
             case 'D': // diverted
                 text = t('flight_state.diverted');
+                color = red[500];
                 break;
         }
         return <Typography color={color} variant="body2">
