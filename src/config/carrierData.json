@@ -503,6 +503,10 @@
         {
             "iata": "WK",
             "name": "Edelweiss Air"
+        },
+        {
+            "iata": "CA",
+            "name": "Air China"
         }
     ]
 }
