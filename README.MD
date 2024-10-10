@@ -19,6 +19,7 @@ The webapp is configured via environment variables. The following variables are 
 
 - `NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS`: The address of the product contract 
 - `NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS`: The address of the flight oracle contract
+- `GAS_LIMIT`: The gas limit for oracle responses (defaults to `5000000`)
 - `FLIGHTSTATS_BASE_URL`: The base URL for the Flightstats API
 - `FLIGHTSTATS_APP_ID`: The Flightstats API application ID
 - `FLIGHTSTATS_APP_KEY`: The Flightstats API application key
@@ -62,6 +63,3 @@ docker build -t flightdelay-ui-webapp .
 ```
 **Important**: This project requires a fontawesome pro license. Please set your auth token in the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
 
-## Mockoon
-
-For details on Mockoon usage see https://mockoon.com/. Configuration for the API mock is in `/mockoon/api.json`. 
