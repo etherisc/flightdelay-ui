@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         const requestIds = await collectActiveRequestIds(reqId, flightOracle);
 
         // if status == null and request id !== null => resend request
-        let oracleResponses = [] as { requestId: bigint, status: string | null, delay: number, riskId: string | null }[];
+        let oracleResponses = [] as { requestId: bigint, status: string | null, delay: number, riskId: string | null, flightPlan: string }[];
         for (const requestId of requestIds) {
             const requestState = await flightOracle.getRequestState(requestId);
 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
                 }
             } else if (requestState.waitingForResend) {
                 LOGGER.debug(`[${reqId}] request ${requestId} is waiting for resend`);
-                oracleResponses.push({ requestId, status: null, delay: 0, riskId: null });
+                oracleResponses.push({ requestId, status: null, delay: 0, riskId: null, flightPlan: "" });
             }
         }
 
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
             let policiesRemaining = BigInt(0);
 
             if (response.status !== null) {
-                policiesRemaining = await sendOracleResponse(reqId, flightOracle, response.requestId, response.status, response.delay);
+                policiesRemaining = await sendOracleResponse(reqId, flightOracle, response.requestId, response.status, response.delay, response.flightPlan);
             } else {
                 policiesRemaining = await resendRequest(reqId, flightProduct, response.requestId);
             }
@@ -126,14 +126,14 @@ async function processOracleRequest(
     flightOracle: FlightOracle, 
     instanceReader: InstanceReader, 
     requestId: bigint
-): Promise<{ requestId: bigint, status: string, delay: number, riskId: string } | null> {
+): Promise<{ requestId: bigint, status: string, delay: number, riskId: string, flightPlan: string } | null> {
     // this needs to be done per thread
     dayjs.extend(utc);
     dayjs.extend(timezone);
     LOGGER.debug(`[${reqId}] processing request ${requestId}`);
 
     // 1. extract flight risk from oracle request data
-    const { risk: flightRisk, riskId } = await readFlightRisk(instanceReader, flightProduct, flightOracle, requestId);
+    const { risk: flightRisk, riskId, flightPlan } = await readFlightRisk(instanceReader, flightProduct, flightOracle, requestId);
     // LOGGER.debug(JSON.stringify(flightRisk));
     const arrivalTimeUtc = flightRisk.arrivalTime;
     const nowUtc = dayjs.utc().unix();
@@ -148,7 +148,7 @@ async function processOracleRequest(
     // 3. fetch flight status 
     const {status, delay} = await fetchFlightStatus(reqId, flightRisk);
     // LOGGER.debug(`[${reqId}] flight status: ${JSON.stringify(flightstatus)}`);
-    LOGGER.info(`[${reqId}] flight status: ${status}, delay: ${delay}`);
+    LOGGER.info(`[${reqId}] flight status: ${status}, delay: ${delay} - flightPlan: ${flightPlan}`);
 
     switch (status) {
         case 'S': // scheduled
@@ -160,9 +160,9 @@ async function processOracleRequest(
         case 'D': // diverted
             if (delay === undefined) {
                 LOGGER.debug(`[${reqId}] flight without delay information`);
-                return { requestId, status, delay: 0, riskId };
+                return { requestId, status, delay: 0, riskId, flightPlan };
             }
-            return { requestId, status, delay, riskId };
+            return { requestId, status, delay, riskId, flightPlan };
 
         default:
             LOGGER.error(`[${reqId}] unknown flight status: ${status}`);
@@ -170,7 +170,7 @@ async function processOracleRequest(
     }
 }
 
-async function readFlightRisk(instanceReader: InstanceReader, flightProduct: FlightProduct, flightOracle: FlightOracle, requestId: bigint): Promise<{ riskId: string, risk: FlightProduct.FlightRiskStruct}> {
+async function readFlightRisk(instanceReader: InstanceReader, flightProduct: FlightProduct, flightOracle: FlightOracle, requestId: bigint): Promise<{ riskId: string, risk: FlightProduct.FlightRiskStruct, flightPlan: string}> {
     const requestInfo = await instanceReader.getRequestInfo(requestId);
     // LOGGER.debug(JSON.stringify(requestInfo.requestData));
     const requestData = await flightOracle.decodeFlightStatusRequestData(requestInfo.requestData);
@@ -178,8 +178,9 @@ async function readFlightRisk(instanceReader: InstanceReader, flightProduct: Fli
     const riskInfo = await instanceReader.getRiskInfo(requestData.riskId);
     // LOGGER.debug(JSON.stringify(riskInfo));
     const risk = await flightProduct.decodeFlightRiskData(riskInfo.data);
+    const flightPlan = decodeBytes32String(risk.flightData).trim();
     // LOGGER.debug(JSON.stringify(risk));
-    return { riskId: requestData.riskId, risk };
+    return { riskId: requestData.riskId, risk, flightPlan };
 }
 
 async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.FlightRiskStruct): 
@@ -213,8 +214,8 @@ async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.Flight
     return { status: flightstatus.status, delay: flightstatus.delays?.arrivalGateDelayMinutes };
 }
 
-async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, requestId: bigint, status: string, delay: number): Promise<bigint> {
-    LOGGER.debug(`[${reqId}] responding to request ${requestId} with status ${status} and delay ${delay}`);
+async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, requestId: bigint, status: string, delay: number, flightPlan: string): Promise<bigint> {
+    LOGGER.debug(`[${reqId}] responding to request ${requestId} with status ${status} and delay ${delay} (${flightPlan})`);
 
     try {
         const txOpts = getTxOpts();
@@ -240,7 +241,7 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
             return BigInt(0);
         }
 
-        LOGGER.info(`[${reqId}] finished oracle response to request ${requestId} with status ${status} and delay ${delay}`);
+            LOGGER.info(`[${reqId}] finished oracle response to request ${requestId} with status ${status} and delay ${delay} (${flightPlan})`);
 
         return getFieldFromLogs(tx.logs, FlightProduct__factory.createInterface(), "LogFlightPoliciesProcessed", "policiesRemaining") as bigint;
     } catch (err) {
