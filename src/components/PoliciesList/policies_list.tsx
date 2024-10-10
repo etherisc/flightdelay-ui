@@ -1,5 +1,5 @@
 import { Alert, Box, Container, LinearProgress, Typography } from "@mui/material";
-import { blue, green, grey } from "@mui/material/colors";
+import { blue, green, grey, red } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -30,8 +30,8 @@ export default function PoliciesList() {
     function formatState(flightData: FlightPlan) {
         let text;
         let color = grey[900] as string;
-        const additional = undefined;
         const state = flightData.status;
+        const delay = flightData.delay;
         const nowUtc = dayjs.utc().unix();
         
         switch (state) {
@@ -47,27 +47,25 @@ export default function PoliciesList() {
                 color = blue[600];
                 break;
             case 'L': // landed
-                text = t('flight_state.punctual');
-                color = green[600];
-                // TODO: fixme
-                // additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
+                if (delay !== null && delay > 0) {
+                    text = <>{t('flight_state.delayed')} {delay} <Trans k="minutes" /></> ;
+                    color = red[500];
+                } else {
+                    text = t('flight_state.punctual');
+                    color = green[600];
+                }
                 break;
-            // TODO: implement by reading delay
-            // case 'L':
-            //     text = t('flight_state.delayed');
-            //     additional = <>{t('actual_arrival')}: {dayjs(flightData?.actualArrivalTime).format('HH:mm')}</>;
-            //     color = red[500];
-            //     break;
             case 'C': // cancelled
                 text = t('flight_state.cancelled');
+                color = red[500];
                 break;
             case 'D': // diverted
                 text = t('flight_state.diverted');
+                color = red[500];
                 break;
         }
         return <Typography color={color} variant="body2">
             {text}
-            {additional !== undefined ? <><br/>{additional}</> : null}
         </Typography>;
     }
 

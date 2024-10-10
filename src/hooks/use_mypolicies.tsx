@@ -72,15 +72,18 @@ export function useMyPolicies() {
     async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
         const flightRiskData = await decodeRiskData(info.data);
         const flightDataTokens = decodeBytes32String(flightRiskData.flightData).split(" ");
+        console.log("converting risk data", riskId, flightDataTokens, flightRiskData);
         const departureTimeLocal = toUtf8String(flightRiskData.departureTimeLocal);
         const arrivalTimeLocal = toUtf8String(flightRiskData.arrivalTimeLocal);
+        const statusStr = toUtf8String(flightRiskData.status);
+        const status = ( statusStr !== '\0') ? toUtf8String(flightRiskData.status) : "S";
         return {
             riskId: hexlify(riskId),
             carrier: flightDataTokens[0],
             flightNumber: flightDataTokens[1],
             departureDate: flightDataTokens[4],
             flightPlan: {
-                status: toUtf8String(flightRiskData.status),
+                status: status,
                 departureAirportFsCode: flightDataTokens[2],
                 arrivalAirportFsCode: flightDataTokens[3],
                 departureTimeUtc: getNumber(flightRiskData.departureTime),
