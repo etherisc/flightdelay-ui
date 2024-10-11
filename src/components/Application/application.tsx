@@ -1,27 +1,28 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, Modal, SvgIcon, Theme, useMediaQuery } from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
+import { setAirportWhitelist } from "../../redux/slices/flightData";
 import { RootState } from "../../redux/store";
+import { formatAmount } from "../../utils/amount";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import ApplicationForm from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseSuccess from "./purchase_success";
-import { useEnvContext } from "next-runtime-env";
-import { setAirportWhitelist } from "../../redux/slices/flightData";
-import { useEffect } from "react";
-import { grey } from "@mui/material/colors";
 
 export default function Application() {
     const { t } = useTranslation();
     const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
-    const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST } = useEnvContext();
+    const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
     const dispatch = useDispatch();
     const { purchaseProtection } = useApplication();
 
@@ -111,7 +112,7 @@ export default function Application() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        bgcolor: grey[200], 
+                        bgcolor: "white",
                         opacity: '1.0 !important',
                         boxShadow: 24,
                         p: 4,
@@ -125,9 +126,13 @@ export default function Application() {
                             <Trans k="purchasing" />
                         </Box>}
                         { executingSigning && <Box sx={{ mb: 2, textAlign: 'center' }}>
-                            <Trans k="signing_request" >
-                                <b></b>
-                            </Trans>
+                            <Alert severity="info">
+                                <Trans k="signing_request_1" />
+                                <br />
+                                <Trans k="signing_request_2" values={{ symbol: NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL, amount: formatAmount(BigInt(flightDataState.premium!), 6, 0)}} >
+                                    <b></b>
+                                </Trans>
+                            </Alert>
                         </Box>}
                     </Box>
                 </Box>
