@@ -289,6 +289,14 @@
             "name": "EasyJet"
         },
         {
+            "iata": "DS",
+            "name": "EasyJet Switzerland"
+        },
+        {
+            "iata": "EC",
+            "name": "EasyJet Europe"
+        },
+        {
             "iata": "U6",
             "name": "Ural Airlines"
         },

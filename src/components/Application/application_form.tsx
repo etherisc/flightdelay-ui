@@ -68,13 +68,13 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
     };
     
     const carrierOptionsList = () => 
-        carrierData.carriers.map((e) => ({ label: e.name, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
+        carrierData.carriers.map((e) => ({ label: `${e.name} (${e.iata})`, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
 
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
             <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 4}}>
+                <Grid size={{ xs: 12, md: 5}}>
                     <Controller
                         name="carrier"
                         control={control}
@@ -105,7 +105,7 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
                         />
                     
                 </Grid>
-                <Grid size={{ xs: 12, md: 4}}>
+                <Grid size={{ xs: 12, md: 3}}>
                     <Controller
                         name="flightNumber"
                         control={control}
