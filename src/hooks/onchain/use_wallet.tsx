@@ -14,9 +14,26 @@ import { EVENT_CONNECT_WALLET, EVENT_CONNECT_WALLET_NO_WALLET, EVENT_DISCONNECT_
 
 export function useWallet() {
     const dispatch = useDispatch();
-    const { NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, NEXT_PUBLIC_EXPECTED_CHAIN_ID } = useEnvContext();
+    const { 
+        NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, 
+        NEXT_PUBLIC_EXPECTED_CHAIN_ID,
+        NEXT_PUBLIC_EXPECTED_CHAIN_NAME,
+        NEXT_PUBLIC_EXPECTED_CHAIN_RPC_NODE,
+        NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL,
+        NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_NAME,
+        NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_SYMBOL,
+        NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_DECIMALS,
+    } = useEnvContext();
     const { isAccountSwitchListenerConnected } = useSelector((state: RootState) => (state.wallet));
     const { trackEvent } = useAnalytics();
+
+    const canAddNetwork = NEXT_PUBLIC_EXPECTED_CHAIN_ID !== undefined 
+        && NEXT_PUBLIC_EXPECTED_CHAIN_NAME !== undefined 
+        && NEXT_PUBLIC_EXPECTED_CHAIN_RPC_NODE !== undefined 
+        && NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL !== undefined 
+        && NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_NAME !== undefined 
+        && NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_SYMBOL !== undefined 
+        && NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_DECIMALS !== undefined;
 
     /* function getSigner */
     const getSigner = useCallback(async () => {
@@ -133,13 +150,40 @@ export function useWallet() {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         if (window.ethereum !== undefined) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: toHexString(parseInt(NEXT_PUBLIC_EXPECTED_CHAIN_ID ?? '1')) }],
-            });
+            try {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: toHexString(parseInt(NEXT_PUBLIC_EXPECTED_CHAIN_ID ?? '1')) }],
+                });
+            } catch (switchError) {
+                // @ts-expect-error code is not defined in the global scope
+                if (switchError.code === 4902 && canAddNetwork) {
+                    await addNetwork();
+                }
+            }
         }
+    }
+
+    async function addNetwork() {
+        // @ts-expect-error ethereum is not defined in the global scope
+        await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+                {
+                    chainId: toHexString(parseInt(NEXT_PUBLIC_EXPECTED_CHAIN_ID ?? '1')),
+                    chainName: NEXT_PUBLIC_EXPECTED_CHAIN_NAME ?? 'Unknown',
+                    rpcUrls: [NEXT_PUBLIC_EXPECTED_CHAIN_RPC_NODE],
+                    nativeCurrency: {
+                        name: NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_NAME ?? 'Unknown',
+                        symbol: NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_SYMBOL ?? 'Unknown',
+                        decimals: parseInt(NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_DECIMALS ?? '18'),
+                    },
+                    blockExplorerUrls: [NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL]
+                },
+            ],
+        });
     }
 
     function toHexString(x: number) {
@@ -178,7 +222,7 @@ export function useWallet() {
         }
         // else case has no window.etherum, so we can't add the listener and therfor do as if it was connected
         dispatch(setAccountSwitchListenerConnected(true));
-    }, [isAccountSwitchListenerConnected, dispatch, accountChanged]);
+    }, [isAccountSwitchListenerConnected, dispatch, accountChanged, networkChanged]);
 
     return { 
         connectWallet, 
