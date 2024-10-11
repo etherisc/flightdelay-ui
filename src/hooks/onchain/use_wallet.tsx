@@ -155,7 +155,16 @@ export function useWallet() {
         await connectWallet();
     }, [connectWallet]);
 
+    const networkChanged = useCallback(async (networkId: string) => {
+        console.log("networkChanged", networkId);
+        await connectWallet();
+    }, [connectWallet]);
+
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.ethereum.on('networkChanged', networkChanged);
+
         if (isAccountSwitchListenerConnected) {
             return;
         }
