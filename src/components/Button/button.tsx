@@ -8,6 +8,7 @@ interface ButtonProps {
     fullwidth?: boolean;
     sx?: SxProps<Theme>;
     type?: "submit" | "reset" | "button" | undefined;
+    size?: "small" | "medium" | "large" | undefined;
     disabled?: boolean;
     variant?: "text" | "outlined" | "contained" | undefined;
 }
@@ -25,6 +26,7 @@ export default function Button(props: ButtonProps) {
         fullWidth={props.fullwidth}
         disabled={props.disabled}
         onClick={props.onClick}
+        size={props.size}
         >
         {props.children}
     </MuiButton>);

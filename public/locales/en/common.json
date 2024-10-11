@@ -12,7 +12,8 @@
         "connect_short": "Connect",
         "purchase": "Purchase protection",
         "purchase_short": "Buy protection",
-        "refresh": "Refresh"
+        "refresh": "Refresh",
+        "switch": "Switch network"
     },
     "carrier": "Airline",
     "flightNumber": "Flight number",

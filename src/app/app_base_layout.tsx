@@ -6,6 +6,8 @@ import TopBar from "../components/TopBar/topbar";
 import { RootState } from "../redux/store";
 import Trans from "../components/Trans/trans";
 import { useEnvContext } from "next-runtime-env";
+import Button from "../components/Button/button";
+import { useWallet } from "../hooks/onchain/use_wallet";
 
 export function AppBaseLayout({
     children,
@@ -14,13 +16,22 @@ export function AppBaseLayout({
 }) {
     const isExpectedChain = useSelector((state: RootState) => state.wallet.isExpectedChain);
     const { NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
+    const { switchChain } = useWallet();   
 
     let generalError = undefined;
 
     if (! isExpectedChain) {
         generalError = <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
                 <Box sx={{ textAlign: 'center' }}>
-                    <Alert severity='error'><Trans k='error.wrong_chain' values={{ chain: NEXT_PUBLIC_EXPECTED_CHAIN_NAME}}/></Alert>
+                    <Alert 
+                    severity='error' 
+                    sx={{ }}
+                    action={
+                        <Button variant="text" size="small" onClick={switchChain}><Trans k="action.switch" /></Button>
+                    }
+                    >
+                        <Trans k='error.wrong_chain' values={{ chain: NEXT_PUBLIC_EXPECTED_CHAIN_NAME}}/>
+                    </Alert>
                 </Box>
             </Container>;
     }
