@@ -47,8 +47,10 @@ export default function Application() {
     const errorReasonApi = useSelector((state: RootState) => state.flightData.errorReasonApi);
 
     useEffect(() => {
-        const departureAirportWhitelist = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
-        const arrivalAirportWhitelist = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST !== undefined ? NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST.split(',').map((airport) => airport.trim()) : [];
+        const depatureWhitelistRaw = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST?.trim() ?? '';
+        const arrivalWhitelistRaw = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST?.trim() ?? '';
+        const departureAirportWhitelist = depatureWhitelistRaw !== '' ? depatureWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
+        const arrivalAirportWhitelist = arrivalWhitelistRaw !== '' ? arrivalWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
         dispatch(setAirportWhitelist({ departure: departureAirportWhitelist, arrival: arrivalAirportWhitelist}));
     }, [NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST, dispatch]);
     
