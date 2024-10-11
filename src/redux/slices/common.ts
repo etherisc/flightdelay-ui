@@ -1,16 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export interface CommonState {
-    tokenSymbol: string,
-    tokenDecimals: number,
-    tokenSymbolEth: string,
     snackbarErrorMessage: string | null,
 }
 
 const initialState: CommonState = {
-    tokenSymbol: 'USDC',
-    tokenDecimals: 6,
-    tokenSymbolEth: 'MATIC',
     snackbarErrorMessage: null,
 }
 
