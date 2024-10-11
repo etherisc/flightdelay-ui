@@ -21,7 +21,7 @@ export default function useApplication() {
     const { getSigner } = useWallet();
     const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, parseInt(NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS || '6'));
     const { getProductTokenHandlerAddress } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { sendPurchaseProtectionRequest } = useLocalApi();
+    const { sendPurchaseProtectionRequest, checkPurchaseCompleted } = useLocalApi();
     const dispatch = useDispatch();
     
     const isExpectedChain = useSelector((state: RootState) => state.wallet.isExpectedChain);
@@ -105,7 +105,19 @@ export default function useApplication() {
             } as ApplicationData;
 
             console.log("purchase request data", permit, application);
-            const result = await sendPurchaseProtectionRequest(permit, application);
+            const { tx } = await sendPurchaseProtectionRequest(permit, application);
+            console.log("purchase request tx created", tx);
+
+            let result = { policyNftId: "0", riskId: "" };
+
+            do {
+                result = await checkPurchaseCompleted(tx);
+                if (result.policyNftId === "0") {
+                    console.log("waiting for policy creation");
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+            } while (result.policyNftId === "0");
+
             console.log("purchase result", result);
 
             dispatch(setPolicy({policyNftId: result.policyNftId, riskId: result.riskId}));

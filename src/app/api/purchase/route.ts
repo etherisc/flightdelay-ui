@@ -4,10 +4,8 @@ import { nanoid } from "nanoid";
 import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IPolicyService__factory } from "../../../contracts/gif";
 import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
-import { IApplicationService__factory } from "../../../contracts/gif/factories/product";
 import { TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
-import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
 import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
@@ -28,11 +26,10 @@ export async function POST(request: Request) {
         const permit = preparePermitData(jsonBody.permit);
         const applicationData = prepareApplicationData(jsonBody.application);
 
-        const { policyNftId, riskId } = await createPolicy(signer, permit, applicationData);
+        const { tx } = await createPolicy(signer, permit, applicationData);
         return Response.json({
-            policyNftId,
-            riskId,
-        }, { status: 200 });
+            tx
+        }, { status: 202 });
     } catch (err) {
         LOGGER.error(err);
         if (err instanceof TransactionFailedException) {
@@ -98,7 +95,7 @@ async function createPolicy(
     signer: Signer,
     permit: { owner: string; spender: string; value: bigint; deadline: number; v: number; r: string; s: string; }, 
     applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
-}) {
+}): Promise<{ tx: string }> {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
     LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
     LOGGER.debug(`applicationData: ${JSON.stringify(applicationData)}`);
@@ -110,22 +107,7 @@ async function createPolicy(
     try {
         const txResp = await flightProduct.createPolicyWithPermit(permit, applicationData, getTxOpts());
         LOGGER.debug(`waiting for tx: ${txResp.hash}`);
-        const tx = await txResp.wait();
-        LOGGER.debug(`createPolicy tx: ${tx!.hash}`);
-
-        if (tx === null) {
-            throw new TransactionFailedException(null, null);
-        }
-
-        if (tx.status !== 1) {
-            throw new TransactionFailedException(tx, null);
-        }
-
-        const logs = tx.logs;
-        const policyNftId = getFieldFromLogs(logs, IPolicyService__factory.createInterface(), "LogPolicyServicePolicyCreated", "policyNftId");
-        const riskId = getFieldFromLogs(logs, IApplicationService__factory.createInterface(), "LogApplicationServiceApplicationCreated", "riskId");
-        LOGGER.info(`policy created - policyNftId: ${policyNftId} riskId: ${riskId} tx: ${tx.hash}`);
-        return { policyNftId, riskId };
+        return { tx: txResp.hash };
     } catch (err) {
         const errorDecoder = ErrorDecoder.create([
             FlightProduct__factory.createInterface(), 

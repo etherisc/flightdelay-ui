@@ -9,7 +9,9 @@ BigInt.prototype.toJSON = function () {
 
 export function useLocalApi() {
 
-    async function sendPurchaseProtectionRequest(permit: PermitData, application: ApplicationData): Promise<{ riskId: string, policyNftId: string }> {
+    async function sendPurchaseProtectionRequest(permit: PermitData, application: ApplicationData): 
+        Promise<{ tx: string }> 
+    {
         console.log("purchasing protection api call");
         const uri = `/api/purchase`;
         const res = await fetch(uri, {
@@ -36,8 +38,25 @@ export function useLocalApi() {
 
         return await res.json();
     }
+    
+    async function checkPurchaseCompleted(tx: string): Promise<{ policyNftId: string, riskId: string }> {
+        console.log("checking purchase completion api call");
+        const uri = `/api/purchase/${tx}`;
+        const res = await fetch(uri);
+        
+        if (res.status === 202) {
+            return { policyNftId: "0", riskId: "" };
+        }
+
+        if (! res.ok) {
+            throw new Error(`Error checking purchase completion: ${res.statusText}`);
+        }
+
+        return await res.json();
+    }
 
     return {
         sendPurchaseProtectionRequest,
+        checkPurchaseCompleted,
     }
 }
