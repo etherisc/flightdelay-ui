@@ -207,7 +207,11 @@ export function useWallet() {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        window.ethereum.on('networkChanged', networkChanged);
+        if (window.ethereum !== undefined) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            window.ethereum.on('networkChanged', networkChanged);
+        }
 
         if (isAccountSwitchListenerConnected) {
             return;
