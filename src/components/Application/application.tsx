@@ -1,6 +1,6 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, SvgIcon, Theme, useMediaQuery } from "@mui/material";
+import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, Modal, SvgIcon, Theme, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import PurchaseSuccess from "./purchase_success";
 import { useEnvContext } from "next-runtime-env";
 import { setAirportWhitelist } from "../../redux/slices/flightData";
 import { useEffect } from "react";
+import { grey } from "@mui/material/colors";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function Application() {
     const flightDataState = useSelector((state: RootState) => state.flightData);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const purchaseSuccessful = useSelector((state: RootState) => state.purchase.policyNftId !== null);
+    const executingSigning = useSelector((state: RootState) => state.purchase.isSigning);
     const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
 
     // prepare data
@@ -97,10 +99,39 @@ export default function Application() {
     }
 
     const executePurchase = 
-        <Box sx={{ p: 2 }}>
-            <CircularProgress sx={{ verticalAlign: 'middle'}} />
-            <Box component="span" sx={{ ml: 2 }}><Trans k="purchasing" /></Box>
-        </Box>;
+            <Modal
+                open={true}
+                aria-labelledby="loading-modal-title"
+                aria-describedby="loading-modal-description"
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: grey[200] + `80` }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: grey[200], 
+                        opacity: '1.0 !important',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 1,
+                        zIndex: 1000
+                    }}
+                >
+                    <CircularProgress />
+                    <Box component="span" sx={{ mt: 2 }} maxWidth="md">
+                        { ! executingSigning && <Box sx={{ mb: 2, textAlign: 'center' }}>
+                            <Trans k="purchasing" />
+                        </Box>}
+                        { executingSigning && <Box sx={{ mb: 2, textAlign: 'center' }}>
+                            <Trans k="signing_request" >
+                                <b></b>
+                            </Trans>
+                        </Box>}
+                    </Box>
+                </Box>
+            </Modal>
 
     return (<>
         <Card>

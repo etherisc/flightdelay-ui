@@ -33,6 +33,7 @@
     "purchase_success": "Flight delay protection is now active for flight {{carrier}} {{flightNumber}} on {{departureDate}}. Policy ID: {{policyNftId}}",
     "purchase_another": "Protect another flight",
     "purchasing": "Please wait a moment while we issue your policy",
+    "signing_request": "To proceed with your flight delay purchase request, please sign the ERC20 permit. This allows us to securely authorize the transaction on your behalf. <0>Note</0>: This is a one-time authorization and will not give us access to your funds without your explicit permission.",
     "no_payout": "No payout",
     "table": {
         "header": {

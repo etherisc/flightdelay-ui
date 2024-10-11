@@ -4,7 +4,7 @@ import { useEnvContext } from "next-runtime-env";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { resetErrors, setError } from "../redux/slices/flightData";
-import { resetPurchase, setExecuting, setPolicy } from "../redux/slices/purchase";
+import { resetPurchase, setExecuting, setPolicy, setSigning } from "../redux/slices/purchase";
 import { RootState } from "../redux/store";
 import { Erc20PermitSignature } from "../types/erc20permitsignature";
 import { ApplicationData, PermitData } from "../types/purchase_request";
@@ -69,10 +69,12 @@ export default function useApplication() {
 
         console.log("purchaseProtection");
         dispatch(setExecuting(true));
+        dispatch(setSigning(true));
 
         try {
             // 2. Calculate erc20 permit signature 
             const signature = await calculateErc20PermitSignature(BigInt(premium!));
+            dispatch(setSigning(false));
             console.log("signature", signature);
 
             // 3. send all data relevant for tx to the backend
