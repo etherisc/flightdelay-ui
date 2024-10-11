@@ -14,6 +14,7 @@ import ConnectButton from "./connect_button";
 import Wallet from "./wallet";
 
 export default function TopBar() {
+    const isConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const address = useSelector((state: RootState) => (state.wallet.address));
     const [ showWallet, setShowWallet ] = useState(false);
 
@@ -22,7 +23,7 @@ export default function TopBar() {
     }
 
     let wallet = null;
-    if (address) {
+    if (isConnected && address !== null) {
         wallet = <JazziconAvatar address={address} onClick={toggleWallet} />;
     } else {
         wallet = <ConnectButton />;

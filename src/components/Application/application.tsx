@@ -25,7 +25,7 @@ export default function Application() {
     const { purchaseProtection } = useApplication();
 
     const flightDataState = useSelector((state: RootState) => state.flightData);
-    const walletIsConnected = useSelector((state: RootState) => state.wallet.address !== null);
+    const walletIsConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const purchaseSuccessful = useSelector((state: RootState) => state.purchase.policyNftId !== null);
     const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
 

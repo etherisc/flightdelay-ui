@@ -16,7 +16,7 @@ import Trans from "../Trans/trans";
 
 export default function PoliciesList() {
     const { t } = useTranslation();
-    const isConnected = useSelector((state: RootState) => state.wallet.address !== null);
+    const isConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const loading = useSelector((state: RootState) => state.policies.loading);
     const policies = useSelector((state: RootState) => state.policies.policies);
     const risks = useSelector((state: RootState) => state.policies.risks);

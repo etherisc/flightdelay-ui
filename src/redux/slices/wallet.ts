@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { stringifyBigInt } from '../../utils/bigint';
 
 export interface WalletState {
+    isConnected: boolean,
     isExpectedChain: boolean,
     connecting: boolean,
     address: string | null,
@@ -12,6 +13,7 @@ export interface WalletState {
 }
 
 const initialState: WalletState = {
+    isConnected: false,
     isExpectedChain: true,
     connecting: false,
     address: null,
@@ -24,6 +26,9 @@ export const accountSlice = createSlice({
     name: 'wallet',
     initialState,
     reducers: {
+        setConnected(state, action: PayloadAction<boolean>) {
+            state.isConnected = action.payload;
+        },
         setExpectedChain(state, action: PayloadAction<boolean>) {
             state.isExpectedChain = action.payload;
         },
@@ -43,6 +48,7 @@ export const accountSlice = createSlice({
             state.isAccountSwitchListenerConnected = action.payload;
         },
         resetAccount(state) {
+            state.isConnected = false;
             state.isExpectedChain = true;
             state.connecting = false;
             state.address = null;
@@ -55,6 +61,7 @@ export const accountSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const { 
+    setConnected,
     setExpectedChain,
     setConnecting,
     setAddress,

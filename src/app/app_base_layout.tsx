@@ -15,17 +15,14 @@ export function AppBaseLayout({
     const isExpectedChain = useSelector((state: RootState) => state.wallet.isExpectedChain);
     const { NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
 
+    let generalError = undefined;
+
     if (! isExpectedChain) {
-        return (<Box>
-            <Container disableGutters maxWidth={false}>
-                <TopBar />
-            </Container>
-            <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
+        generalError = <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
                 <Box sx={{ textAlign: 'center' }}>
                     <Alert severity='error'><Trans k='error.wrong_chain' values={{ chain: NEXT_PUBLIC_EXPECTED_CHAIN_NAME}}/></Alert>
                 </Box>
-            </Container>
-        </Box>);
+            </Container>;
     }
 
     return (
@@ -34,6 +31,7 @@ export function AppBaseLayout({
                 <TopBar />
             </Container>
             <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
+                {generalError}
                 {children}
             </Container>
         </Box>

@@ -5,7 +5,7 @@ import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSnackbarErrorMessage } from "../../redux/slices/common";
 import { resetPolicies } from "../../redux/slices/policies";
-import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setConnecting, setExpectedChain } from "../../redux/slices/wallet";
+import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setConnected, setConnecting, setExpectedChain } from "../../redux/slices/wallet";
 import { RootState } from "../../redux/store";
 import { stringifyBigInt } from "../../utils/bigint";
 import { chainId } from "../../utils/chain";
@@ -45,16 +45,20 @@ export function useWallet() {
         dispatch(setAddress(address));
 
         if (address !== undefined) {
-            const balanceEth = await signer.provider?.getBalance(address) || BigInt(0);
-            console.log("address, balance", address, balanceEth);
-            dispatch(setBalanceEth(stringifyBigInt(balanceEth)));
-            const erc20TokenContractAddress = NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS;
-            // console.log("erc20TokenContractAddress", erc20TokenContractAddress);
-            if (erc20TokenContractAddress !== undefined) {
-                console.log("erc20TokenContractAddress", erc20TokenContractAddress);
-                const bal = await getBalance(erc20TokenContractAddress, address, (await getSigner())!); // TODO: remove the ! when getSigner is fixed
-                console.log("erc20 address, balance", address, bal);
-                dispatch(setBalanceUsdc(stringifyBigInt(bal)));
+            try {
+                const balanceEth = await signer.provider?.getBalance(address) || BigInt(0);
+                console.log("address, balance", address, balanceEth);
+                dispatch(setBalanceEth(stringifyBigInt(balanceEth)));
+                const erc20TokenContractAddress = NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS;
+                // console.log("erc20TokenContractAddress", erc20TokenContractAddress);
+                if (erc20TokenContractAddress !== undefined) {
+                    console.log("erc20TokenContractAddress", erc20TokenContractAddress);
+                    const bal = await getBalance(erc20TokenContractAddress, address, (await getSigner())!); // TODO: remove the ! when getSigner is fixed
+                    console.log("erc20 address, balance", address, bal);
+                    dispatch(setBalanceUsdc(stringifyBigInt(bal)));
+                }
+            } catch (err) {
+                console.log("error fetching balance", err);
             }
         }
     }, [dispatch, NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, getSigner]);
@@ -71,16 +75,18 @@ export function useWallet() {
                 return;
             }
 
+            dispatch(setConnected(true));
+
+            // get address and balance
+            await getAddressAndBalance(signer);
+
             // check chain id is expected
             if (NEXT_PUBLIC_EXPECTED_CHAIN_ID !== undefined && (await chainId(signer)) !== BigInt(parseInt(NEXT_PUBLIC_EXPECTED_CHAIN_ID))) {
                 dispatch(setExpectedChain(false));
                 return;
             } else {
                 dispatch(setExpectedChain(true));
-            }
-            
-            // get address and balance
-            await getAddressAndBalance(signer);
+            }            
         } catch (error: unknown) {
             console.log(error);
         } finally {
