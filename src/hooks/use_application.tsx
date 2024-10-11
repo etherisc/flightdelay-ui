@@ -24,6 +24,7 @@ export default function useApplication() {
     const { sendPurchaseProtectionRequest } = useLocalApi();
     const dispatch = useDispatch();
     
+    const isExpectedChain = useSelector((state: RootState) => state.wallet.isExpectedChain);
     const departureAirport = useSelector((state: RootState) => state.flightData.departureAirport);
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || false);
@@ -42,11 +43,17 @@ export default function useApplication() {
         dispatch(resetPurchase());
         // do nothing, just log for now
 
-        const canPurchase = departureAirport !== null && isDepartureAirportWhiteListed && isArrivalAirportWhiteListed && premium !== null;
+        const canPurchase = isExpectedChain 
+            && departureAirport !== null 
+            && isDepartureAirportWhiteListed 
+            && isArrivalAirportWhiteListed 
+            && premium !== null;
 
         // 0. Check if purchase is possible (blacklisted airports, etc.)
         if (!canPurchase) {
-            if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
+            if (! isExpectedChain) {
+                dispatch(setError({ message: t("error.switch_chain_first"), level: "error" }));
+            } else if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
             } else {
                 dispatch(setError({ message: t("error.purchase_protection_not_possible"), level: "error" }));
