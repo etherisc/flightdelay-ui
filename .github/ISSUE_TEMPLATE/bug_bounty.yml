@@ -18,7 +18,7 @@ body:
         Also tell us, what did you expect to happen? If possible, please provide screenshots (drag and drop images into the text area) and the date and time the problem occured. 
         Additionally, if you the bug was encountered while interacting with a wallet (e.g. while buying a policy), please provide the wallet address you used. 
         And any other data you think will help us to reproduce the bug. The more details we have, the better we can figure out what went wrong.
-      value: "Damn, my flight was late!"
+      value: "I couldn't find my flight"
     validations:
       required: true
   - type: dropdown
