@@ -29,7 +29,7 @@
     "@mui/x-data-grid": "^7.19.0",
     "@mui/x-date-pickers": "^7.19.0",
     "@react-hooks-hub/use-debounce": "^1.1.5",
-    "@reduxjs/toolkit": "^2.0.1",
+    "@reduxjs/toolkit": "^2.2.8",
     "@uidotdev/usehooks": "^2.4.1",
     "abi-coder": "^5.0.0",
     "axios": "^1.6.2",
