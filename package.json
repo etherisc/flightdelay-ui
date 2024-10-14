@@ -38,7 +38,7 @@
     "encoding": "^0.1.13",
     "ethers": "^6.13.3",
     "ethers-decode-error": "^2.1.3",
-    "i18next": "^23.15.2",
+    "i18next": "^23.16.0",
     "jazzicon": "^1.5.0",
     "nanoid": "^5.0.4",
     "next": "^14.2.14",
