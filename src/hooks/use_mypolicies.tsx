@@ -1,4 +1,4 @@
-import { BytesLike, decodeBytes32String, getNumber, hexlify, toUtf8String } from "ethers";
+import { BytesLike, getNumber, hexlify, toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -77,9 +77,43 @@ export function useMyPolicies() {
         }
     }
 
+    function getBytes(value: BytesLike): Uint8Array {
+        if (value instanceof Uint8Array) {
+            return value;
+        }
+    
+        if (typeof(value) === "string" && value.match(/^0x(?:[0-9a-f][0-9a-f])*$/i)) {
+            const result = new Uint8Array((value.length - 2) / 2);
+            let offset = 2;
+            for (let i = 0; i < result.length; i++) {
+                result[i] = parseInt(value.substring(offset, offset + 2), 16);
+                offset += 2;
+            }
+            return result;
+        }
+    
+        return new Uint8Array(0);
+    }
+    
+    /**
+     *  Encodes the Bytes32-encoded %%bytes%% into a string.
+     */
+    function decodeOzShortString(_bytes: BytesLike): string {
+        const data = getBytes(_bytes);
+    
+        // Must be 32 bytes with a null-termination
+        if (data.length !== 32) { throw new Error("invalid short string - not 32 bytes long"); }
+    
+        const length = data[31];
+    
+        // Determine the string value
+        return toUtf8String(data.slice(0, length));
+    }
+
     async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
         const flightRiskData = await decodeRiskData(info.data);
-        const flightDataTokens = decodeBytes32String(flightRiskData.flightData).split(" ");
+        // const flightDataTokens = decodeBytes32String(flightRiskData.flightData).split(" ");
+        const flightDataTokens = decodeOzShortString(flightRiskData.flightData).split(" ");
         console.log("converting risk data", riskId, flightDataTokens, flightRiskData);
         const departureTimeLocal = toUtf8String(flightRiskData.departureTimeLocal);
         const arrivalTimeLocal = toUtf8String(flightRiskData.arrivalTimeLocal);

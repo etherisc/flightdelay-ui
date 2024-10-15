@@ -1,4 +1,4 @@
-import { encodeBytes32String, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
+import { hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
@@ -76,9 +76,11 @@ function preparePermitData(permit: PermitData) {
 }
 
 function prepareApplicationData(application: ApplicationData) {
-    LOGGER.debug(`prepareApplicationData`);
+    const flightDataString = `${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`;
+    LOGGER.debug(`prepareApplicationData flightData: ${flightDataString}, departureTimeLocal:${application.departureTimeLocal}, arrivalTimeLocal:${application.arrivalTimeLocal}`);
+
     return {
-        flightData: encodeBytes32String(`${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`),
+        flightData: flightDataString,
         departureTime: application.departureTime,
         departureTimeLocal: hexlify(toUtf8Bytes(application.departureTimeLocal)),
         arrivalTime: application.arrivalTime,
@@ -90,6 +92,7 @@ function prepareApplicationData(application: ApplicationData) {
         s: application.s,
     }
 }
+
 
 async function createPolicy(
     signer: Signer,
