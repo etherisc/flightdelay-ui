@@ -83,7 +83,6 @@ function prepareApplicationData(application: ApplicationData) {
     LOGGER.debug(`prepareApplicationData flightData: ${flightDataString}, departureTimeLocal:${application.departureTimeLocal}, arrivalTimeLocal:${application.arrivalTimeLocal}`);
 
     return {
-        // flightData: encodeBytes32String(`${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`),
         flightData: flightDataString,
         departureTime: application.departureTime,
         departureTimeLocal: hexlify(toUtf8Bytes(application.departureTimeLocal)),
@@ -95,18 +94,6 @@ function prepareApplicationData(application: ApplicationData) {
         r: application.r,
         s: application.s,
     }
-}
-
-function toAsciiBytes(str) {
-    const asciiArray = new Uint8Array(str.length); // Create a Uint8Array
-    for (let i = 0; i < str.length; i++) {
-        const code = str.charCodeAt(i);
-        if (code > 127) {
-            throw new Error('Non-ASCII character found'); // ASCII is 0-127
-        }
-        asciiArray[i] = code; // Store the ASCII code in the Uint8Array
-    }
-    return asciiArray; // Return Uint8Array
 }
 
 
