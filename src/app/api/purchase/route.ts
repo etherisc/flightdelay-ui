@@ -100,7 +100,6 @@ function prepareApplicationData(application: ApplicationData) {
 async function createPolicy(
     signer: Signer,
     permit: { owner: string; spender: string; value: bigint; deadline: number; v: number; r: string; s: string; }, 
-    // applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
     applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[];
     }) {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
