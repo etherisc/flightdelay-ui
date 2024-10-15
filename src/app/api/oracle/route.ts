@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { decodeBytes32String, getNumber, hexlify, parseUnits, Signer, toUtf8Bytes, toUtf8String } from "ethers";
+import { getNumber, hexlify, parseUnits, Signer, toUtf8Bytes, toUtf8String } from "ethers";
 import type { BytesLike, } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";

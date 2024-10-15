@@ -1,4 +1,4 @@
-import { BytesLike, decodeBytes32String, getNumber, hexlify, toUtf8String } from "ethers";
+import { BytesLike, getNumber, hexlify, toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
