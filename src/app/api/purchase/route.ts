@@ -79,9 +79,12 @@ function preparePermitData(permit: PermitData) {
 }
 
 function prepareApplicationData(application: ApplicationData) {
-    LOGGER.debug(`prepareApplicationData`);
+    const flightDataString = `${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`;
+    LOGGER.debug(`prepareApplicationData flightData: ${flightDataString}, departureTimeLocal:${application.departureTimeLocal}, arrivalTimeLocal:${application.arrivalTimeLocal}`);
+
     return {
-        flightData: encodeBytes32String(`${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`),
+        // flightData: encodeBytes32String(`${application.carrier} ${application.flightNumber} ${application.departureAirport} ${application.arrivalAirport} ${application.departureDate}`),
+        flightData: flightDataString,
         departureTime: application.departureTime,
         departureTimeLocal: hexlify(toUtf8Bytes(application.departureTimeLocal)),
         arrivalTime: application.arrivalTime,
@@ -94,11 +97,25 @@ function prepareApplicationData(application: ApplicationData) {
     }
 }
 
+function toAsciiBytes(str) {
+    const asciiArray = new Uint8Array(str.length); // Create a Uint8Array
+    for (let i = 0; i < str.length; i++) {
+        const code = str.charCodeAt(i);
+        if (code > 127) {
+            throw new Error('Non-ASCII character found'); // ASCII is 0-127
+        }
+        asciiArray[i] = code; // Store the ASCII code in the Uint8Array
+    }
+    return asciiArray; // Return Uint8Array
+}
+
+
 async function createPolicy(
     signer: Signer,
     permit: { owner: string; spender: string; value: bigint; deadline: number; v: number; r: string; s: string; }, 
-    applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
-}) {
+    // applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
+    applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[];
+    }) {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
     LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
     LOGGER.debug(`applicationData: ${JSON.stringify(applicationData)}`);

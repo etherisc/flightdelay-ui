@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { decodeBytes32String, getNumber, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
+import { decodeBytes32String, getNumber, hexlify, parseUnits, Signer, toUtf8Bytes, toUtf8String } from "ethers";
+import type { BytesLike, } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
@@ -170,6 +171,42 @@ async function processOracleRequest(
     }
 }
 
+
+function getBytes(value: BytesLike): Uint8Array {
+    if (value instanceof Uint8Array) {
+        return value;
+    }
+
+    if (typeof(value) === "string" && value.match(/^0x(?:[0-9a-f][0-9a-f])*$/i)) {
+        const result = new Uint8Array((value.length - 2) / 2);
+        let offset = 2;
+        for (let i = 0; i < result.length; i++) {
+            result[i] = parseInt(value.substring(offset, offset + 2), 16);
+            offset += 2;
+        }
+        return result;
+    }
+
+    return new Uint8Array(0);
+}
+
+
+/**
+ *  Encodes the Bytes32-encoded %%bytes%% into a string.
+ */
+function decodeOzShortString(_bytes: BytesLike): string {
+    const data = getBytes(_bytes);
+
+    // Must be 32 bytes with a null-termination
+    if (data.length !== 32) { throw new Error("invalid short string - not 32 bytes long"); }
+
+    const length = data[31];
+
+    // Determine the string value
+    return toUtf8String(data.slice(0, length));
+}
+
+
 async function readFlightRisk(instanceReader: InstanceReader, flightProduct: FlightProduct, flightOracle: FlightOracle, requestId: bigint): Promise<{ riskId: string, risk: FlightProduct.FlightRiskStruct, flightPlan: string}> {
     const requestInfo = await instanceReader.getRequestInfo(requestId);
     // LOGGER.debug(JSON.stringify(requestInfo.requestData));
@@ -178,16 +215,18 @@ async function readFlightRisk(instanceReader: InstanceReader, flightProduct: Fli
     const riskInfo = await instanceReader.getRiskInfo(requestData.riskId);
     // LOGGER.debug(JSON.stringify(riskInfo));
     const risk = await flightProduct.decodeFlightRiskData(riskInfo.data);
-    const flightPlan = decodeBytes32String(risk.flightData).trim();
-    // LOGGER.debug(JSON.stringify(risk));
+    LOGGER.debug(JSON.stringify(risk.flightData));
+    const flightPlan = decodeOzShortString(risk.flightData).trim();
+    // const flightPlan = (await instanceReader.toString(risk.flightData)).trim();
     return { riskId: requestData.riskId, risk, flightPlan };
 }
 
 async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.FlightRiskStruct): 
     Promise<{ status: string, delay: number | undefined}> 
 {
-    const x = decodeBytes32String(flightRisk.flightData);
-    // LOGGER.debug(`[${reqId}] flight data: ${x}`);
+    LOGGER.debug(`[${reqId}] flight data: ${flightRisk.flightData}`);
+    const x = decodeOzShortString(flightRisk.flightData);
+    LOGGER.debug(`[${reqId}] flight data decoded: ${x}`);
     const flightPlan = x.trim().split(" ");
     const carrier = flightPlan[0];
     const flightNumber = flightPlan[1];
