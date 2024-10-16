@@ -43,11 +43,13 @@ async function checkPolicyCreated(
     try {
         LOGGER.debug(`[${reqId}] checking policy created for tx: ${txHash}`);
         const tx = await signer.provider!.getTransaction(txHash);
+        // const tx = await getTransactionWithRetry(reqId, signer, txHash);
         LOGGER.debug(`[${reqId}] tx found: ${tx !== null}`);
     
         if (tx === null) {
-            LOGGER.error(`[${reqId}] unknown tx: ${txHash}`);
-            throw new Error(`transaction not found: ${tx}`);
+            LOGGER.warn(`[${reqId}] unknown tx: ${txHash}`);
+            // throw new Error(`transaction not found: ${tx}`);
+            return { policyNftId: BigInt(0), riskId: "" };
         }
     
         if (! tx.isMined || tx.blockNumber === null || await tx.confirmations() < 1) {

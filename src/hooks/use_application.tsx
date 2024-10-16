@@ -114,7 +114,7 @@ export default function useApplication() {
                 result = await checkPurchaseCompleted(tx);
                 if (result.policyNftId === "0") {
                     console.log("waiting for policy creation");
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             } while (result.policyNftId === "0");
 

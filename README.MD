@@ -72,4 +72,3 @@ Via container created by executing
 docker build -t flightdelay-ui-webapp .
 ```
 **Important**: This project requires a fontawesome pro license. Please set your auth token in the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
-
