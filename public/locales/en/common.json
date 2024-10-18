@@ -49,7 +49,7 @@
     "flight_state": {
         "scheduled": "Scheduled",
         "en_route": "Active",
-        "punctual": "Punctual",
+        "punctual": "On time",
         "delayed": "Delayed",
         "cancelled": "Cancelled",
         "landed": "Landed"

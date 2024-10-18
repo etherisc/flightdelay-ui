@@ -1,6 +1,14 @@
 {
     "carriers": [
         {
+            "iata": "JT",
+            "name": "Lion Air"
+        },
+        {
+            "iata": "ID",
+            "name": "Batik Air"
+        },
+        {
             "iata": "5J",
             "name": "Cebu Pacific Air"
         },
