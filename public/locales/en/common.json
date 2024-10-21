@@ -36,6 +36,8 @@
     "signing_request_1": "Please sign the ERC20 permit. This authorizes the contract to collect the premium amount and issue the policy on your behalf.",
     "signing_request_2": "<0>Note</0>: This is a one-time authorization limited to {{symbol}} {{amount}}.",
     "no_payout": "No payout",
+    "whitelisted_airports": "Whitelisted airports",
+    "blacklisted_airports": "Blacklisted airports",
     "table": {
         "header": {
             "nftId": "Policy ID",
@@ -62,8 +64,8 @@
         },
         "no_flight_found": "No matching flight found",
         "inconsistent_data": "The flight data provided by the flight data service is inconsistent and cannot be used for protection purposes.",
-        "airport_not_whitelisted": "Buying protection for flights from {{dep}} to {{arr}} is not possible. Please select another flight.",
-        "airport_blacklisted": "Buying protection for flights departing from or arriving into {{airport}} is not possible. Please select another flight.",
+        "airport_not_whitelisted": "Protection for flights from {{dep}} to {{arr}} is not available. Please choose a different flight. Refer to the <0>complete list of approved airports here</0>.",
+        "airport_blacklisted": "Protection for flights from or to {{airport}} is not available. Please choose a different flight. Refer to the <0>complete list of approved airports here</0>.",
         "purchase_protection_not_possible": "To purchase protection, please connect your wallet, choose a flight and departure date and try again.",
         "no_wallet_connected": "Please connect your wallet to view policies",
         "no_policies": "No policies found",

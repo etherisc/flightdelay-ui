@@ -81,7 +81,31 @@ export default function Application() {
     
     let error = <></>;
 
-    if (errorReasonApi !== null) {
+    if (flightFound && isDepartureAirportBlackListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error">
+                <Trans k="error.airport_blacklisted" values={{ airport: departureAirport?.iata }} >
+                    <a href="/airports" target="_blank" rel="noreferrer noopener"></a>
+                </Trans>
+            </Alert>
+        </Box>;
+    } else if (flightFound && isArrivalAirportBlackListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error">
+                <Trans k="error.airport_blacklisted" values={{ airport: arrivalAirport?.iata }} >
+                    <a href="/airports" target="_blank" rel="noreferrer noopener"></a>
+                </Trans>
+            </Alert>
+        </Box>;
+    } else if (flightFound && ! isDepartureAirportWhiteListed && ! isArrivalAirportWhiteListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error">
+                <Trans k="error.airport_not_whitelisted" values={{ dep: departureAirport?.iata, arr: arrivalAirport?.iata }}>
+                    <a href="/airports" target="_blank" rel="noreferrer noopener"></a>
+                </Trans>
+            </Alert>
+        </Box>;
+    } else if (errorReasonApi !== null) {
         switch(errorReasonApi) {
             case Reason.NOT_ENOUGH_DATA_FOR_QUOTE:
                 error = <Box sx={{ py: 2 }}>
@@ -98,19 +122,7 @@ export default function Application() {
         error = <Box sx={{ py: 2 }}>
             <Alert severity={errorLevel as AlertColor || 'error'}>{errorMessage}</Alert>
         </Box>;
-    } else if (flightFound && isDepartureAirportBlackListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.airport_blacklisted" values={{ airport: departureAirport?.iata }} /></Alert>
-        </Box>;
-    } else if (flightFound && isArrivalAirportBlackListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.airport_blacklisted" values={{ airport: arrivalAirport?.iata }} /></Alert>
-        </Box>;
-    } else if (flightFound && ! isDepartureAirportWhiteListed && ! isArrivalAirportWhiteListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.airport_not_whitelisted" values={{ dep: departureAirport?.iata, arr: arrivalAirport?.iata }} /></Alert>
-        </Box>;
-    }
+    } 
 
     let flightDataLoading = <></>;
     if (loadingFlightData || loadingQuote) {
