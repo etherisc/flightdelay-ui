@@ -9,7 +9,7 @@ export interface WalletState {
     address: string | null,
     balanceEth: string,
     balanceUsdc: string,
-    isNetworkChangedListenerConnected: boolean,
+    isChainChangedListenerConnected: boolean,
     isAccountSwitchListenerConnected: boolean,
 }
 
@@ -20,7 +20,7 @@ const initialState: WalletState = {
     address: null,
     balanceEth: stringifyBigInt(BigInt(0)),
     balanceUsdc: stringifyBigInt(BigInt(0)),
-    isNetworkChangedListenerConnected: false,
+    isChainChangedListenerConnected: false,
     isAccountSwitchListenerConnected: false,
 }
 
@@ -46,8 +46,8 @@ export const accountSlice = createSlice({
         setConnecting(state, action: PayloadAction<boolean>) {
             state.connecting = action.payload;
         },
-        setNetworkChangedListenerConnected(state, action: PayloadAction<boolean>) {
-            state.isNetworkChangedListenerConnected = action.payload;
+        setChainChangedListenerConnected(state, action: PayloadAction<boolean>) {
+            state.isChainChangedListenerConnected = action.payload;
         },
         setAccountSwitchListenerConnected(state, action: PayloadAction<boolean>) {
             state.isAccountSwitchListenerConnected = action.payload;
@@ -60,7 +60,7 @@ export const accountSlice = createSlice({
             state.balanceEth = stringifyBigInt(BigInt(0));
             state.balanceUsdc = stringifyBigInt(BigInt(0));
             state.isAccountSwitchListenerConnected = false;
-            state.isNetworkChangedListenerConnected = false;
+            state.isChainChangedListenerConnected = false;
         }
     },
 });
@@ -74,7 +74,7 @@ export const {
     setBalanceEth, 
     setBalanceUsdc,
     setAccountSwitchListenerConnected,
-    setNetworkChangedListenerConnected,
+    setChainChangedListenerConnected,
     resetAccount,
 } = accountSlice.actions;
 

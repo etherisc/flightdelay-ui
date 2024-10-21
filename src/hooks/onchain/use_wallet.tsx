@@ -5,7 +5,7 @@ import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSnackbarErrorMessage } from "../../redux/slices/common";
 import { resetPolicies } from "../../redux/slices/policies";
-import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setConnected, setConnecting, setExpectedChain, setNetworkChangedListenerConnected } from "../../redux/slices/wallet";
+import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setChainChangedListenerConnected, setConnected, setConnecting, setExpectedChain } from "../../redux/slices/wallet";
 import { RootState } from "../../redux/store";
 import { stringifyBigInt } from "../../utils/bigint";
 import { chainId } from "../../utils/chain";
@@ -24,7 +24,7 @@ export function useWallet() {
         NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_SYMBOL,
         NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_DECIMALS,
     } = useEnvContext();
-    const { isAccountSwitchListenerConnected, isNetworkChangedListenerConnected, isConnected } = useSelector((state: RootState) => (state.wallet));
+    const { isAccountSwitchListenerConnected, isChainChangedListenerConnected, isConnected } = useSelector((state: RootState) => (state.wallet));
     const { trackEvent } = useAnalytics();
 
     const canAddNetwork = NEXT_PUBLIC_EXPECTED_CHAIN_ID !== undefined 
@@ -203,21 +203,21 @@ export function useWallet() {
         await connectWallet();
     }, [connectWallet]);
 
-    const networkChanged = useCallback(async (networkId: string) => {
-        console.log("networkChanged", networkId);
+    const chainChanged = useCallback(async (networkId: string) => {
+        console.log("chainChanged", networkId);
         await connectWallet();
     }, [connectWallet]);
 
     useEffect(() => {
-        if (! isNetworkChangedListenerConnected) {
+        if (! isChainChangedListenerConnected) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             if (window.ethereum !== undefined) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                window.ethereum.on('networkChanged', networkChanged);
+                window.ethereum.on('chainChanged', chainChanged);
             }
-            dispatch(setNetworkChangedListenerConnected(true));
+            dispatch(setChainChangedListenerConnected(true));
         }
 
         if (! isAccountSwitchListenerConnected) {
@@ -232,7 +232,7 @@ export function useWallet() {
             dispatch(setAccountSwitchListenerConnected(true));            
         }
 
-    }, [isAccountSwitchListenerConnected, isNetworkChangedListenerConnected, dispatch, accountChanged, networkChanged]);
+    }, [isAccountSwitchListenerConnected, isChainChangedListenerConnected, dispatch, accountChanged, chainChanged]);
 
     return { 
         connectWallet, 
