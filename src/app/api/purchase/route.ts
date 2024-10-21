@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 }
 
 async function hasBalance(signer: Signer) {
-    const minBalance = parseUnits(process.env.APPLICATION_SENDER_MIN_BALANCE! || "1", "wei");
+    const minBalance = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
     if (! await checkSignerBalance(signer, minBalance)) {
         throw new Error("BALANCE_ERROR");
     }

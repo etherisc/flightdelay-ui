@@ -17,9 +17,12 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL`: The symbol of the premium token
 - `NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS`: The number of decimals of the premium token
 
-
 - `NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS`: The address of the product contract 
 - `NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS`: The address of the flight oracle contract
+- `STATISTICS_PROVIDER_MIN_BALANCE`: The minimum balance of the statistics provider. If the balance is below this value, the provider will not be able to create new policies and the readiness check will fail.
+- `STATISTICS_PROVIDER_MNEMONIC`: The mnemonic of the statistics provider. This account is used to create the policies. 
+- `STATUS_PROVIDER_MIN_BALANCE`: The minimum balance of the status provider. If the balance is below this value, the provider will not be able to send oracle responses and the readiness check will fail.
+- `STATUS_PROVIDER_MNEMONIC`: The mnemonic of the status provider. This account is used to send the oracle response transactions. 
 
 - `ORACLE_ARRIVAL_CHECK_DELAY_SECONDS`: The delay in seconds for the oracle to check the arrival status after the exected arrival time
 - `GAS_LIMIT`: The gas limit for oracle responses (defaults to `5000000`)

@@ -363,7 +363,7 @@ async function processPayoutsAndClosePolicies(reqId: string, flightProduct: Flig
 
 
 async function hasBalance(signer: Signer) {
-    const minBalance = parseUnits(process.env.ORACLE_MIN_BALANCE! || "1", "wei");
+    const minBalance = parseUnits(process.env.STATUS_PROVIDER_MIN_BALANCE! || "1", "wei");
     if (! await checkSignerBalance(signer, minBalance)) {
         throw new Error("BALANCE_ERROR");
     }

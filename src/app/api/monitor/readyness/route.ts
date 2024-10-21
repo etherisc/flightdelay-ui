@@ -2,7 +2,7 @@ import { parseUnits } from "ethers";
 import { checkSignerBalance, getApplicationSenderSigner, getOracleSigner } from "../../_utils/chain";
 
 export async function GET() {
-    if (process.env.RPC_NODE_URL === undefined || process.env.APPLICATION_SENDER_MNEMONIC === undefined || process.env.ORACLE_MNEMONIC === undefined) {
+    if (process.env.RPC_NODE_URL === undefined || process.env.STATISTICS_PROVIDER_MNEMONIC === undefined || process.env.STATUS_PROVIDER_MNEMONIC === undefined) {
         return Response.json({
             error: "missing configuration"
         }, { status: 500 });
@@ -12,8 +12,8 @@ export async function GET() {
     const applicationSigner = await getApplicationSenderSigner();
     const oracleSigner = await getOracleSigner();
     
-    const minBalanceApplication = parseUnits(process.env.APPLICATION_SENDER_MIN_BALANCE! || "1", "wei");
-    const minBalanceOracle = parseUnits(process.env.ORACLE_MIN_BALANCE! || "1", "wei");
+    const minBalanceApplication = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
+    const minBalanceOracle = parseUnits(process.env.STATUS_PROVIDER_MIN_BALANCE! || "1", "wei");
 
     const applicationSignerHasBalance = await checkSignerBalance(applicationSigner, minBalanceApplication);
     const oracleSignerHasBalance = await checkSignerBalance(oracleSigner, minBalanceOracle);
