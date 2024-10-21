@@ -13,6 +13,7 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted arrival airports
 - `PREMIUM`: Set the premium in wei
 - `NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS`: The address of the ERC20 token contract to pay the premium with
+- `NEXT_PUBLIC_ERC20_TOKEN_VERSION`: Token version, default is "1", needs to be set to "2" for USDC on Base
 - `NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL`: The symbol of the premium token
 - `NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS`: The number of decimals of the premium token
 
@@ -72,4 +73,3 @@ Via container created by executing
 docker build -t flightdelay-ui-webapp .
 ```
 **Important**: This project requires a fontawesome pro license. Please set your auth token in the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
-

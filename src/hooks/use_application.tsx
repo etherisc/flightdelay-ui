@@ -16,7 +16,7 @@ import { useWallet } from "./onchain/use_wallet";
 
 export default function useApplication() {
     const { t } = useTranslation();
-    const { NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS } = useEnvContext();
+    const { NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_ERC20_TOKEN_VERSION, NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS } = useEnvContext();
 
     const { getSigner } = useWallet();
     const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, parseInt(NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS || '6'));
@@ -114,7 +114,7 @@ export default function useApplication() {
                 result = await checkPurchaseCompleted(tx);
                 if (result.policyNftId === "0") {
                     console.log("waiting for policy creation");
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             } while (result.policyNftId === "0");
 
@@ -160,7 +160,7 @@ export default function useApplication() {
         // set the domain parameters
         const domain = {
             name,
-            version: "1",
+            version: NEXT_PUBLIC_ERC20_TOKEN_VERSION ?? "1",
             chainId,
             verifyingContract: NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS
         };

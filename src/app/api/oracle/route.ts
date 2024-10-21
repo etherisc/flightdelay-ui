@@ -1,18 +1,19 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { decodeBytes32String, getNumber, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
+import { getNumber, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IBundleService__factory, IInstance__factory, InstanceReader, InstanceReader__factory, IOracleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../contracts/gif";
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
+import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
+import { decodeOzShortString } from "../../../utils/oz_shortstring";
 import { FLIGHTSTATS_BASE_URL, GAS_LIMIT, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getOracleSigner, getTxOpts } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
-import { getFieldFromLogs } from "../../../utils/chain";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -178,16 +179,18 @@ async function readFlightRisk(instanceReader: InstanceReader, flightProduct: Fli
     const riskInfo = await instanceReader.getRiskInfo(requestData.riskId);
     // LOGGER.debug(JSON.stringify(riskInfo));
     const risk = await flightProduct.decodeFlightRiskData(riskInfo.data);
-    const flightPlan = decodeBytes32String(risk.flightData).trim();
-    // LOGGER.debug(JSON.stringify(risk));
+    LOGGER.debug(JSON.stringify(risk.flightData));
+    const flightPlan = decodeOzShortString(risk.flightData).trim();
+    // const flightPlan = (await instanceReader.toString(risk.flightData)).trim();
     return { riskId: requestData.riskId, risk, flightPlan };
 }
 
 async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.FlightRiskStruct): 
     Promise<{ status: string, delay: number | undefined}> 
 {
-    const x = decodeBytes32String(flightRisk.flightData);
-    // LOGGER.debug(`[${reqId}] flight data: ${x}`);
+    LOGGER.debug(`[${reqId}] flight data: ${flightRisk.flightData}`);
+    const x = decodeOzShortString(flightRisk.flightData);
+    LOGGER.debug(`[${reqId}] flight data decoded: ${x}`);
     const flightPlan = x.trim().split(" ");
     const carrier = flightPlan[0];
     const flightNumber = flightPlan[1];

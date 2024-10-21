@@ -1,4 +1,4 @@
-import { BytesLike, decodeBytes32String, getNumber, hexlify, toUtf8String } from "ethers";
+import { BytesLike, getNumber, hexlify, toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ import { useERC721Contract } from "./onchain/use_erc721_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { useInstanceReaderContract } from "./onchain/use_instance_reader";
 import { useRegistryContract } from "./onchain/use_registry_contract";
+import { decodeOzShortString } from "../utils/oz_shortstring";
 
 const NFT_ID_TYPE_POLICY = BigInt(21);
 
@@ -79,7 +80,7 @@ export function useMyPolicies() {
 
     async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
         const flightRiskData = await decodeRiskData(info.data);
-        const flightDataTokens = decodeBytes32String(flightRiskData.flightData).split(" ");
+        const flightDataTokens = decodeOzShortString(flightRiskData.flightData).split(" ");
         console.log("converting risk data", riskId, flightDataTokens, flightRiskData);
         const departureTimeLocal = toUtf8String(flightRiskData.departureTimeLocal);
         const arrivalTimeLocal = toUtf8String(flightRiskData.arrivalTimeLocal);
