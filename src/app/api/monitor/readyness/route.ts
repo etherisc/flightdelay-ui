@@ -1,5 +1,5 @@
 import { parseUnits } from "ethers";
-import { checkSignerBalance, getApplicationSenderSigner, getOracleSigner } from "../../_utils/chain";
+import { checkSignerBalance, getStatisticsProviderSigner, getStatusProviderSigner } from "../../_utils/chain";
 
 export async function GET() {
     if (process.env.RPC_NODE_URL === undefined || process.env.STATISTICS_PROVIDER_MNEMONIC === undefined || process.env.STATUS_PROVIDER_MNEMONIC === undefined) {
@@ -9,8 +9,8 @@ export async function GET() {
     }
     
     // check min amounts for application and oracle signers
-    const applicationSigner = await getApplicationSenderSigner();
-    const oracleSigner = await getOracleSigner();
+    const applicationSigner = await getStatisticsProviderSigner();
+    const oracleSigner = await getStatusProviderSigner();
     
     const minBalanceApplication = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
     const minBalanceOracle = parseUnits(process.env.STATUS_PROVIDER_MIN_BALANCE! || "1", "wei");

@@ -8,17 +8,17 @@ export async function getBackendVoidSigner(): Promise<Signer> {
     return new ethers.VoidSigner("0x0000000000000000000000000000000000000000", provider);
 }
 
-export async function getApplicationSenderSigner(): Promise<Signer> {
+export async function getStatisticsProviderSigner(): Promise<Signer> {
     const provider = new JsonRpcProvider(process.env.RPC_NODE_URL);
     const signer = Wallet.fromPhrase(process.env.STATISTICS_PROVIDER_MNEMONIC || "").connect(provider);
-    LOGGER.debug(`getApplicationSenderSigner ${signer.address}`);
+    LOGGER.debug(`getStatisticsProviderSigner ${signer.address}`);
     return signer;
 }
 
-export async function getOracleSigner(): Promise<Signer> {
+export async function getStatusProviderSigner(): Promise<Signer> {
     const provider = new JsonRpcProvider(process.env.RPC_NODE_URL);
     const signer = Wallet.fromPhrase(process.env.STATUS_PROVIDER_MNEMONIC || "").connect(provider);
-    LOGGER.debug(`getOracleSigner ${signer.address}`);
+    LOGGER.debug(`getStatusProviderSigner ${signer.address}`);
     return signer;
 }
 

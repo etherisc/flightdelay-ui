@@ -12,7 +12,7 @@ import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
 import { decodeOzShortString } from "../../../utils/oz_shortstring";
 import { FLIGHTSTATS_BASE_URL, GAS_LIMIT, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
-import { checkSignerBalance, getOracleSigner, getTxOpts } from "../_utils/chain";
+import { checkSignerBalance, getStatusProviderSigner, getTxOpts } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 
 // @ts-expect-error BigInt is not defined in the global scope
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const reqId = nanoid();
     LOGGER.debug(`[${reqId}] oracle execution requested`);
 
-    const signer = await getOracleSigner();
+    const signer = await getStatusProviderSigner();
     try {
         await hasBalance(signer);
 
