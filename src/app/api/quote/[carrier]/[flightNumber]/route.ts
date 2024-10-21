@@ -4,8 +4,8 @@ import { FlightProduct__factory } from "../../../../../contracts/flight";
 import { PayoutAmounts } from "../../../../../redux/slices/flightData";
 import { Rating } from "../../../../../types/flightstats/rating";
 import { LOGGER } from "../../../../../utils/logger_backend";
-import { getBackendVoidSigner } from "../../../_utils/chain";
 import { FLIGHTSTATS_BASE_URL, PREMIUM } from "../../../_utils/api_constants";
+import { getBackendVoidSigner } from "../../../_utils/chain";
 import { sendRequestAndReturnResponse } from "../../../_utils/proxy";
 
 // @ts-expect-error BigInt is not defined in the global scope
@@ -31,8 +31,19 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
         return Response.json({ error: 'No rating data found' }, { status: 404 });
     }
     
-    // calculate payout amounts via smart contract call
-    const payouts = await calculatePayoutAmounts(reqId, premium, rating);
+    let payouts = {
+        delayed: BigInt(0),
+        cancelled: BigInt(0),
+        diverted: BigInt(0)
+    } as PayoutAmounts;
+
+    try {
+        // calculate payout amounts via smart contract call
+        payouts = await calculatePayoutAmounts(reqId, premium, rating);
+    } catch (err) {
+        LOGGER.error(`[${reqId}] Error calculating payout amounts: ${err}`);
+        return Response.json({ error: 'calculation of payout amounts failed' }, { status: 404 });
+    }
 
     return Response.json({
         premium, 
