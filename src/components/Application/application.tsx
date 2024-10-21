@@ -11,13 +11,14 @@ import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
 import { setAirportWhitelist } from "../../redux/slices/flightData";
 import { RootState } from "../../redux/store";
+import { Reason } from "../../types/errors";
 import { formatAmount } from "../../utils/amount";
+import { logOnBackend } from "../../utils/logger";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import ApplicationForm from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseSuccess from "./purchase_success";
-import { Reason } from "../../types/errors";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -36,6 +37,8 @@ export default function Application() {
     // prepare data
     const departureAirport = flightDataState.departureAirport;
     const arrivalAirport = flightDataState.arrivalAirport;
+    const carrier = flightDataState.carrier;
+    const flightNumber = flightDataState.flightNumber;
     const isDepartureAirportWhiteListed = flightDataState.departureAirport?.whitelisted || false;
     const isArrivalAirportWhiteListed = flightDataState.arrivalAirport?.whitelisted || false;
     const loadingFlightData = flightDataState.loading;
@@ -61,6 +64,13 @@ export default function Application() {
             flightDataRef.current?.scrollIntoView({ behavior: "smooth" });
         }
     }, [flightFound]);
+
+    useEffect(() => {
+        if ((departureAirport?.iata !== null && departureAirport?.whitelisted === false) && (arrivalAirport?.iata !== null && arrivalAirport?.whitelisted === false)) {
+            logOnBackend(`Airport not whitelisted - ${carrier} ${flightNumber} ${departureAirport?.iata} - ${arrivalAirport?.iata}`);
+        }
+    }, [departureAirport, arrivalAirport, carrier, flightNumber]);
+
     
     let error = <></>;
 

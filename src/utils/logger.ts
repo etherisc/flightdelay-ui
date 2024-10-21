@@ -18,3 +18,22 @@ export async function logErrorOnBackend(message: string, stackToSubmit?: unknown
     });
 }
 
+export async function logOnBackend(message: string) {
+    console.log(message);
+    const body = JSON.stringify({
+        message: message,
+        client_timestamp : Math.floor(Date.now()),
+    });
+    if (process.env.SUPPRESS_BACKEND_LOGS?.toLowerCase() === 'true') {
+        return;
+    }
+    await fetch('/api/clientLog', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body
+    });
+}
+
+
