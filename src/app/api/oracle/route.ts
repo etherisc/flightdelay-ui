@@ -1,19 +1,19 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { getNumber, hexlify, parseUnits, Signer, toUtf8Bytes, toUtf8String } from "ethers";
-import type { BytesLike, } from "ethers";
+import { getNumber, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IBundleService__factory, IInstance__factory, InstanceReader, InstanceReader__factory, IOracleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../contracts/gif";
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
+import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
+import { decodeOzShortString } from "../../../utils/oz_shortstring";
 import { FLIGHTSTATS_BASE_URL, GAS_LIMIT, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getOracleSigner, getTxOpts } from "../_utils/chain";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
-import { getFieldFromLogs } from "../../../utils/chain";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -170,42 +170,6 @@ async function processOracleRequest(
             throw new Error("FLIGHT_STATUS_UNKNOWN");
     }
 }
-
-
-function getBytes(value: BytesLike): Uint8Array {
-    if (value instanceof Uint8Array) {
-        return value;
-    }
-
-    if (typeof(value) === "string" && value.match(/^0x(?:[0-9a-f][0-9a-f])*$/i)) {
-        const result = new Uint8Array((value.length - 2) / 2);
-        let offset = 2;
-        for (let i = 0; i < result.length; i++) {
-            result[i] = parseInt(value.substring(offset, offset + 2), 16);
-            offset += 2;
-        }
-        return result;
-    }
-
-    return new Uint8Array(0);
-}
-
-
-/**
- *  Encodes the Bytes32-encoded %%bytes%% into a string.
- */
-function decodeOzShortString(_bytes: BytesLike): string {
-    const data = getBytes(_bytes);
-
-    // Must be 32 bytes with a null-termination
-    if (data.length !== 32) { throw new Error("invalid short string - not 32 bytes long"); }
-
-    const length = data[31];
-
-    // Determine the string value
-    return toUtf8String(data.slice(0, length));
-}
-
 
 async function readFlightRisk(instanceReader: InstanceReader, flightProduct: FlightProduct, flightOracle: FlightOracle, requestId: bigint): Promise<{ riskId: string, risk: FlightProduct.FlightRiskStruct, flightPlan: string}> {
     const requestInfo = await instanceReader.getRequestInfo(requestId);
