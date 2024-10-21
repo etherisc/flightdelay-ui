@@ -202,7 +202,7 @@ export default function useApplication() {
             spender,
             value: amount,
             nonce,
-            deadline: deadline * 1000,
+            deadline,
         };
     
         // sign the Permit type data with the deployer's private key
