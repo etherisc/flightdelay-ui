@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Dialog, Link, Slide, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Box, Dialog, IconButton, Link, Menu, MenuItem, Slide, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { TransitionProps } from "@mui/material/transitions";
 import Image from "next/image";
@@ -12,14 +12,29 @@ import { RootState } from "../../redux/store";
 import Trans from "../Trans/trans";
 import ConnectButton from "./connect_button";
 import Wallet from "./wallet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 export default function TopBar() {
     const isConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const address = useSelector((state: RootState) => (state.wallet.address));
     const [ showWallet, setShowWallet ] = useState(false);
+    const [ showMenu, setShowMenu ] = useState(false);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     function toggleWallet() {
         setShowWallet(! showWallet);
+    }
+
+    function toggleMenu(event: React.MouseEvent<HTMLElement>) {
+        setShowMenu(! showMenu);
+        setAnchorEl(showMenu ? null : event.currentTarget);
+    }
+
+    function goto(path: string) {
+        return () => {
+            window.location.href = path;
+        }
     }
 
     let wallet = null;
@@ -30,7 +45,31 @@ export default function TopBar() {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 4, mb: { xs: 0, md: 6} , backgroundColor: grey[200] }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, pl: { xs: 2, md: 4 }, pr: 4, mb: { xs: 0, md: 6} , backgroundColor: grey[200] }}>
+            <IconButton onClick={toggleMenu} sx={{ p: 0 }}>
+                <SvgIcon sx={{ mr: 1, display: { xs: 'block', md: 'none' } }} fontSize="small" color="primary">
+                    <FontAwesomeIcon icon={faBars} />
+                </SvgIcon>
+            </IconButton>
+            <Menu
+                sx={{ display: { xs: 'block', md: 'none' } }}
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={toggleMenu}
+                >
+                <MenuItem onClick={goto("/apply")}><Trans k="nav.apply" /></MenuItem>
+                <MenuItem onClick={goto("/policies")}><Trans k="nav.policies" /></MenuItem>
+            </Menu>
             <Image src="/assets/images/etherisc_logo_blue.svg" alt="Etherisc Logo" width={120} height="46"/>
             <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 2, display: { 'xs': 'none', 'md': 'inherit'} }} >
                 <Link href="/apply" color="inherit" sx={{ textDecoration: 'none' }}>
