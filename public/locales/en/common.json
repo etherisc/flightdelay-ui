@@ -74,6 +74,7 @@
         "switch_chain_first": "Please switch to the correct network before purchasing protection",
         "change_flight": "Please choose another flight to continue",
         "unknown_error": "An unknown error occurred. Please try again later.",
-        "user_rejected": "The transaction was cancelled"
+        "user_rejected": "The transaction was cancelled",
+        "not_enough_data": "Currently there is not enough data available to provide protection for this flight. Please try again in the future."
     }
 }

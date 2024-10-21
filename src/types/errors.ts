@@ -5,6 +5,7 @@ export enum Reason {
     COMM_ERROR,
     NO_FLIGHT_FOUND,
     INCONSISTENT_DATA,
+    NOT_ENOUGH_DATA_FOR_QUOTE,
 }
 
 /**

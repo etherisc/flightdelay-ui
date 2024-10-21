@@ -17,6 +17,7 @@ import Trans from "../Trans/trans";
 import ApplicationForm from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseSuccess from "./purchase_success";
+import { Reason } from "../../types/errors";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -57,9 +58,18 @@ export default function Application() {
     let error = <></>;
 
     if (errorReasonApi !== null) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
-        </Box>;
+        switch(errorReasonApi) {
+            case Reason.NOT_ENOUGH_DATA_FOR_QUOTE:
+                error = <Box sx={{ py: 2 }}>
+                    <Alert severity="error"><Trans k="error.not_enough_data" /></Alert>
+                </Box>;
+                break;
+            default:
+                error = <Box sx={{ py: 2 }}>
+                    <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
+                </Box>;
+        }
+        
     } else if (errorMessage !== null) {
         error = <Box sx={{ py: 2 }}>
             <Alert severity={errorLevel as AlertColor || 'error'}>{errorMessage}</Alert>

@@ -70,6 +70,7 @@ async function fetchFlightstatsRating(reqId: string, carrier: string, flightNumb
     const jsonResponse = await response.json();
 
     if (jsonResponse.ratings === undefined || jsonResponse.ratings.length === 0) {
+        LOGGER.warn(`[${reqId}] No rating data found for ${carrier} ${flightNumber}`);
         return null;
     }
 

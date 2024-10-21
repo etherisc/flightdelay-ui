@@ -37,6 +37,7 @@ export default function useApplication() {
     const arrivalTimeLocal = useSelector((state: RootState) => state.flightData.arrivalTime);
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
     const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
+    const errorReasonApi = useSelector((state: RootState) => state.flightData.errorReasonApi);
     
     async function purchaseProtection() {
         dispatch(resetErrors());
@@ -44,6 +45,7 @@ export default function useApplication() {
         // do nothing, just log for now
 
         const canPurchase = isExpectedChain 
+            && errorReasonApi === null
             && departureAirport !== null 
             && isDepartureAirportWhiteListed 
             && isArrivalAirportWhiteListed 
@@ -53,7 +55,7 @@ export default function useApplication() {
         if (!canPurchase) {
             if (! isExpectedChain) {
                 dispatch(setError({ message: t("error.switch_chain_first"), level: "error" }));
-            } else if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
+            } else if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed  || errorReasonApi !== null) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
             } else {
                 dispatch(setError({ message: t("error.purchase_protection_not_possible"), level: "error" }));

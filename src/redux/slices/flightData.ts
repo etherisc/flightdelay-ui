@@ -147,12 +147,19 @@ export const flightDataSlice = createSlice({
             state.loadingQuote = true;
         });
         builder.addCase(fetchQuote.fulfilled, (state, action) => {
+            state.loadingQuote = false;
             const { response } = action.payload;
             if (state.carrier !== response.carrier || state.flightNumber !== response.flightNumber) {
                 // this is a quote for a different flight, ignore it
                 return;
             }
-            state.loadingQuote = false;
+            if (response.error !== undefined) {
+                state.errorReasonApi = response.error;
+                state.errorLevel = 'warning';
+                state.premium = 0;
+                state.ontime = 0;
+                return;
+            }
             state.premium = response.premium;
             state.ontime = response.ontimepercent;
             state.payoutAmounts = response.payouts;
