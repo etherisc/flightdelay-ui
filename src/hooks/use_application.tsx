@@ -47,8 +47,7 @@ export default function useApplication() {
         const canPurchase = isExpectedChain 
             && errorReasonApi === null
             && departureAirport !== null 
-            && isDepartureAirportWhiteListed 
-            && isArrivalAirportWhiteListed 
+            && ( isDepartureAirportWhiteListed || isArrivalAirportWhiteListed )
             && premium !== null;
 
         // 0. Check if purchase is possible (blacklisted airports, etc.)
