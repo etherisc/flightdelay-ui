@@ -4,7 +4,7 @@ import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, Cir
 import { grey } from "@mui/material/colors";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "../../hooks/onchain/use_wallet";
@@ -47,6 +47,8 @@ export default function Application() {
     const errorLevel = useSelector((state: RootState) => state.flightData.errorLevel);
     const errorReasonApi = useSelector((state: RootState) => state.flightData.errorReasonApi);
 
+    const flightDataRef = useRef(null);
+
     useEffect(() => {
         const depatureWhitelistRaw = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST?.trim() ?? '';
         const arrivalWhitelistRaw = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST?.trim() ?? '';
@@ -54,6 +56,13 @@ export default function Application() {
         const arrivalAirportWhitelist = arrivalWhitelistRaw !== '' ? arrivalWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
         dispatch(setAirportWhitelist({ departure: departureAirportWhitelist, arrival: arrivalAirportWhitelist}));
     }, [NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST, dispatch]);
+
+    useEffect(() => {
+        if (flightFound) {
+            // @ts-expect-error: scrollIntoView is a valid function
+            flightDataRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [flightFound]);
     
     let error = <></>;
 
@@ -96,7 +105,7 @@ export default function Application() {
     }
 
     let button = <Button color="primary" fullwidth onClick={connectWallet}>
-        <SvgIcon sx={{ mr: 1 }} fontSize="small">
+        <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
             <FontAwesomeIcon icon={faWallet} />
         </SvgIcon>
         <Trans k="action.connect" />
@@ -104,7 +113,7 @@ export default function Application() {
     if (walletIsConnected) {
         const buttonText = isSmallScreen ? t('action.purchase_short') : t('action.purchase');
         button = <Button color="primary" fullwidth onClick={purchaseProtection} disabled={purchaseSuccessful}>
-            <SvgIcon sx={{ mr: 1 }} fontSize="small">
+            <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
                 <FontAwesomeIcon icon={faCartShopping} />
             </SvgIcon>
             {buttonText}
