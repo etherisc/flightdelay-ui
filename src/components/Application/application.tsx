@@ -24,7 +24,7 @@ export default function Application() {
     const { t } = useTranslation();
     const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
-    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
+    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
     const dispatch = useDispatch();
     const { purchaseProtection } = useApplication();
 
@@ -41,6 +41,8 @@ export default function Application() {
     const flightNumber = flightDataState.flightNumber;
     const isDepartureAirportWhiteListed = flightDataState.departureAirport?.whitelisted || false;
     const isArrivalAirportWhiteListed = flightDataState.arrivalAirport?.whitelisted || false;
+    const isDepartureAirportBlackListed = flightDataState.departureAirport?.blacklisted || false;
+    const isArrivalAirportBlackListed = flightDataState.arrivalAirport?.blacklisted || false;
     const loadingFlightData = flightDataState.loading;
     const loadingQuote = flightDataState.loadingQuote;
     const flightFound = ! flightDataState.loading && !flightDataState.loadingQuote && flightDataState.arrivalAirport !== null && flightDataState.premium !== null;
@@ -55,8 +57,10 @@ export default function Application() {
     useEffect(() => {
         const airportsWhitelistRaw = NEXT_PUBLIC_AIRPORTS_WHITELIST?.trim() ?? '';
         const airportsWhitelist = airportsWhitelistRaw !== '' ? airportsWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
-        dispatch(setAirportWhitelist(airportsWhitelist));
-    }, [NEXT_PUBLIC_AIRPORTS_WHITELIST, dispatch]);
+        const airportsBlacklistRaw = NEXT_PUBLIC_AIRPORTS_BLACKLIST?.trim() ?? '';
+        const airportsBlacklist = airportsBlacklistRaw !== '' ? airportsBlacklistRaw.split(',').map((airport) => airport.trim()) : [];
+        dispatch(setAirportWhitelist({ airportsWhitelist, airportsBlacklist }));
+    }, [NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, dispatch]);
 
     useEffect(() => {
         if (flightFound) {
@@ -68,6 +72,9 @@ export default function Application() {
     useEffect(() => {
         if ((departureAirport?.iata !== null && departureAirport?.whitelisted === false) && (arrivalAirport?.iata !== null && arrivalAirport?.whitelisted === false)) {
             logOnBackend(`Airport not whitelisted - ${carrier} ${flightNumber} ${departureAirport?.iata} - ${arrivalAirport?.iata}`);
+        }
+        if ((departureAirport?.iata !== null && departureAirport?.blacklisted === true) || (arrivalAirport?.iata !== null && arrivalAirport?.blacklisted === true)) {
+            logOnBackend(`Airport blacklisted - ${carrier} ${flightNumber} ${departureAirport?.iata} - ${arrivalAirport?.iata}`);
         }
     }, [departureAirport, arrivalAirport, carrier, flightNumber]);
 
@@ -90,6 +97,14 @@ export default function Application() {
     } else if (errorMessage !== null) {
         error = <Box sx={{ py: 2 }}>
             <Alert severity={errorLevel as AlertColor || 'error'}>{errorMessage}</Alert>
+        </Box>;
+    } else if (flightFound && isDepartureAirportBlackListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error"><Trans k="error.airport_blacklisted" values={{ airport: departureAirport?.iata }} /></Alert>
+        </Box>;
+    } else if (flightFound && isArrivalAirportBlackListed) {
+        error = <Box sx={{ py: 2 }}>
+            <Alert severity="error"><Trans k="error.airport_blacklisted" values={{ airport: arrivalAirport?.iata }} /></Alert>
         </Box>;
     } else if (flightFound && ! isDepartureAirportWhiteListed && ! isArrivalAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>

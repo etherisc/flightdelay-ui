@@ -29,6 +29,8 @@ export default function useApplication() {
     const arrivalAirport = useSelector((state: RootState) => state.flightData.arrivalAirport);
     const isDepartureAirportWhiteListed = useSelector((state: RootState) => state.flightData.departureAirport?.whitelisted || false);
     const isArrivalAirportWhiteListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.whitelisted || false);
+    const isDepartureAirportBlackListed = useSelector((state: RootState) => state.flightData.departureAirport?.blacklisted || false);
+    const isArrivalAirportBlackListed = useSelector((state: RootState) => state.flightData.arrivalAirport?.blacklisted || false);
     const premium = useSelector((state: RootState) => state.flightData.premium);
     const statistics = useSelector((state: RootState) => state.flightData.statistics);
     const departureDateUTC = useSelector((state: RootState) => state.flightData.departureTimeUTC);
@@ -48,13 +50,14 @@ export default function useApplication() {
             && errorReasonApi === null
             && departureAirport !== null 
             && ( isDepartureAirportWhiteListed || isArrivalAirportWhiteListed )
+            && ! isDepartureAirportBlackListed && ! isArrivalAirportBlackListed
             && premium !== null;
 
         // 0. Check if purchase is possible (blacklisted airports, etc.)
         if (!canPurchase) {
             if (! isExpectedChain) {
                 dispatch(setError({ message: t("error.switch_chain_first"), level: "error" }));
-            } else if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed  || errorReasonApi !== null) {
+            } else if (isDepartureAirportBlackListed || isArrivalAirportBlackListed || ! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed  || errorReasonApi !== null) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
             } else {
                 dispatch(setError({ message: t("error.purchase_protection_not_possible"), level: "error" }));

@@ -10,6 +10,7 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS`: The minimum number of days in the future for the departure date
 - `NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS`: The maximum number of days in the future for the departure date
 - `NEXT_PUBLIC_AIRPORTS_WHITELIST`: A comma-separated list of airport codes of whitelisted airports. At least the departure or the arrival airport must be in this list.
+- `NEXT_PUBLIC_AIRPORTS_BLACKLIST`: A comma-separated list of airport codes of blacklisted airports. If the departure or the arrival airport is in this list, no policy can be created.
 - `PREMIUM`: Set the premium in wei
 - `NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS`: The address of the ERC20 token contract to pay the premium with
 - `NEXT_PUBLIC_ERC20_TOKEN_VERSION`: Token version, default is "1", needs to be set to "2" for USDC on Base

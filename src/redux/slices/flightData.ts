@@ -15,6 +15,7 @@ export interface FlightDataState {
     departureAirport: Airport | null;
     arrivalAirport: Airport | null;
     airportsWhitelist: string[];
+    airportsBlacklist: string[];
     departureTime: string | null;
     departureTimeUTC: string | null;
     arrivalTime: string | null;
@@ -40,6 +41,7 @@ export interface Airport {
     utcOffsetHours: number;
     timeZoneRegionName: string;
     whitelisted: boolean;
+    blacklisted: boolean;
 }
 
 export interface PayoutAmounts {
@@ -58,6 +60,7 @@ const initialState: FlightDataState = {
     departureAirport: null,
     arrivalAirport: null,
     airportsWhitelist: [],
+    airportsBlacklist: [],
     departureTime: null,
     departureTimeUTC: null,
     arrivalTime: null,
@@ -79,8 +82,9 @@ export const flightDataSlice = createSlice({
     name: 'flightData',
     initialState,
     reducers: {
-        setAirportWhitelist(state, action: PayloadAction<string[]>) {
-            state.airportsWhitelist = action.payload;
+        setAirportWhitelist(state, action: PayloadAction<{ airportsWhitelist: string[], airportsBlacklist: string[]}>) {
+            state.airportsWhitelist = action.payload.airportsWhitelist;
+            state.airportsBlacklist = action.payload.airportsBlacklist;
         },
         setFlight(state, action: PayloadAction<{carrier: string, flightNumber: string; departureDate: string}>) {
             state.carrier = action.payload.carrier;
@@ -126,8 +130,8 @@ export const flightDataSlice = createSlice({
             } else if (response.flights.length > 1) {
                 state.errorReasonApi = Reason.INCONSISTENT_DATA;
             } else {
-                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.airportsWhitelist);
-                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.airportsWhitelist);
+                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.airportsWhitelist, state.airportsBlacklist);
+                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.airportsWhitelist, state.airportsBlacklist);
                 state.departureTime = response.flights[0].departureTime;
                 state.departureTimeUTC = adjustToUtc(response.flights[0].departureTime, state.departureAirport.timeZoneRegionName);
                 state.arrivalTime = response.flights[0].arrivalTime;
@@ -171,7 +175,7 @@ export const flightDataSlice = createSlice({
     },
 });
 
-function extractAirportData(airportFsCode: string, airports: FsAirport[], whitelist: string[]): Airport {
+function extractAirportData(airportFsCode: string, airports: FsAirport[], whitelist: string[], blacklist: string[]): Airport {
     const ap = airports.find((a) => a.fs === airportFsCode);
     if (ap === undefined) {
         return {
@@ -182,6 +186,7 @@ function extractAirportData(airportFsCode: string, airports: FsAirport[], whitel
             utcOffsetHours: 0,
             timeZoneRegionName: '',
             whitelisted: false,
+            blacklisted: false,
         } as Airport;
     }
     return {
@@ -192,6 +197,7 @@ function extractAirportData(airportFsCode: string, airports: FsAirport[], whitel
         utcOffsetHours: ap?.utcOffsetHours || 0,
         timeZoneRegionName: ap?.timeZoneRegionName || '',
         whitelisted: whitelist.length > 0 ? whitelist.includes(ap?.iata) : true,
+        blacklisted: blacklist.length > 0 ? blacklist.includes(ap?.iata) : false,
     } as Airport;
 }
 
