@@ -23,7 +23,7 @@ export default function Application() {
     const { t } = useTranslation();
     const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
-    const { NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
+    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
     const dispatch = useDispatch();
     const { purchaseProtection } = useApplication();
 
@@ -50,12 +50,10 @@ export default function Application() {
     const flightDataRef = useRef(null);
 
     useEffect(() => {
-        const depatureWhitelistRaw = NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST?.trim() ?? '';
-        const arrivalWhitelistRaw = NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST?.trim() ?? '';
-        const departureAirportWhitelist = depatureWhitelistRaw !== '' ? depatureWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
-        const arrivalAirportWhitelist = arrivalWhitelistRaw !== '' ? arrivalWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
-        dispatch(setAirportWhitelist({ departure: departureAirportWhitelist, arrival: arrivalAirportWhitelist}));
-    }, [NEXT_PUBLIC_DEPARTURE_AIRPORTS_WHITELIST, NEXT_PUBLIC_ARRIVAL_AIRPORTS_WHITELIST, dispatch]);
+        const airportsWhitelistRaw = NEXT_PUBLIC_AIRPORTS_WHITELIST?.trim() ?? '';
+        const airportsWhitelist = airportsWhitelistRaw !== '' ? airportsWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
+        dispatch(setAirportWhitelist(airportsWhitelist));
+    }, [NEXT_PUBLIC_AIRPORTS_WHITELIST, dispatch]);
 
     useEffect(() => {
         if (flightFound) {
@@ -83,15 +81,11 @@ export default function Application() {
         error = <Box sx={{ py: 2 }}>
             <Alert severity={errorLevel as AlertColor || 'error'}>{errorMessage}</Alert>
         </Box>;
-    } else if (flightFound && ! isDepartureAirportWhiteListed) {
+    } else if (flightFound && ! isDepartureAirportWhiteListed && ! isArrivalAirportWhiteListed) {
         error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.departure_airport_not_whitelisted" values={{ airport: departureAirport?.iata }} /></Alert>
+            <Alert severity="error"><Trans k="error.airport_not_whitelisted" values={{ dep: departureAirport?.iata, arr: arrivalAirport?.iata }} /></Alert>
         </Box>;
-    } else if (flightFound && ! isArrivalAirportWhiteListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error"><Trans k="error.arrival_airport_not_whitelisted" values={{ airport: arrivalAirport?.iata }} /></Alert>
-        </Box>;
-    } 
+    }
 
     let flightDataLoading = <></>;
     if (loadingFlightData || loadingQuote) {

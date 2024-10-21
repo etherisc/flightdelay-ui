@@ -14,8 +14,7 @@ export interface FlightDataState {
     departureDate: string | null;
     departureAirport: Airport | null;
     arrivalAirport: Airport | null;
-    departureAirportWhitelist: string[];
-    arrivalAirportWhitelist: string[];
+    airportsWhitelist: string[];
     departureTime: string | null;
     departureTimeUTC: string | null;
     arrivalTime: string | null;
@@ -58,8 +57,7 @@ const initialState: FlightDataState = {
     departureDate: null,
     departureAirport: null,
     arrivalAirport: null,
-    departureAirportWhitelist: [],
-    arrivalAirportWhitelist: [],
+    airportsWhitelist: [],
     departureTime: null,
     departureTimeUTC: null,
     arrivalTime: null,
@@ -81,9 +79,8 @@ export const flightDataSlice = createSlice({
     name: 'flightData',
     initialState,
     reducers: {
-        setAirportWhitelist(state, action: PayloadAction<{departure: string[], arrival: string[]}>) {
-            state.departureAirportWhitelist = action.payload.departure;
-            state.arrivalAirportWhitelist = action.payload.arrival;
+        setAirportWhitelist(state, action: PayloadAction<string[]>) {
+            state.airportsWhitelist = action.payload;
         },
         setFlight(state, action: PayloadAction<{carrier: string, flightNumber: string; departureDate: string}>) {
             state.carrier = action.payload.carrier;
@@ -129,8 +126,8 @@ export const flightDataSlice = createSlice({
             } else if (response.flights.length > 1) {
                 state.errorReasonApi = Reason.INCONSISTENT_DATA;
             } else {
-                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.departureAirportWhitelist);
-                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.arrivalAirportWhitelist);
+                state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.airportsWhitelist);
+                state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.airportsWhitelist);
                 state.departureTime = response.flights[0].departureTime;
                 state.departureTimeUTC = adjustToUtc(response.flights[0].departureTime, state.departureAirport.timeZoneRegionName);
                 state.arrivalTime = response.flights[0].arrivalTime;
