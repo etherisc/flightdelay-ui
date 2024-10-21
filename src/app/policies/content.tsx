@@ -27,14 +27,16 @@ export function Content() {
     const { fetchPolicies } = useMyPolicies();
     
     useEffect(() => {
-        reconnectWallet();
+        if (address === null) {
+            reconnectWallet();
+        }
         trackPageView("policies", "/policies");
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // fetch policies when address changes
     useEffect(() => {
-        if (address !== null) {
+        if (address !== null && policies.length === 0 && !loading) {
             fetchPolicies();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps

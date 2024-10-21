@@ -5,7 +5,7 @@ import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSnackbarErrorMessage } from "../../redux/slices/common";
 import { resetPolicies } from "../../redux/slices/policies";
-import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setConnected, setConnecting, setExpectedChain } from "../../redux/slices/wallet";
+import { resetAccount, setAccountSwitchListenerConnected, setAddress, setBalanceEth, setBalanceUsdc, setConnected, setConnecting, setExpectedChain, setNetworkChangedListenerConnected } from "../../redux/slices/wallet";
 import { RootState } from "../../redux/store";
 import { stringifyBigInt } from "../../utils/bigint";
 import { chainId } from "../../utils/chain";
@@ -24,7 +24,7 @@ export function useWallet() {
         NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_SYMBOL,
         NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_DECIMALS,
     } = useEnvContext();
-    const { isAccountSwitchListenerConnected } = useSelector((state: RootState) => (state.wallet));
+    const { isAccountSwitchListenerConnected, isNetworkChangedListenerConnected, isConnected } = useSelector((state: RootState) => (state.wallet));
     const { trackEvent } = useAnalytics();
 
     const canAddNetwork = NEXT_PUBLIC_EXPECTED_CHAIN_ID !== undefined 
@@ -132,6 +132,10 @@ export function useWallet() {
             return;
         }
 
+        if (isConnected) {
+            return;
+        }
+
         console.log("reconnectWallet");
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -205,28 +209,30 @@ export function useWallet() {
     }, [connectWallet]);
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (window.ethereum !== undefined) {
+        if (! isNetworkChangedListenerConnected) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            window.ethereum.on('networkChanged', networkChanged);
+            if (window.ethereum !== undefined) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                window.ethereum.on('networkChanged', networkChanged);
+            }
+            dispatch(setNetworkChangedListenerConnected(true));
         }
 
-        if (isAccountSwitchListenerConnected) {
-            return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (window.ethereum !== undefined && ! isAccountSwitchListenerConnected) {
+        if (! isAccountSwitchListenerConnected) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            window.ethereum.on('accountsChanged', accountChanged);
+            if (window.ethereum !== undefined) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                window.ethereum.on('accountsChanged', accountChanged);
+            }
+            // else case has no window.etherum, so we can't add the listener and therfor do as if it was connected
+            dispatch(setAccountSwitchListenerConnected(true));            
         }
-        // else case has no window.etherum, so we can't add the listener and therfor do as if it was connected
-        dispatch(setAccountSwitchListenerConnected(true));
-    }, [isAccountSwitchListenerConnected, dispatch, accountChanged, networkChanged]);
+
+    }, [isAccountSwitchListenerConnected, isNetworkChangedListenerConnected, dispatch, accountChanged, networkChanged]);
 
     return { 
         connectWallet, 
