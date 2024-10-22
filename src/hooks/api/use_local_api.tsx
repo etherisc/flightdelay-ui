@@ -54,9 +54,27 @@ export function useLocalApi() {
 
         return await res.json();
     }
+    
+    async function checkRiskpoolCapacity(): Promise<boolean> {
+        console.log("checking riskpool capacity api call");
+        const uri = "/api/purchase/possible";
+        const res = await fetch(uri);
+
+        if (res.status === 503) {
+            return false;
+        }
+
+        if (! res.ok) {
+            throw new Error(`Error checking riskpool capacity: ${res.statusText}`);
+        }
+
+        return true;
+    }
+
 
     return {
         sendPurchaseProtectionRequest,
         checkPurchaseCompleted,
+        checkRiskpoolCapacity,
     }
 }

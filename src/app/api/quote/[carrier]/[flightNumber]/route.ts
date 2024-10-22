@@ -1,20 +1,29 @@
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
-import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../../../contracts/flight";
+import { FlightLib__factory, FlightOracle__factory, FlightPool__factory, FlightProduct__factory, FlightUSD__factory } from "../../../../../contracts/flight";
 import { PayoutAmounts } from "../../../../../redux/slices/flightData";
 import { Rating } from "../../../../../types/flightstats/rating";
 import { LOGGER } from "../../../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL, PREMIUM } from "../../../_utils/api_constants";
+import { FLIGHTSTATS_BASE_URL, POOL_CONTRACT_ADDRESS, PREMIUM } from "../../../_utils/api_constants";
 import { getBackendVoidSigner } from "../../../_utils/chain";
 import { sendRequestAndReturnResponse } from "../../../_utils/proxy";
 import { ErrorDecoder } from "ethers-decode-error";
 import { IBundleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../../../contracts/gif";
+import { getAvailableCapacity } from "../../../../../utils/riskpool";
+import { formatUnits, Signer } from "ethers";
+import { CapacityError } from "../../../../../utils/error";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
     const int = Number.parseInt(this.toString());
     return int ?? this.toString();
 };
+
+function bigIntMax(...args: bigint[]): bigint {
+    return args.reduce((max, e) => {
+        return e > max ? e : max;
+    }, args[0]);
+}
 
 /**
  * get rating from flightstats and calculate payout amounts via smart contract call 
@@ -38,13 +47,21 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
         cancelled: BigInt(0),
         diverted: BigInt(0)
     } as PayoutAmounts;
+    let hasCapacity = true;
 
     try {
         // calculate payout amounts via smart contract call
-        payouts = await calculatePayoutAmounts(reqId, premium, rating);
+        const signer = await getBackendVoidSigner();
+        payouts = await calculatePayoutAmounts(reqId, premium, rating, signer);
+        hasCapacity = await checkCapacity(payouts, signer);
     } catch (err) {
-        LOGGER.error(`[${reqId}] Error calculating payout amounts: ${err}`);
-        return Response.json({ error: 'calculation of payout amounts failed' }, { status: 404 });
+        if (err instanceof CapacityError) {
+            LOGGER.error(`[${reqId}] Not enough capacity for payout amounts`);
+            return Response.json({ error: 'Not enough capacity for payout amounts' }, { status: 503 });
+        } else {
+            LOGGER.error(`[${reqId}] Error calculating payout amounts: ${err}`);
+            return Response.json({ error: 'calculation of payout amounts failed' }, { status: 404 });
+        }
     }
 
     return Response.json({
@@ -52,21 +69,28 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
         payouts,
         ontimepercent: rating.ontimePercent,
         statistics: [rating.observations, rating.late15, rating.late30, rating.late45, rating.cancelled, rating.diverted],
-    }, { status: 200 });
+    }, { status: hasCapacity ? 200 : 503 });
 }
 
-async function calculatePayoutAmounts(reqId: string, premium: bigint, rating: Rating): Promise<PayoutAmounts> {
+async function checkCapacity(payouts: PayoutAmounts, signer: Signer): Promise<boolean> {
+    const flightPool = FlightPool__factory.connect(POOL_CONTRACT_ADDRESS, signer);
+    const maxPayout = bigIntMax(payouts.delayed, payouts.cancelled, payouts.diverted);
+    const availableCapacity = await getAvailableCapacity(flightPool, signer);
+    LOGGER.debug(`available capacity: ${formatUnits(availableCapacity, 6)} max payout: ${formatUnits(maxPayout, 6)}`);
+    return availableCapacity > maxPayout;
+}
+
+async function calculatePayoutAmounts(reqId: string, premium: bigint, rating: Rating, signer: Signer): Promise<PayoutAmounts> {
     LOGGER.debug(`[${reqId}] calling calculatePayoutAmounts ${premium}`);
-    const signer = await getBackendVoidSigner();
     const productAddress = process.env.NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!;
     const flightProduct = FlightProduct__factory.connect(productAddress, signer);
     
     try {
         const result = await flightProduct.calculatePayoutAmounts(productAddress, premium, [rating.observations, rating.late15, rating.late30, rating.late45, rating.cancelled, rating.diverted]);
         const payouts = {
-            delayed: BigInt(result[1][2]),
-            cancelled: BigInt(result[1][3]),
-            diverted: BigInt(result[1][4]),
+            delayed: result[1][2],
+            cancelled: result[1][3],
+            diverted: result[1][4],
         };
         LOGGER.info(`calculatePayoutAmounts => ${result[0].toString()}, ${result[1].toString()}, ${result[2].toString()}`);
         return payouts;

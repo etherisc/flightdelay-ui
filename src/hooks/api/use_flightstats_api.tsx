@@ -36,17 +36,20 @@ export function useFlightstatsApi() {
         console.log("fetching quote for", carrier, flightNumber);
         const uri = `/api/quote/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}`;
         const res = await fetch(uri);
-        
+        const j = await res.json();
+
         if (! res.ok) {
             if (res.status === 404) {
                 const error = Reason.NOT_ENOUGH_DATA_FOR_QUOTE;
                 return {premium: 0, ontimepercent: 0, payouts: {delayed: BigInt(0), cancelled: BigInt(0), diverted: BigInt(0)}, statistics: [], carrier, flightNumber, error};
+            } else if (res.status === 503) {
+                console.log("not enough capacity for quote");
+                return {premium: 0, ontimepercent: 0, payouts: {delayed: BigInt(0), cancelled: BigInt(0), diverted: BigInt(0)}, statistics: [], carrier, flightNumber, error: Reason.NOT_ENOUGH_CAPACITY};
+            } else {
+                throw new Error(`Error fetching quote data: ${res.statusText}`);
             }
-
-            throw new Error(`Error fetching quote data: ${res.statusText}`);
         }
 
-        const j = await res.json();
         j.carrier = carrier;
         j.flightNumber = flightNumber;
         return j;

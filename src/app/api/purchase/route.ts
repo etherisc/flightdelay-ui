@@ -8,7 +8,7 @@ import { TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
 import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
-import { checkSignerBalance, getApplicationSenderSigner, getTxOpts } from "../_utils/chain";
+import { checkSignerBalance, getStatisticsProviderSigner, getTxOpts } from "../_utils/chain";
 
 /**
  * purchase protection for a flight
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const reqId = nanoid();
     LOGGER.debug(`[${reqId} purchase protection for flight ${jsonBody.application.carrier} ${jsonBody.application.flightNumber} ${jsonBody.application.departureDate}`);
 
-    const signer = await getApplicationSenderSigner();
+    const signer = await getStatisticsProviderSigner();
     try {
         await hasBalance(signer);
 
