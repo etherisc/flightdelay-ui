@@ -1,7 +1,7 @@
 import { hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
-import { FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
+import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IPolicyService__factory } from "../../../contracts/gif";
 import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
 import { TransactionFailedException } from "../../../types/errors";
@@ -118,7 +118,8 @@ async function createPolicy(
             FlightOracle__factory.createInterface(),
             IPolicyService__factory.createInterface(),
             IPoolService__factory.createInterface(),
-            IBundleService__factory.createInterface()
+            IBundleService__factory.createInterface(),
+            FlightLib__factory.createInterface(),
         ]);
         const decodedError = await errorDecoder.decode(err);
         LOGGER.error(`Decoded error reason: ${decodedError.reason}`);

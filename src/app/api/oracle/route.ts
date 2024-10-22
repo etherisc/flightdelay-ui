@@ -4,7 +4,7 @@ import utc from "dayjs/plugin/utc";
 import { getNumber, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
-import { FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
+import { FlightLib__factory, FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IBundleService__factory, IInstance__factory, InstanceReader, InstanceReader__factory, IOracleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../contracts/gif";
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
@@ -256,6 +256,7 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
             IPolicyService__factory.createInterface(),
             IPoolService__factory.createInterface(),
             IBundleService__factory.createInterface(),
+            FlightLib__factory.createInterface(),
         ]);
         const decodedError = await errorDecoder.decode(err);
         if (decodedError.reason !== null) {
@@ -302,6 +303,7 @@ async function resendRequest(reqId: string, flightProduct: FlightProduct, reques
             IPolicyService__factory.createInterface(),
             IPoolService__factory.createInterface(),
             IBundleService__factory.createInterface(),
+            FlightLib__factory.createInterface(),
         ]);
         const decodedError = await errorDecoder.decode(err);
         if (decodedError.reason !== null) {

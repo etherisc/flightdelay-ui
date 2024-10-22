@@ -1,12 +1,14 @@
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
-import { FlightProduct__factory } from "../../../../../contracts/flight";
+import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../../../contracts/flight";
 import { PayoutAmounts } from "../../../../../redux/slices/flightData";
 import { Rating } from "../../../../../types/flightstats/rating";
 import { LOGGER } from "../../../../../utils/logger_backend";
 import { FLIGHTSTATS_BASE_URL, PREMIUM } from "../../../_utils/api_constants";
 import { getBackendVoidSigner } from "../../../_utils/chain";
 import { sendRequestAndReturnResponse } from "../../../_utils/proxy";
+import { ErrorDecoder } from "ethers-decode-error";
+import { IBundleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../../../contracts/gif";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -59,15 +61,30 @@ async function calculatePayoutAmounts(reqId: string, premium: bigint, rating: Ra
     const productAddress = process.env.NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!;
     const flightProduct = FlightProduct__factory.connect(productAddress, signer);
     
-    const result = await flightProduct.calculatePayoutAmounts(productAddress, premium, [rating.observations, rating.late15, rating.late30, rating.late45, rating.cancelled, rating.diverted]);
-    const payouts = {
-        delayed: BigInt(result[1][2]),
-        cancelled: BigInt(result[1][3]),
-        diverted: BigInt(result[1][4]),
-    };
-    LOGGER.info(`calculatePayoutAmounts => ${result[0].toString()}, ${result[1].toString()}, ${result[2].toString()}`);
-    
-    return payouts;
+    try {
+        const result = await flightProduct.calculatePayoutAmounts(productAddress, premium, [rating.observations, rating.late15, rating.late30, rating.late45, rating.cancelled, rating.diverted]);
+        const payouts = {
+            delayed: BigInt(result[1][2]),
+            cancelled: BigInt(result[1][3]),
+            diverted: BigInt(result[1][4]),
+        };
+        LOGGER.info(`calculatePayoutAmounts => ${result[0].toString()}, ${result[1].toString()}, ${result[2].toString()}`);
+        return payouts;
+    } catch (err) {
+        const errorDecoder = ErrorDecoder.create([
+            FlightProduct__factory.createInterface(), 
+            FlightUSD__factory.createInterface(),
+            FlightOracle__factory.createInterface(),
+            IPolicyService__factory.createInterface(),
+            IPoolService__factory.createInterface(),
+            IBundleService__factory.createInterface(),
+            FlightLib__factory.createInterface(),
+        ]);
+        const decodedError = await errorDecoder.decode(err);
+        LOGGER.error(`Decoded error reason: ${decodedError.reason}`);
+        LOGGER.error(`Decoded error args: ${decodedError.args}`);
+        throw err;
+    }
 }
 
 async function fetchFlightstatsRating(reqId: string, carrier: string, flightNumber: string): Promise<Rating|null> {
