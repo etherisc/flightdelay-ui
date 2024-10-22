@@ -5,6 +5,10 @@
             "name": "Lion Air"
         },
         {
+            "iata": "OMA",
+            "name": "Oman Air"
+        },
+        {
             "iata": "ID",
             "name": "Batik Air"
         },
