@@ -6,6 +6,7 @@ export enum Reason {
     NO_FLIGHT_FOUND,
     INCONSISTENT_DATA,
     NOT_ENOUGH_DATA_FOR_QUOTE,
+    NOT_ENOUGH_CAPACITY,
 }
 
 /**

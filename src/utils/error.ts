@@ -50,3 +50,9 @@ export class PurchaseNotPossibleError extends Error {
         super("Purchase not possible");
     }
 }
+
+export class CapacityError extends Error {
+    constructor() {
+        super("Capacity error");
+    }
+}

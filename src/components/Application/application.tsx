@@ -114,6 +114,11 @@ export default function Application() {
                     <Alert severity="error"><Trans k="error.not_enough_data" /></Alert>
                 </Box>;
                 break;
+            case Reason.NOT_ENOUGH_CAPACITY:
+                error = <Box sx={{ py: 2 }}>
+                    <Alert severity="error"><Trans k="error.riskpool_not_enough_caoacity_for_flight" /></Alert>
+                </Box>;
+                break;
             default:
                 error = <Box sx={{ py: 2 }}>
                     <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
