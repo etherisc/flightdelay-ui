@@ -82,8 +82,8 @@ export function useMyPolicies() {
         const flightRiskData = await decodeRiskData(info.data);
         const flightDataTokens = decodeOzShortString(flightRiskData.flightData).split(" ");
         console.log("converting risk data", riskId, flightDataTokens, flightRiskData);
-        const departureTimeLocal = toUtf8String(flightRiskData.departureTimeLocal);
-        const arrivalTimeLocal = toUtf8String(flightRiskData.arrivalTimeLocal);
+        const departureTimeLocal = flightRiskData.departureTimeLocal.startsWith("0x") ? toUtf8String(flightRiskData.departureTimeLocal) :  flightRiskData.departureTimeLocal;
+        const arrivalTimeLocal = flightRiskData.arrivalTimeLocal.startsWith("0x") ? toUtf8String(flightRiskData.arrivalTimeLocal) :  flightRiskData.arrivalTimeLocal;
         const statusStr = toUtf8String(flightRiskData.status);
         const status = ( statusStr !== '\0') ? toUtf8String(flightRiskData.status) : "S";
         return {

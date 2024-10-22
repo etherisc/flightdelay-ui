@@ -1,4 +1,4 @@
-import { hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
+import { parseUnits, Signer } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
@@ -82,9 +82,9 @@ function prepareApplicationData(application: ApplicationData) {
     return {
         flightData: flightDataString,
         departureTime: application.departureTime,
-        departureTimeLocal: hexlify(toUtf8Bytes(application.departureTimeLocal)),
+        departureTimeLocal: application.departureTimeLocal,
         arrivalTime: application.arrivalTime,
-        arrivalTimeLocal: hexlify(toUtf8Bytes(application.arrivalTimeLocal)),
+        arrivalTimeLocal: application.arrivalTimeLocal,
         premiumAmount: application.premiumAmount,
         statistics: application.statistics,
         v: application.v,
