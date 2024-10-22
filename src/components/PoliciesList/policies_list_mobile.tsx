@@ -19,6 +19,11 @@ export default function PoliciesListMobile({ policies, risks, loading }: { polic
         loadingIndicator = <LinearProgress />;
     }
 
+    if (policies.length === 0 && !loading) {
+        return <><Trans k="no_policies_mobile" /></>;
+    }
+
+
     return (<>
         {loadingIndicator}
         {policies.map((policy) => {

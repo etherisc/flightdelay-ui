@@ -38,6 +38,7 @@
     "no_payout": "No payout",
     "whitelisted_airports": "Approved airports",
     "blacklisted_airports": "Blacklisted airports",
+    "no_policies_mobile": "No policies found",
     "table": {
         "header": {
             "nftId": "Policy ID",
