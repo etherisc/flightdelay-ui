@@ -36,7 +36,7 @@
     "signing_request_1": "Please sign the ERC20 permit. This authorizes the contract to collect the premium amount and issue the policy on your behalf.",
     "signing_request_2": "<0>Note</0>: This is a one-time authorization limited to {{symbol}} {{amount}}.",
     "no_payout": "No payout",
-    "whitelisted_airports": "Whitelisted airports",
+    "whitelisted_airports": "Approved airports",
     "blacklisted_airports": "Blacklisted airports",
     "table": {
         "header": {
