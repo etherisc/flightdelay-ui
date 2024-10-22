@@ -26,7 +26,7 @@ export default function PoliciesList() {
     const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 });
 
     
-    let loadingIndicator = <></>;
+    let loadingIndicator = undefined;
     if (loading) {
         loadingIndicator = <LinearProgress />;
     }
@@ -230,12 +230,19 @@ export default function PoliciesList() {
         {loadingIndicator}
 
         <DataGrid 
+            loading={loadingIndicator !== undefined || false} 
             rows={policies} 
             columns={columns} 
             getRowId={(row: PolicyData) => row.nftId}
             getRowHeight={() => 'auto'}
             slots={{
                 noRowsOverlay: NoRowsOverlay,
+            }}
+            slotProps={{
+                loadingOverlay: {
+                    // variant: 'skeleton',
+                    noRowsVariant: 'skeleton',
+                },
             }}
             initialState={{
                 sorting: {
