@@ -78,6 +78,6 @@
         "unknown_error": "An unknown error occurred. Please try again later.",
         "user_rejected": "The transaction was cancelled",
         "not_enough_data": "Currently not enough data available to protect this flight. Please try again in the future.",
-        "riskpool_full": "No flights can be insured at the moment. Please try again later."
+        "riskpool_full": "No new flights can be protected right now, because the capacity of the risk pool is exhausted. Please wait until capacity is available again."
     }
 }
