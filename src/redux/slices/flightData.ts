@@ -9,6 +9,7 @@ import { logErrorOnBackend } from '../../utils/logger';
 import { fetchFlightData, fetchQuote } from '../thunks/flightData';
 
 export interface FlightDataState {
+    riskpoolHasCapacity: boolean;
     carrier: string | null;
     flightNumber: string | null;
     departureDate: string | null;
@@ -54,6 +55,7 @@ export interface PayoutAmounts {
  * The signup slice contains all the data related to the signup process. This is mostly tentative data that is shown to the user to be selected or confirmed. 
  */
 const initialState: FlightDataState = {
+    riskpoolHasCapacity: true,
     carrier: null,
     flightNumber: null,
     departureDate: null,
@@ -82,6 +84,9 @@ export const flightDataSlice = createSlice({
     name: 'flightData',
     initialState,
     reducers: {
+        setRiskpoolHasCapacity(state, action: PayloadAction<boolean>) {
+            state.riskpoolHasCapacity = action.payload;
+        },
         setAirportWhitelist(state, action: PayloadAction<{ airportsWhitelist: string[], airportsBlacklist: string[]}>) {
             state.airportsWhitelist = action.payload.airportsWhitelist;
             state.airportsBlacklist = action.payload.airportsBlacklist;
@@ -211,6 +216,7 @@ function adjustToUtc(time: string, tzRegionName: string): string {
 
 // Action creators are generated for each case reducer function
 export const { 
+    setRiskpoolHasCapacity,
     setAirportWhitelist,
     setFlight,
     setError,

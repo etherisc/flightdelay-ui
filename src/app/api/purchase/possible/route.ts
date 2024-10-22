@@ -21,23 +21,30 @@ export async function GET() {
     const minAvailableCapacity = parseUnits(process.env.RISKPOOL_MIN_CAPACITY! || "100000000", "wei");
     
     const flightPool = FlightPool__factory.connect(POOL_CONTRACT_ADDRESS, statisticsProviderSigner);
+    // LOGGER.debug(`flight pool address: ${POOL_CONTRACT_ADDRESS}`);
     const poolNftId = await flightPool.getNftId();
+    // LOGGER.debug(`pool nft id: ${poolNftId}`);
 
     const instanceAddress = await flightPool.getInstance();
     const instance = IInstance__factory.connect(instanceAddress, statisticsProviderSigner);
     const instanceReaderAddress = await instance.getInstanceReader();
+    // LOGGER.debug(`instance reader address: ${instanceReaderAddress}`);
     const instanceReader = InstanceReader__factory.connect(instanceReaderAddress, statisticsProviderSigner);
 
-    const balanceAmount = await instanceReader.getBalanceAmount(poolNftId);
-    const lockedAmount = await instanceReader.getLockedAmount(poolNftId);
-    const feeAmount = await instanceReader.getFeeAmount(poolNftId);
+    const bundleNftId = await instanceReader.getBundleNftId(poolNftId, 0);
+
+    const balanceAmount = await instanceReader.getBalanceAmount(bundleNftId);
+    const lockedAmount = await instanceReader.getLockedAmount(bundleNftId);
+    const feeAmount = await instanceReader.getFeeAmount(bundleNftId);
 
     const availableCapacity = balanceAmount - lockedAmount - feeAmount;
-    LOGGER.debug(`available capacity: ${formatUnits(availableCapacity, process.env.NEXT_PUBLIC_ERC20_TOKEN_DECIMALS)} [${availableCapacity} = ${balanceAmount.toString()} - ${lockedAmount.toString()} - ${feeAmount.toString()}]`);
+    LOGGER.debug(`available capacity: `
+        + `${formatUnits(availableCapacity, parseInt(process.env.NEXT_PUBLIC_ERC20_TOKEN_DECIMALS || "6"))} `
+        + `[${availableCapacity} = ${balanceAmount} - ${lockedAmount} - ${feeAmount}]`);
     
     const poolHasCapacity = availableCapacity >= minAvailableCapacity;
 
     const isReady = applicationSignerHasBalance && poolHasCapacity;
 
-    return Response.json({}, { status: isReady ? 200 : 500 });
+    return Response.json({}, { status: isReady ? 200 : 503 });
 }

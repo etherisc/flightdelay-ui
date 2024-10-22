@@ -3,7 +3,7 @@ import { ethers, resolveAddress } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { resetErrors, setError } from "../redux/slices/flightData";
+import { resetErrors, setError, setRiskpoolHasCapacity } from "../redux/slices/flightData";
 import { resetPurchase, setExecuting, setPolicy, setSigning } from "../redux/slices/purchase";
 import { RootState } from "../redux/store";
 import { Erc20PermitSignature } from "../types/erc20permitsignature";
@@ -13,6 +13,7 @@ import { useLocalApi } from "./api/use_local_api";
 import { useERC20Contract } from "./onchain/use_erc20_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { useWallet } from "./onchain/use_wallet";
+import { setGeneralErrorMessage } from "../redux/slices/common";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -21,7 +22,7 @@ export default function useApplication() {
     const { getSigner } = useWallet();
     const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, parseInt(NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS || '6'));
     const { getProductTokenHandlerAddress } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { sendPurchaseProtectionRequest, checkPurchaseCompleted } = useLocalApi();
+    const { sendPurchaseProtectionRequest, checkPurchaseCompleted, checkRiskpoolCapacity } = useLocalApi();
     const dispatch = useDispatch();
     
     const isExpectedChain = useSelector((state: RootState) => state.wallet.isExpectedChain);
@@ -40,6 +41,17 @@ export default function useApplication() {
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
     const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     const errorReasonApi = useSelector((state: RootState) => state.flightData.errorReasonApi);
+    const riskpoolHasCapacity = useSelector((state: RootState) => state.flightData.riskpoolHasCapacity);
+
+    async function fetchRiskpoolCapacity() {
+        // do nothing, just log for now
+        console.log("checking riskpool capacity");
+        const res = await checkRiskpoolCapacity();
+        dispatch(setRiskpoolHasCapacity(res));
+        if (! res) {
+            dispatch(setGeneralErrorMessage(t("error.riskpool_full")));
+        }
+    }
     
     async function purchaseProtection() {
         dispatch(resetErrors());
@@ -47,6 +59,7 @@ export default function useApplication() {
         // do nothing, just log for now
 
         const canPurchase = isExpectedChain 
+            && riskpoolHasCapacity
             && errorReasonApi === null
             && departureAirport !== null 
             && ( isDepartureAirportWhiteListed || isArrivalAirportWhiteListed )
@@ -57,6 +70,8 @@ export default function useApplication() {
         if (!canPurchase) {
             if (! isExpectedChain) {
                 dispatch(setError({ message: t("error.switch_chain_first"), level: "error" }));
+            } else if (! riskpoolHasCapacity) {
+                dispatch(setError({ message: t("error.riskpool_full"), level: "error" }));
             } else if (isDepartureAirportBlackListed || isArrivalAirportBlackListed || ! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed  || errorReasonApi !== null) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
             } else {
@@ -225,5 +240,6 @@ export default function useApplication() {
 
     return {
         purchaseProtection,
+        fetchRiskpoolCapacity,
     }
 }

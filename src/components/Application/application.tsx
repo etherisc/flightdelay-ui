@@ -26,7 +26,7 @@ export default function Application() {
     const { connectWallet } = useWallet();
     const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
     const dispatch = useDispatch();
-    const { purchaseProtection } = useApplication();
+    const { purchaseProtection, fetchRiskpoolCapacity } = useApplication();
 
     const flightDataState = useSelector((state: RootState) => state.flightData);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.isConnected);
@@ -55,12 +55,14 @@ export default function Application() {
     const flightDataRef = useRef(null);
 
     useEffect(() => {
+        fetchRiskpoolCapacity();
         const airportsWhitelistRaw = NEXT_PUBLIC_AIRPORTS_WHITELIST?.trim() ?? '';
         const airportsWhitelist = airportsWhitelistRaw !== '' ? airportsWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
         const airportsBlacklistRaw = NEXT_PUBLIC_AIRPORTS_BLACKLIST?.trim() ?? '';
         const airportsBlacklist = airportsBlacklistRaw !== '' ? airportsBlacklistRaw.split(',').map((airport) => airport.trim()) : [];
         dispatch(setAirportWhitelist({ airportsWhitelist, airportsBlacklist }));
-    }, [NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (flightFound) {
