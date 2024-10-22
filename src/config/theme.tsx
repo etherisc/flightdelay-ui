@@ -1,6 +1,5 @@
 import { createTheme } from '@mui/material/styles';
 
-
 export const PRIMARY_BLUE = '#5180F3';
 // TODO: remove when no longer needed
 export const BLUE_LIGHT = PRIMARY_BLUE; 
@@ -59,6 +58,20 @@ export const customTheme = createTheme({
                 title: {
                     fontSize: '1.5rem',
                     fontWeight: 600,
+                },
+            },
+        },
+        // manual override of MuiDataGrid to fix height issue with overlay
+        // @ts-expect-error - MuiDataGrid is not exported
+        MuiDataGrid: {
+            styleOverrides: {
+                root: {
+                    '.MuiDataGrid-overlayWrapper': {
+                        height: 'auto !important',
+                    },
+                    '.MuiDataGrid-overlayWrapperInner': {
+                        height: 'auto !important',
+                    },
                 },
             },
         },

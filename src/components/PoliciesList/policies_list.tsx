@@ -1,4 +1,4 @@
-import { Alert, Box, Container, LinearProgress, Typography } from "@mui/material";
+import { Alert, Box, LinearProgress, Stack, Typography } from "@mui/material";
 import { blue, green, grey, red } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import { useEnvContext } from "next-runtime-env";
@@ -198,18 +198,17 @@ export default function PoliciesList() {
 
     function NoRowsOverlay() {
         if (! isConnected) {
-            return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
+            return (<Stack>
                 <Alert variant="standard" severity="info">
                     <Trans k="error.no_wallet_connected" />
                 </Alert>
-            </Container>);
+            </Stack>);
         }
-        // TODO: don't show while loading
-        return (<Container maxWidth={false} sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: "center" }}>
+        return (<Stack>
                 <Alert variant="standard" severity="info">
                     <Trans k="error.no_policies" />
                 </Alert>
-            </Container>);
+            </Stack>);
     }
 
     function FlightData({ value }: { value: FlightPlan }) {
@@ -259,6 +258,7 @@ export default function PoliciesList() {
                 [`& .${gridClasses.cell}`]: {
                     py: 1,
                 },
+                
             }}
             />
     </>);
