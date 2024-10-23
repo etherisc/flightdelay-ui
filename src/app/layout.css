@@ -2,12 +2,14 @@ body {
     min-height: 100vh;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url("/assets/images/FlightDelayBackgroundDesktopLR.png");
+    /* background-image: url("/assets/images/FlightDelayBackgroundDesktopLR.png"); */
+    background-image: url("/assets/images/FlightDelayBackgroundDesktopD1ConfLR.png");
 }
 
 @media screen and (max-width:720px) {
     body {
-        background-image: url("/assets/images/FlightDelayBackgroundMobileLR.png");
+        /* background-image: url("/assets/images/FlightDelayBackgroundMobileLR.png"); */
+        background-image: url("/assets/images/FlightDelayBackgroundMobileD1ConfLR.png");
     }
 }
 
