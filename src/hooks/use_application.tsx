@@ -143,7 +143,7 @@ export default function useApplication() {
         } catch (err) {
             if (err instanceof PurchaseFailedError) {
                 console.log("purchase failed", err);
-                dispatch(setError({ message: `t("error.purchase_failed") (${err.decodedError?.reason || "unknown error"})`, level: "error" }));
+                dispatch(setError({ message: `${t("error.purchase_failed")} (${err.decodedError?.reason || "unknown error"})`, level: "error" }));
             } else if (err instanceof PurchaseNotPossibleError) {
                 dispatch(setError({ message: t("error.purchase_currently_not_possible"), level: "error" }));
             } else {
