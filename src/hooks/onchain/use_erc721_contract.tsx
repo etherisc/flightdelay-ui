@@ -24,6 +24,10 @@ export function useERC721Contract(productAddress: string) {
 
         const tokensIds = [];
         for (let i = 0; i < numTokens; i++) {
+            if (numTokens > 5) {
+                // sleep random <100ms
+                await new Promise(resolve => setTimeout(resolve, 25));
+            }
             tokensIds.push(await chainNft.tokenOfOwnerByIndex(owner, i));
         }
         return tokensIds;
