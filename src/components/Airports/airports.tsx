@@ -16,7 +16,9 @@ export default function Airports() {
             <CardContent>
                 { airportsWhitelist.length > 0 && 
                     <Box sx={{ mb: 4 }}>
-                        <Typography variant="h2"><Trans k="whitelisted_airports" /></Typography>
+                        <Box sx={{ py: 2}}>
+                            <Typography variant="h2"><Trans k="whitelisted_airports" /></Typography>
+                        </Box>
                         { airportsWhitelist.sort().map((airport, index) => {
                             let sep =", ";
                             if (index === airportsWhitelist.length - 1) {
@@ -24,11 +26,18 @@ export default function Airports() {
                             }
                             return (<Typography key={airport} component="span">{airport}{sep} </Typography>);
                         })}
+                        <Box sx={{ py: 2}}>
+                            <Typography variant="body1">
+                                <Trans k="whitelisted_airports_explanation" />
+                            </Typography>
+                        </Box>
                     </Box>
                 }
                 { airportsBlacklist.length > 0 && 
                     <Box>
-                        <Typography variant="h2"><Trans k="blacklisted_airports" /></Typography>
+                        <Box sx={{ py: 2}}>
+                            <Typography variant="h2"><Trans k="blacklisted_airports" /></Typography>
+                        </Box>
                         { airportsBlacklist.sort().map((airport, index) => {
                             let sep =", ";
                             if (index === airportsBlacklist.length - 1) {
@@ -36,6 +45,11 @@ export default function Airports() {
                             }
                             return (<Typography key={airport} component="span">{airport}{sep} </Typography>);
                         })}
+                        <Box sx={{ py: 2}}>
+                            <Typography variant="body1">
+                                <Trans k="blacklisted_airports_explanation" />
+                            </Typography>
+                        </Box>
                     </Box>
                 }
             </CardContent>
