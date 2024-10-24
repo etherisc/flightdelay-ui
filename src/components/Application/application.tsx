@@ -206,29 +206,43 @@ export default function Application() {
                 title={isSmallScreen ? t('app.title.short') : t('app.title')}
                 />
             <CardContent>
-                <Box sx={{ mb: 4 }}>
-                    <Typography variant="body2" component="p">
-                        <Trans k="application_instructions" />
-                    </Typography>
-                </Box>
+                <Instructions />
                 <ApplicationForm disableForm={executingPurchase || purchaseSuccessful} />
                 {flightDataLoading}
                 {flightData}
                 {error}
             </CardContent>
             <CardActions sx={{ flexDirection: 'column'}}>
-                {(!executingPurchase && !purchaseSuccessful) && button}
-                {executingPurchase && executePurchase}
-                {(!executingPurchase && purchaseSuccessful) && <PurchaseSuccess />}
-                <Box sx={{ py: 2 }}>
-                    <Typography variant="body2" component="p" color="textSecondary">
-                        <Trans k="purchase_disclaimer">
-                            <a href="https://www.circle.com/multi-chain-usdc/base" target="_blank" rel="noreferrer noopener" className="link"></a>
-                            <a href="https://www.base.org/" target="_blank" rel="noreferrer noopener" className="link"></a>
-                        </Trans>
-                    </Typography>
-                </Box>
+                <Actions 
+                    button={button} 
+                    executingPurchase={executingPurchase} 
+                    purchaseSuccessful={purchaseSuccessful} 
+                    executePurchase={executePurchase} />
             </CardActions>
         </Card>
     </>);
+}
+
+function Instructions() {
+    return <Box sx={{ mb: 4 }}>
+            <Typography variant="body2" component="p">
+                <Trans k="application_instructions" />
+            </Typography>
+        </Box>;
+}
+
+function Actions({ button, executingPurchase, purchaseSuccessful, executePurchase }: { button: JSX.Element, executingPurchase: boolean, purchaseSuccessful: boolean, executePurchase: JSX.Element }) {
+    return <>
+            {(!executingPurchase && !purchaseSuccessful) && button}
+            {executingPurchase && executePurchase}
+            {(!executingPurchase && purchaseSuccessful) && <PurchaseSuccess />}
+            <Box sx={{ py: 2 }}>
+                <Typography variant="body2" component="p" color="textSecondary">
+                    <Trans k="purchase_disclaimer">
+                        <a href="https://www.circle.com/multi-chain-usdc/base" target="_blank" rel="noreferrer noopener" className="link"></a>
+                        <a href="https://www.base.org/" target="_blank" rel="noreferrer noopener" className="link"></a>
+                    </Trans>
+                </Typography>
+            </Box>
+        </>;
 }
