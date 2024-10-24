@@ -1,18 +1,18 @@
-import { Box, IconButton, Link, Typography } from '@mui/material';
-import Address from './address';
+import { faFile, faPlane, faPowerOff, faRefresh, faTableList } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileSignature, faPowerOff, faRefresh, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { Box, IconButton, Link, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { useWallet } from '../../hooks/onchain/use_wallet';
+import { useEnvContext } from 'next-runtime-env';
 import { useSelector } from 'react-redux';
+import { JazziconAvatar } from '../(basic_widgets)/Jazzicon/jazzicon_avatar';
+import { useWallet } from '../../hooks/onchain/use_wallet';
 import { RootState } from '../../redux/store';
 import { formatAmount } from '../../utils/amount';
 import { parseBigInt } from '../../utils/bigint';
-import { PATH_MYPOLICIES, PATH_APPLICATION } from '../../utils/paths';
-import { JazziconAvatar } from '../(basic_widgets)/Jazzicon/jazzicon_avatar';
+import { PATH_APPLICATION, PATH_MYPOLICIES } from '../../utils/paths';
 import Button from '../Button/button';
 import Trans from '../Trans/trans';
-import { useEnvContext } from 'next-runtime-env';
+import Address from './address';
 
 export default function Wallet({
     onDisconnect,
@@ -69,7 +69,7 @@ export default function Wallet({
             <Link href={PATH_APPLICATION}>
                 <Button fullwidth sx={{ my: 1 }}>
                     <Box sx={{ mr: 2 }}>
-                        <FontAwesomeIcon icon={faShoppingCart} />
+                        <FontAwesomeIcon icon={faPlane} />
                     </Box>
                     <Trans k="nav.apply"/>
                 </Button>
@@ -77,9 +77,17 @@ export default function Wallet({
             <Link href={PATH_MYPOLICIES}>
                 <Button fullwidth sx={{ my: 1 }}>
                     <Box sx={{ mr: 2 }}>
-                        <FontAwesomeIcon icon={faFileSignature} />
+                        <FontAwesomeIcon icon={faTableList} />
                     </Box>
                     <Trans k="nav.policies" />
+                </Button>
+            </Link>
+            <Link href="/contracts">
+                <Button fullwidth sx={{ my: 1 }}>
+                    <Box sx={{ mr: 2 }}>
+                        <FontAwesomeIcon icon={faFile} />
+                    </Box>
+                    <Trans k="nav.contracts" />
                 </Button>
             </Link>
         </Box>

@@ -69,6 +69,7 @@ export default function TopBar() {
                 >
                 <MenuItem onClick={goto("/apply")}><Trans k="nav.apply" /></MenuItem>
                 <MenuItem onClick={goto("/policies")}><Trans k="nav.policies" /></MenuItem>
+                <MenuItem onClick={goto("/contracts")}><Trans k="nav.contracts" /></MenuItem>
             </Menu>
             <Image src="/assets/images/etherisc_logo_blue.svg" alt="Etherisc Logo" width={120} height="46"/>
             <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 3, display: { 'xs': 'none', 'md': 'inherit'} }} >
