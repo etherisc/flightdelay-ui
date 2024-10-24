@@ -1,14 +1,12 @@
-import { faPlaneCircleCheck } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Box, SvgIcon } from "@mui/material";
-import { amber } from "@mui/material/colors";
+import { Alert, Dialog, DialogActions, DialogContent } from "@mui/material";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
+import { resetFlightData } from "../../redux/slices/flightData";
+import { resetPurchase } from "../../redux/slices/purchase";
 import { RootState } from "../../redux/store";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
-import { resetFlightData } from "../../redux/slices/flightData";
-import { resetPurchase } from "../../redux/slices/purchase";
+import { useState } from "react";
 
 export default function PurchaseSuccess() {
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
@@ -16,22 +14,33 @@ export default function PurchaseSuccess() {
     const departureDate = useSelector((state: RootState) => state.flightData.departureDate);
     const policyNftId = useSelector((state: RootState) => state.purchase.policyNftId);
     const dispatch = useDispatch();
+    const [visible, setVisible] = useState(true);
 
     function reset() {
         dispatch(resetPurchase());
         dispatch(resetFlightData());
+        setVisible(false);
     }
 
-    return (<Box>
-        <Alert 
-            sx={{ mt: 2 }}
-            icon={<SvgIcon sx={{ mr: 1 }}>
-                    <FontAwesomeIcon icon={faPlaneCircleCheck} />
-                </SvgIcon>}
-            variant="filled" 
-            severity="success">
-            <Trans k="purchase_success" values={{ carrier, flightNumber, departureDate: dayjs(departureDate).format("YYYY-MM-DD"), policyNftId }} />
-        </Alert>
-        <Button sx={{ mt: 2 }} fullwidth color={amber[500]} onClick={reset}><Trans k="purchase_another" /></Button>
-    </Box>);
+    return (<>
+        <Dialog
+            open={visible}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            maxWidth="md"
+            >
+            <DialogContent>
+                <Alert 
+                    sx={{ mt: 2, p: 4 }}
+                    severity="success">
+                    <Trans k="purchase_success" values={{ carrier, flightNumber, departureDate: dayjs(departureDate).format("YYYY-MM-DD"), policyNftId }}>
+                        <br/>
+                    </Trans>
+                </Alert>
+            </DialogContent>
+            <DialogActions sx={{ p: 2 }}>
+                <Button onClick={reset}><Trans k="action.continue" /></Button>
+            </DialogActions>
+        </Dialog>
+    </>);
 }

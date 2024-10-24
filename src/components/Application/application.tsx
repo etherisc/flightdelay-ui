@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "../../hooks/onchain/use_wallet";
@@ -25,8 +25,6 @@ export default function Application() {
     const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST } = useEnvContext();
     const dispatch = useDispatch();
     const { purchaseProtection, fetchRiskpoolCapacity } = useApplication();
-
-    // const [ showPurchaseSuccess, setShowPurchaseSuccess ] = useState(false);
 
     const flightDataState = useSelector((state: RootState) => state.flightData);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.isConnected);

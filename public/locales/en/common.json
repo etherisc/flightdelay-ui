@@ -14,7 +14,8 @@
         "purchase": "Purchase protection",
         "purchase_short": "Buy protection",
         "refresh": "Refresh",
-        "switch": "Switch network"
+        "switch": "Switch network",
+        "continue": "Continue"
     },
     "application_instructions": "Enter airline, flight number, and departure date to get a quote for flight delay protection.",
     "purchase_disclaimer": "Purchase flight delay protection with <0>USDC</0> on the <1>Base blockchain</1>.",
@@ -33,7 +34,7 @@
     "delayed": "Delay (>45min)",
     "cancelled": "Cancellation",
     "diverted": "Diversion",
-    "purchase_success": "Flight delay protection is now active for flight {{carrier}} {{flightNumber}} on {{departureDate}}. Policy ID: {{policyNftId}}",
+    "purchase_success": "Flight delay protection is now active for flight {{carrier}} {{flightNumber}} on {{departureDate}}. <0/> Policy ID: {{policyNftId}}",
     "purchase_another": "Protect another flight",
     "purchasing": "Please wait a moment while we issue your policy",
     "signing_request_1": "Please sign the ERC20 permit. This authorizes the contract to collect the premium amount and issue the policy on your behalf.",
