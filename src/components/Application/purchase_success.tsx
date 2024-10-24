@@ -1,4 +1,4 @@
-import { Alert, Dialog, DialogActions, DialogContent } from "@mui/material";
+import { Alert, Dialog, DialogActions, DialogContent, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import { resetFlightData } from "../../redux/slices/flightData";
@@ -8,13 +8,17 @@ import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import { useState } from "react";
 
-export default function PurchaseSuccess() {
+export default function PurchaseSuccess({ purchaseSuccessful } : { purchaseSuccessful: boolean }) {
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
     const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     const departureDate = useSelector((state: RootState) => state.flightData.departureDate);
     const policyNftId = useSelector((state: RootState) => state.purchase.policyNftId);
     const dispatch = useDispatch();
     const [visible, setVisible] = useState(true);
+
+    if ( ! purchaseSuccessful) {
+        return undefined;
+    }
 
     function reset() {
         dispatch(resetPurchase());
@@ -34,6 +38,7 @@ export default function PurchaseSuccess() {
                     sx={{ mt: 2, p: 4 }}
                     severity="success">
                     <Trans k="purchase_success" values={{ carrier, flightNumber, departureDate: dayjs(departureDate).format("YYYY-MM-DD"), policyNftId }}>
+                        <strong>1</strong>
                         <br/>
                     </Trans>
                 </Alert>

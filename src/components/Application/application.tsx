@@ -120,7 +120,7 @@ function Instructions() {
 function Actions({ button, executingPurchase, purchaseSuccessful }: { button: JSX.Element, executingPurchase: boolean, purchaseSuccessful: boolean }) {
     return <>
             {(!executingPurchase && !purchaseSuccessful) && button}
-            {(!executingPurchase && purchaseSuccessful) && <PurchaseSuccess />}
+            <PurchaseSuccess purchaseSuccessful={purchaseSuccessful} />
             <Box sx={{ py: 2 }}>
                 <Typography variant="body2" component="p" color="textSecondary">
                     <Trans k="purchase_disclaimer">
