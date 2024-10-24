@@ -3,6 +3,8 @@ export const FLIGHTSTATS_BASE_URL = process.env.FLIGHTSTATS_BASE_URL || 'https:/
 export const FLIGHTSTATS_APP_ID = process.env.FLIGHTSTATS_APP_ID || '123456789';
 export const FLIGHTSTATS_APP_KEY = process.env.FLIGHTSTATS_APP_KEY || '123456789';
 
+export const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_BASE_URL || 'https://flightdelay.app';
+
 export const PREMIUM = process.env.PREMIUM || '15000000';
 export const ORACLE_ARRIVAL_CHECK_DELAY_SECONDS = parseInt(process.env.ORACLE_ARRIVAL_CHECK_DELAY_SECONDS || '3600');
 

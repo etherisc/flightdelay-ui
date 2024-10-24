@@ -34,6 +34,7 @@ The webapp is configured via environment variables. The following variables are 
 - `FLIGHTSTATS_APP_ID`: The Flightstats API application ID
 - `FLIGHTSTATS_APP_KEY`: The Flightstats API application key
 
+- `NEXT_PUBLIC_APP_BASE_URL`: The base URL where the webapp is deployed (without trailing slash). Defaults to `https://flightdelay.app`
 - `NEXT_PUBLIC_EXPECTED_CHAIN_ID`: The expected chain ID
 - `NEXT_PUBLIC_EXPECTED_CHAIN_NAME`: The expected chain name (optional, required for automatic chain adding)
 - `NEXT_PUBLIC_EXPECTED_CHAIN_RPC_NODE_URL`: The expected chain RPC node URL (optional, required for automatic chain adding)

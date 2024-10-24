@@ -3,7 +3,7 @@ import { toUtf8String } from "ethers";
 import { NextRequest } from "next/server";
 import { FlightNft__factory } from "../../../../contracts/flight";
 import { LOGGER } from "../../../../utils/logger_backend";
-import { FLIGHT_NFT_CONTRACT_ADDRESS } from "../../_utils/api_constants";
+import { APP_BASE_URL, FLIGHT_NFT_CONTRACT_ADDRESS } from "../../_utils/api_constants";
 import { getStatisticsProviderSigner } from "../../_utils/chain";
 
 /**
@@ -38,6 +38,6 @@ export async function GET(request: NextRequest, { params } : { params: { nftId: 
     return Response.json({
         "name": `Etherisc Policy NFT - #${params.nftId}`,
         "description": `Protected flight: ${riskData.flightData}\nScheduled departure at: ${departureTimeLocal}\nScheduled arrival at: ${arrivalTimeLocal}\nDISCLAIMER: Due diligence is imperative when assessing this NFT.`,
-        "image": "./assets/images/etherisc_logo_bird_blue.svg",
+        "image": `${APP_BASE_URL}/assets/images/etherisc_logo_bird_blue.svg`,
     }, { status: 200 });
 }
