@@ -22,8 +22,7 @@ export default function ApplicationForm({disableForm, formState, control}: {disa
     const departureDateMin = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS || '14'), 'd');
     const departureDateMax = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS || '60'), 'd');
     
-    const carrierOptionsList = () => 
-        carrierData.carriers.map((e) => ({ label: `${e.name} (${e.iata})`, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
+    const carrierOptionsList = carrierData.carriers.map((e) => ({ label: `${e.name} (${e.iata})`, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
 
     return (
         <form style={{ height: '100%' }}>
@@ -38,7 +37,8 @@ export default function ApplicationForm({disableForm, formState, control}: {disa
                         render={({ field }) => 
                             <Autocomplete
                                 fullWidth
-                                options={carrierOptionsList()}
+                                options={carrierOptionsList}
+                                value={carrierOptionsList.find(e => e.code === field.value) || null}
                                 renderInput={(params) => 
                                     <TextField 
                                         {...field}

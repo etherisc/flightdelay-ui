@@ -1,15 +1,20 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Card, CardActions, CardContent, CardHeader, LinearProgress, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
+import { useDebounce } from "@react-hooks-hub/use-debounce";
+import dayjs from "dayjs";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
 import { resetErrors, resetFlightData, setAirportWhitelist, setFlight } from "../../redux/slices/flightData";
+import { resetPurchase } from "../../redux/slices/purchase";
 import { AppDispatch, RootState } from "../../redux/store";
+import { fetchFlightData } from "../../redux/thunks/flightData";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import { ApplicationError } from "./application_error";
@@ -17,11 +22,6 @@ import ApplicationForm, { IApplicationFormValues } from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseExecutionModal from "./purchase_execution_modal";
 import PurchaseSuccess from "./purchase_success";
-import dayjs from "dayjs";
-import { useDebounce } from "@react-hooks-hub/use-debounce";
-import { useForm } from "react-hook-form";
-import { fetchFlightData } from "../../redux/thunks/flightData";
-import { resetPurchase } from "../../redux/slices/purchase";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -48,7 +48,8 @@ export default function Application() {
 
     const sendFlightDataRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
         // only send again if data is changed
-        if (carrier !== flightDataState.carrier || flightNumber !== flightDataState.flightNumber || departureDate.toISOString() !== flightDataState.departureDate) {
+        if ((carrier !== flightDataState.carrier || flightNumber !== flightDataState.flightNumber || departureDate.toISOString() !== flightDataState.departureDate)
+            && carrier !== "" && flightNumber !== "" && departureDate !== null) {
             dispatch(resetErrors());
             dispatch(setFlight({ carrier, flightNumber, departureDate: departureDate.toISOString() }));
             dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
@@ -152,6 +153,7 @@ export default function Application() {
                     purchaseSuccessful={purchaseSuccessful} />
             </CardActions>
         </Card>
+        {/* <DevTool control={control} /> set up the dev tool */}
     </>);
 }
 
