@@ -8,22 +8,27 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
-import { setAirportWhitelist } from "../../redux/slices/flightData";
-import { RootState } from "../../redux/store";
+import { resetErrors, resetFlightData, setAirportWhitelist, setFlight } from "../../redux/slices/flightData";
+import { AppDispatch, RootState } from "../../redux/store";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import { ApplicationError } from "./application_error";
-import ApplicationForm from "./application_form";
+import ApplicationForm, { IApplicationFormValues } from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseExecutionModal from "./purchase_execution_modal";
 import PurchaseSuccess from "./purchase_success";
+import dayjs from "dayjs";
+import { useDebounce } from "@react-hooks-hub/use-debounce";
+import { useForm } from "react-hook-form";
+import { fetchFlightData } from "../../redux/thunks/flightData";
+import { resetPurchase } from "../../redux/slices/purchase";
 
 export default function Application() {
     const { t } = useTranslation();
     const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
-    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST } = useEnvContext();
-    const dispatch = useDispatch();
+    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS } = useEnvContext();
+    const dispatch = useDispatch() as AppDispatch;
     const { purchaseProtection, fetchRiskpoolCapacity } = useApplication();
 
     const flightDataState = useSelector((state: RootState) => state.flightData);
@@ -32,12 +37,43 @@ export default function Application() {
     const executingSigning = useSelector((state: RootState) => state.purchase.isSigning);
     const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
 
+    const departureDateMin = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS || '14'), 'd');
+
     // prepare data
     const loadingFlightData = flightDataState.loading;
     const loadingQuote = flightDataState.loadingQuote;
     const flightFound = ! flightDataState.loading && !flightDataState.loadingQuote && flightDataState.arrivalAirport !== null && flightDataState.premium !== null;
 
     const flightDataRef = useRef(null);
+
+    const sendFlightDataRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
+        // only send again if data is changed
+        if (carrier !== flightDataState.carrier || flightNumber !== flightDataState.flightNumber || departureDate.toISOString() !== flightDataState.departureDate) {
+            dispatch(resetErrors());
+            dispatch(setFlight({ carrier, flightNumber, departureDate: departureDate.toISOString() }));
+            dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
+        }
+    };
+
+    const debouncedFetchFlightData = useDebounce(sendFlightDataRequest, 600);
+
+    const { control, formState, watch, reset } = useForm<IApplicationFormValues>({
+        mode: "onChange",
+        reValidateMode: "onChange",
+        shouldFocusError: false,
+        defaultValues: {
+            carrier: "",
+            flightNumber: "",
+            departureDate: departureDateMin,
+        }
+    });
+
+    const formValues = watch();
+    useEffect(() => {
+        if (formState.isValid) {
+            debouncedFetchFlightData(formValues.carrier, formValues.flightNumber, formValues.departureDate);
+        }
+    }, [formValues, debouncedFetchFlightData, formState.isValid]);
 
     useEffect(() => {
         fetchRiskpoolCapacity();
@@ -55,6 +91,12 @@ export default function Application() {
             flightDataRef.current?.scrollIntoView({ behavior: "smooth" });
         }
     }, [flightFound]);
+
+    function resetForm() {
+        dispatch(resetPurchase());
+        dispatch(resetFlightData());
+        reset();
+    }
 
     let flightDataLoading = <></>;
     if (loadingFlightData || loadingQuote) {
@@ -85,6 +127,7 @@ export default function Application() {
 
     return (<>
         <PurchaseExecutionModal executingPurchase={executingPurchase} executingSigning={executingSigning} premium={flightDataState.premium} />
+        <PurchaseSuccess purchaseSuccessful={purchaseSuccessful} resetForm={resetForm} />
         <Card>
             <CardHeader
                 avatar={
@@ -94,7 +137,10 @@ export default function Application() {
                 />
             <CardContent>
                 <Instructions />
-                <ApplicationForm disableForm={executingPurchase || purchaseSuccessful} />
+                <ApplicationForm 
+                    disableForm={executingPurchase || purchaseSuccessful}
+                    formState={formState}
+                    control={control} />
                 {flightDataLoading}
                 {flightData}
                 <ApplicationError flightFound={flightFound} flightData={flightDataState} />
@@ -120,7 +166,6 @@ function Instructions() {
 function Actions({ button, executingPurchase, purchaseSuccessful }: { button: JSX.Element, executingPurchase: boolean, purchaseSuccessful: boolean }) {
     return <>
             {(!executingPurchase && !purchaseSuccessful) && button}
-            <PurchaseSuccess purchaseSuccessful={purchaseSuccessful} />
             <Box sx={{ py: 2 }}>
                 <Typography variant="body2" component="p" color="textSecondary">
                     <Trans k="purchase_disclaimer">

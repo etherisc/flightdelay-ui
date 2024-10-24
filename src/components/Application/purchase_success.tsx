@@ -1,19 +1,16 @@
 import { Alert, Dialog, DialogActions, DialogContent } from "@mui/material";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { resetFlightData } from "../../redux/slices/flightData";
-import { resetPurchase } from "../../redux/slices/purchase";
+import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 
-export default function PurchaseSuccess({ purchaseSuccessful } : { purchaseSuccessful: boolean }) {
+export default function PurchaseSuccess({ purchaseSuccessful, resetForm } : { purchaseSuccessful: boolean, resetForm: () => void }) {
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
     const flightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
     const departureDate = useSelector((state: RootState) => state.flightData.departureDate);
     const policyNftId = useSelector((state: RootState) => state.purchase.policyNftId);
-    const dispatch = useDispatch();
     const [visible, setVisible] = useState(true);
 
     if ( ! purchaseSuccessful) {
@@ -21,8 +18,7 @@ export default function PurchaseSuccess({ purchaseSuccessful } : { purchaseSucce
     }
 
     function reset() {
-        dispatch(resetPurchase());
-        dispatch(resetFlightData());
+        resetForm();
         setVisible(false);
     }
 
@@ -44,7 +40,7 @@ export default function PurchaseSuccess({ purchaseSuccessful } : { purchaseSucce
                 </Alert>
             </DialogContent>
             <DialogActions sx={{ p: 2 }}>
-                <Button onClick={reset}><Trans k="action.continue" /></Button>
+                <Button onClick={reset} sx={{ px: 4, mr: 1 }}><Trans k="action.continue" /></Button>
             </DialogActions>
         </Dialog>
     </>);
