@@ -72,7 +72,7 @@ npm run test
 npm run testLoop
 ```
 
-### Deployment 
+### Containzerized runtime
 
 Via container created by executing 
 
@@ -80,3 +80,53 @@ Via container created by executing
 docker build -t flightdelay-ui-webapp .
 ```
 **Important**: This project requires a fontawesome pro license. Please set your auth token in the `FONTAWESOME_NPM_AUTH_TOKEN` environment variable.
+
+
+## Branching Strategy
+
+This repository uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) as branching strategy. The main branches are:
+
+- `main`: The main branch for production releases 
+- `develop`: The main branch for development
+
+Feature branches are created from `develop` and merged back into `develop` via pull requests (or git merge). Hotfix branches are created from `main` and merged back into `develop` and `main` via pull requests (or git merge).
+
+### Git commands
+
+#### Create a new release from develop
+
+Assumption: the current branch is `develop` and the branch is up-to-date and contains the latest changes. 
+
+```bash
+git switch main
+git pull
+git merge develop
+```
+
+Now the `main` branch contains the latest changes from `develop` and the production system can be updated from the `main` branch.
+
+#### Create a hotfix branch for production
+
+Assumption: a hotfix is required for the production system.
+
+```bash
+git switch main
+git pull
+git switch -c hotfix/<branch name>
+# implement the hotfix on that branch 
+```
+
+#### Merge a hotfix into main and develop
+
+Assumption: the hotfix branch is up-to-date and contains the latest changes.
+
+```bash
+git switch main
+git pull
+git merge hotfix/<branch name>
+git switch develop
+git pull
+git merge hotfix/<branch name>
+```
+
+Now the hotfix is merged into `main` and `develop` and the hotfix branch can be deleted. Production can be updated from the `main` branch and the development can continue on the `develop` branch.
