@@ -5,7 +5,8 @@
     "policies": "Policies",
     "nav": {
         "apply": "Purchase protection",
-        "policies": "Policies"
+        "policies": "Policies",
+        "contracts": "Contracts"
     },
     "action": {
         "connect": "Connect wallet",
@@ -58,6 +59,15 @@
         "delayed": "Delayed",
         "cancelled": "Cancelled",
         "landed": "Landed"
+    },
+    "contracts": {
+        "title": "Flight delay contract addresses",
+        "product_contract": "Flight delay product contract",
+        "tokenhandler_contract": "Token handler contract",
+        "nft_contract": "NFT contract",
+        "flight_nft_contract": "Flight NFT contract (Metadata)",
+        "token_contract": "{{token}} Token contract",
+        "stay_safe": "Stay safe and always verify contract addresses from official sources before interacting with them!"
     },
     "error": {
         "field": {
