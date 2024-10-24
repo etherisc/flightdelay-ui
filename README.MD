@@ -18,6 +18,7 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS`: The number of decimals of the premium token
 
 - `NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS`: The address of the product contract 
+- `NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS`: The address of the product token handler contract
 - `NEXT_PUBLIC_POOL_CONTRACT_ADDRESS`: The address of the flight pool contract
 - `NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS`: The address of the flight oracle contract
 - `NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS`: The address of the flight NFT contract

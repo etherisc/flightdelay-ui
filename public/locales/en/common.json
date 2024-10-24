@@ -6,7 +6,7 @@
     "nav": {
         "apply": "Purchase protection",
         "policies": "Policies",
-        "contracts": "Our contracts"
+        "contracts": "Contracts"
     },
     "action": {
         "connect": "Connect wallet",
@@ -61,7 +61,7 @@
         "landed": "Landed"
     },
     "contracts": {
-        "title": "Official flight delay contracts",
+        "title": "Flight delay contract addresses",
         "product_contract": "Flight delay product contract",
         "tokenhandler_contract": "Token handler contract",
         "nft_contract": "NFT contract",
