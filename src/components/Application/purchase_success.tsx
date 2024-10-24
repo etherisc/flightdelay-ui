@@ -1,12 +1,12 @@
-import { Alert, Dialog, DialogActions, DialogContent, Typography } from "@mui/material";
+import { Alert, Dialog, DialogActions, DialogContent } from "@mui/material";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { resetFlightData } from "../../redux/slices/flightData";
 import { resetPurchase } from "../../redux/slices/purchase";
 import { RootState } from "../../redux/store";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
-import { useState } from "react";
 
 export default function PurchaseSuccess({ purchaseSuccessful } : { purchaseSuccessful: boolean }) {
     const carrier = useSelector((state: RootState) => state.flightData.carrier);
