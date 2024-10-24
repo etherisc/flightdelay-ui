@@ -36,42 +36,42 @@ export default function Contracts() {
                                     <Trans k="contracts.stay_safe" />
                                 </b>
                             </Grid>
-                            <Grid size={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <Trans k="contracts.product_contract" />
                             </Grid>
-                            <Grid size={8}>
+                            <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
                                 <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
                                     {NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS}
                                 </Link>
                             </Grid>
-                            <Grid size={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <Trans k="contracts.tokenhandler_contract" />
                             </Grid>
-                            <Grid size={8}>
+                            <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
                                 <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
                                     {NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}
                                 </Link>
                             </Grid>
-                            <Grid size={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <Trans k="contracts.nft_contract" />
                             </Grid>
-                            <Grid size={8}>
+                            <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
                                 <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
                                     {NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}
                                 </Link>
                             </Grid>
-                            <Grid size={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <Trans k="contracts.flight_nft_contract" />
                             </Grid>
-                            <Grid size={8}>
+                            <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
                                 <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
                                     {NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS}
                                 </Link>
                             </Grid>
-                            <Grid size={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <Trans k="contracts.token_contract" values={{ token: NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL }} />
                             </Grid>
-                            <Grid size={8}>
+                            <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
                                 <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
                                     {NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS}
                                 </Link>
