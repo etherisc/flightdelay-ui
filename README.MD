@@ -20,6 +20,7 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS`: The address of the product contract 
 - `NEXT_PUBLIC_POOL_CONTRACT_ADDRESS`: The address of the flight pool contract
 - `NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS`: The address of the flight oracle contract
+- `NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS`: The address of the flight NFT contract
 - `RISKPOOL_MIN_CAPACITY`: The minimum capacity of the risk pool in wei. If the capacity is below this value, the policy creation will not be possible.
 - `STATISTICS_PROVIDER_MIN_BALANCE`: The minimum balance of the statistics provider. If the balance is below this value, the provider will not be able to create new policies and the readiness check will fail.
 - `STATISTICS_PROVIDER_MNEMONIC`: The mnemonic of the statistics provider. This account is used to create the policies. 

@@ -82,6 +82,7 @@ export function useMyPolicies() {
         const flightRiskData = await decodeRiskData(info.data);
         const flightDataTokens = decodeOzShortString(flightRiskData.flightData).split(" ");
         console.log("converting risk data", riskId, flightDataTokens, flightRiskData);
+        // this is a workaround for issue #142 to handle the case when the data is stored as bytes32 and as string
         const departureTimeLocal = flightRiskData.departureTimeLocal.startsWith("0x") ? toUtf8String(flightRiskData.departureTimeLocal) :  flightRiskData.departureTimeLocal;
         const arrivalTimeLocal = flightRiskData.arrivalTimeLocal.startsWith("0x") ? toUtf8String(flightRiskData.arrivalTimeLocal) :  flightRiskData.arrivalTimeLocal;
         const statusStr = toUtf8String(flightRiskData.status);
