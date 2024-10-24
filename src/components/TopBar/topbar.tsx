@@ -71,14 +71,19 @@ export default function TopBar() {
                 <MenuItem onClick={goto("/policies")}><Trans k="nav.policies" /></MenuItem>
             </Menu>
             <Image src="/assets/images/etherisc_logo_blue.svg" alt="Etherisc Logo" width={120} height="46"/>
-            <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 2, display: { 'xs': 'none', 'md': 'inherit'} }} >
+            <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 3, display: { 'xs': 'none', 'md': 'inherit'} }} >
                 <Link href="/apply" color="inherit" sx={{ textDecoration: 'none' }}>
                     <Trans k="nav.apply" />
                 </Link>
             </Typography>
-            <Typography variant="h2" component="div" sx={{ flexGrow: 1, ml: 2, display: { 'xs': 'none', 'md': 'inherit'} }}>
+            <Typography variant="h2" component="div" sx={{ flexGrow: 0, ml: 3, display: { 'xs': 'none', 'md': 'inherit'} }}>
                 <Link href="/policies" color="inherit" sx={{ textDecoration: 'none' }}>
                     <Trans k="nav.policies" />
+                </Link>
+            </Typography>
+            <Typography variant="h2" component="div" sx={{ flexGrow: 1, ml: 3, display: { 'xs': 'none', 'md': 'inherit'} }}>
+                <Link href="/contracts" color="inherit" sx={{ textDecoration: 'none' }}>
+                    <Trans k="nav.contracts" />
                 </Link>
             </Typography>
             <Box sx={{ flexGrow: 1 }}>&nbsp;</Box>
