@@ -1,19 +1,13 @@
 import { Autocomplete, TextField } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import { DatePicker } from "@mui/x-date-pickers";
-import { useDebounce } from "@react-hooks-hub/use-debounce";
 import dayjs from "dayjs";
-import { useEffect } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useEnvContext } from "next-runtime-env";
+import { Control, Controller, FormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import carrierData from "../../config/carrierData.json";
 import { INPUT_VARIANT } from "../../config/theme";
-import { resetErrors, setFlight } from "../../redux/slices/flightData";
-import { AppDispatch, RootState } from "../../redux/store";
-import { fetchFlightData } from "../../redux/thunks/flightData";
 import Trans from "../Trans/trans";
-import { useEnvContext } from "next-runtime-env";
 
 export type IApplicationFormValues = {
     carrier: string;
@@ -21,58 +15,17 @@ export type IApplicationFormValues = {
     departureDate: dayjs.Dayjs;
 };
 
-export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
+export default function ApplicationForm({disableForm, formState, control}: {disableForm: boolean, formState: FormState<IApplicationFormValues>, control: Control<IApplicationFormValues, unknown> }) {
     const { t } = useTranslation();
-    const dispatch = useDispatch() as AppDispatch;
-    const stateCarrier = useSelector((state: RootState) => state.flightData.carrier);
-    const stateFlightNumber = useSelector((state: RootState) => state.flightData.flightNumber);
-    const stateDepartureDate = useSelector((state: RootState) => state.flightData.departureDate);
     const { NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS, NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO } = useEnvContext();
 
     const departureDateMin = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS || '14'), 'd');
     const departureDateMax = (NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO !== undefined) ? dayjs(NEXT_PUBLIC_DEPARTURE_DATE_DATE_TO) : dayjs().add(parseInt(NEXT_PUBLIC_DEPARTURE_DATE_MAX_DAYS || '60'), 'd');
-
-    const sendRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
-        // only send again if data is changed
-        if (carrier !== stateCarrier || flightNumber !== stateFlightNumber || departureDate.toISOString() !== stateDepartureDate) {
-            dispatch(resetErrors());
-            dispatch(setFlight({ carrier, flightNumber, departureDate: departureDate.toISOString() }));
-            dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
-        }
-    };
-
-    const debouncedFetchFlightData = useDebounce(sendRequest, 600);
-
-    const { handleSubmit, control, formState, watch } = useForm<IApplicationFormValues>({
-        mode: "onChange",
-        reValidateMode: "onChange",
-        shouldFocusError: false,
-        defaultValues: {
-            carrier: "",
-            flightNumber: "",
-            departureDate: departureDateMin,
-        }
-    });
-
-    const formValues = watch();
-    useEffect(() => {
-        if (formState.isValid) {
-            debouncedFetchFlightData(formValues.carrier, formValues.flightNumber, formValues.departureDate);
-        }
-    }, [formValues, debouncedFetchFlightData, formState.isValid]);
-
-    const onSubmit: SubmitHandler<IApplicationFormValues> = (data) => {
-        // do nothing, just log for now
-        console.log(data);
-        console.log(formState);
-    };
     
-    const carrierOptionsList = () => 
-        carrierData.carriers.map((e) => ({ label: `${e.name} (${e.iata})`, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
-
+    const carrierOptionsList = carrierData.carriers.map((e) => ({ label: `${e.name} (${e.iata})`, code: e.iata })).sort((a, b) => a.label.localeCompare(b.label));
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
+        <form style={{ height: '100%' }}>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 5}}>
                     <Controller
@@ -84,7 +37,8 @@ export default function ApplicationForm({disableForm}: {disableForm: boolean}) {
                         render={({ field }) => 
                             <Autocomplete
                                 fullWidth
-                                options={carrierOptionsList()}
+                                options={carrierOptionsList}
+                                value={carrierOptionsList.find(e => e.code === field.value) || null}
                                 renderInput={(params) => 
                                     <TextField 
                                         {...field}
