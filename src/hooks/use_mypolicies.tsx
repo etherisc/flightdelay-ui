@@ -54,7 +54,7 @@ export function useMyPolicies() {
                 })));
             console.log("found policy infos", policyInfos);
 
-            // TODO: 3. fetch flight data from the risk the policy is covering
+            // 3. fetch flight data from the risk the policy is covering
             const riskIDs = policyInfos.map(info => info.riskId).filter((item, i, ar) => ar.indexOf(item) === i);
             console.log("found risk ids", riskIDs);
             const riskInfos = await getRiskInfos(riskIDs, async (riskId, info) => {
@@ -62,7 +62,7 @@ export function useMyPolicies() {
             });
             console.log("found risk infos", riskInfos);
 
-            // TODO: 4. fetch claim/payout data for policy nft id
+            // 4. fetch claim/payout data for policy nft id
             policyNftIds.forEach(async policyNftId => {
                 if (policyNftIds.length > 5) { // when too many, sleep a bit to avoid rate limiting on the rpc node
                     await new Promise(resolve => setTimeout(resolve, 50));
