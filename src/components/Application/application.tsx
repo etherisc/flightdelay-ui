@@ -1,6 +1,6 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, Modal, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Alert, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, Modal, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
@@ -11,11 +11,10 @@ import { useWallet } from "../../hooks/onchain/use_wallet";
 import useApplication from "../../hooks/use_application";
 import { setAirportWhitelist } from "../../redux/slices/flightData";
 import { RootState } from "../../redux/store";
-import { Reason } from "../../types/errors";
 import { formatAmount } from "../../utils/amount";
-import { logOnBackend } from "../../utils/logger";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
+import { ApplicationError } from "./application_error";
 import ApplicationForm from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseSuccess from "./purchase_success";
@@ -35,22 +34,9 @@ export default function Application() {
     const executingPurchase = useSelector((state: RootState) => state.purchase.isExecuting);
 
     // prepare data
-    const departureAirport = flightDataState.departureAirport;
-    const arrivalAirport = flightDataState.arrivalAirport;
-    const carrier = flightDataState.carrier;
-    const flightNumber = flightDataState.flightNumber;
-    const isDepartureAirportWhiteListed = flightDataState.departureAirport?.whitelisted || false;
-    const isArrivalAirportWhiteListed = flightDataState.arrivalAirport?.whitelisted || false;
-    const isDepartureAirportBlackListed = flightDataState.departureAirport?.blacklisted || false;
-    const isArrivalAirportBlackListed = flightDataState.arrivalAirport?.blacklisted || false;
     const loadingFlightData = flightDataState.loading;
     const loadingQuote = flightDataState.loadingQuote;
     const flightFound = ! flightDataState.loading && !flightDataState.loadingQuote && flightDataState.arrivalAirport !== null && flightDataState.premium !== null;
-
-    // errors
-    const errorMessage = useSelector((state: RootState) => state.flightData.errorMessage);
-    const errorLevel = useSelector((state: RootState) => state.flightData.errorLevel);
-    const errorReasonApi = useSelector((state: RootState) => state.flightData.errorReasonApi);
 
     const flightDataRef = useRef(null);
 
@@ -70,66 +56,6 @@ export default function Application() {
             flightDataRef.current?.scrollIntoView({ behavior: "smooth" });
         }
     }, [flightFound]);
-
-    useEffect(() => {
-        if ((departureAirport?.iata !== null && departureAirport?.whitelisted === false) && (arrivalAirport?.iata !== null && arrivalAirport?.whitelisted === false)) {
-            logOnBackend(`Airport not whitelisted - ${carrier} ${flightNumber} ${departureAirport?.iata} - ${arrivalAirport?.iata}`);
-        }
-        if ((departureAirport?.iata !== null && departureAirport?.blacklisted === true) || (arrivalAirport?.iata !== null && arrivalAirport?.blacklisted === true)) {
-            logOnBackend(`Airport blacklisted - ${carrier} ${flightNumber} ${departureAirport?.iata} - ${arrivalAirport?.iata}`);
-        }
-    }, [departureAirport, arrivalAirport, carrier, flightNumber]);
-
-    
-    let error = <></>;
-
-    if (flightFound && isDepartureAirportBlackListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error">
-                <Trans k="error.airport_blacklisted" values={{ airport: departureAirport?.iata }} >
-                    <a href="/airports" target="_blank" rel="noreferrer noopener"></a>
-                </Trans>
-            </Alert>
-        </Box>;
-    } else if (flightFound && isArrivalAirportBlackListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error">
-                <Trans k="error.airport_blacklisted" values={{ airport: arrivalAirport?.iata }} >
-                    <a href="/airports" target="_blank" rel="noreferrer noopener"></a>
-                </Trans>
-            </Alert>
-        </Box>;
-    } else if (flightFound && ! isDepartureAirportWhiteListed && ! isArrivalAirportWhiteListed) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity="error">
-                <Trans k="error.airport_not_whitelisted" values={{ dep: departureAirport?.iata, arr: arrivalAirport?.iata }}>
-                    <a href="/airports" target="_blank" rel="noreferrer noopener"></a>
-                </Trans>
-            </Alert>
-        </Box>;
-    } else if (errorReasonApi !== null) {
-        switch(errorReasonApi) {
-            case Reason.NOT_ENOUGH_DATA_FOR_QUOTE:
-                error = <Box sx={{ py: 2 }}>
-                    <Alert severity="error"><Trans k="error.not_enough_data" /></Alert>
-                </Box>;
-                break;
-            case Reason.NOT_ENOUGH_CAPACITY:
-                error = <Box sx={{ py: 2 }}>
-                    <Alert severity="error"><Trans k="error.riskpool_not_enough_caoacity_for_flight" /></Alert>
-                </Box>;
-                break;
-            default:
-                error = <Box sx={{ py: 2 }}>
-                    <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
-                </Box>;
-        }
-        
-    } else if (errorMessage !== null) {
-        error = <Box sx={{ py: 2 }}>
-            <Alert severity={errorLevel as AlertColor || 'error'}>{errorMessage}</Alert>
-        </Box>;
-    } 
 
     let flightDataLoading = <></>;
     if (loadingFlightData || loadingQuote) {
@@ -210,7 +136,7 @@ export default function Application() {
                 <ApplicationForm disableForm={executingPurchase || purchaseSuccessful} />
                 {flightDataLoading}
                 {flightData}
-                {error}
+                <ApplicationError flightFound={flightFound} flightData={flightDataState} />
             </CardContent>
             <CardActions sx={{ flexDirection: 'column'}}>
                 <Actions 
