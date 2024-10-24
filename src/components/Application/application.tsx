@@ -1,6 +1,6 @@
 import { faCartShopping, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, Modal, SvgIcon, Theme, useMediaQuery } from "@mui/material";
+import { Alert, AlertColor, Box, Card, CardActions, CardContent, CardHeader, CircularProgress, LinearProgress, Modal, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
@@ -206,6 +206,11 @@ export default function Application() {
                 title={isSmallScreen ? t('app.title.short') : t('app.title')}
                 />
             <CardContent>
+                <Box sx={{ mb: 4 }}>
+                    <Typography variant="body2" component="p">
+                        <Trans k="application_instructions" />
+                    </Typography>
+                </Box>
                 <ApplicationForm disableForm={executingPurchase || purchaseSuccessful} />
                 {flightDataLoading}
                 {flightData}
@@ -215,6 +220,14 @@ export default function Application() {
                 {(!executingPurchase && !purchaseSuccessful) && button}
                 {executingPurchase && executePurchase}
                 {(!executingPurchase && purchaseSuccessful) && <PurchaseSuccess />}
+                <Box sx={{ py: 2 }}>
+                    <Typography variant="body2" component="p" color="textSecondary">
+                        <Trans k="purchase_disclaimer">
+                            <a href="https://www.circle.com/multi-chain-usdc/base" target="_blank" rel="noreferrer noopener" className="link"></a>
+                            <a href="https://www.base.org/" target="_blank" rel="noreferrer noopener" className="link"></a>
+                        </Trans>
+                    </Typography>
+                </Box>
             </CardActions>
         </Card>
     </>);

@@ -45,7 +45,7 @@ export default function TopBar() {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, pl: { xs: 2, md: 4 }, pr: 4, mb: { xs: 0, md: 6} , backgroundColor: grey[200] }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, pl: { xs: 2, md: 4 }, pr: 4, mb: { xs: 0, md: 2} , backgroundColor: grey[200] }}>
             <IconButton onClick={toggleMenu} sx={{ p: 0 }}>
                 <SvgIcon sx={{ mr: 1, display: { xs: 'block', md: 'none' } }} fontSize="small" color="primary">
                     <FontAwesomeIcon icon={faBars} />
