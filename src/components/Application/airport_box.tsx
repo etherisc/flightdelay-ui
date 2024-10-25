@@ -1,4 +1,4 @@
-import { faPlane } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Divider, SvgIcon, Typography } from "@mui/material";
 import dayjs from "dayjs";
@@ -91,6 +91,8 @@ export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null 
                 </SvgIcon>
             </Box>
             <Typography variant="caption" sx={{ lineHeight: 0.5 }}>
+                <FontAwesomeIcon icon={faClock} />
+                &nbsp;
                 {ontimepercent ? (ontimepercent * 100).toFixed(0) : ""}%
             </Typography>
         </Box>
