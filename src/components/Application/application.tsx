@@ -136,7 +136,7 @@ export default function Application() {
                 {flightFound && <FlightData />}
                 <ApplicationError flightFound={flightFound} flightData={flightDataState} />
             </CardContent>
-            <CardActions sx={{ flexDirection: 'column'}}>
+            <CardActions sx={{ flexDirection: 'column', p: 2}}>
                 <Actions 
                     button={button} 
                     executingPurchase={executingPurchase} 
