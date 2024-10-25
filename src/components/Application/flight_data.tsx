@@ -27,7 +27,20 @@ export default function FlightData() {
         if (date === null) {
             return '';
         }
-        return dayjs(date).format('HH:mm');
+        const d = dayjs(date);
+        return <>{d.format('HH:mm')}</>;
+    }
+
+    function nextDay(departureTime: string | null, arrivalTime: string | null) {
+        if (departureTime === null || arrivalTime === null) {
+            return undefined;
+        }
+        const d1 = dayjs(departureTime);
+        const d2 = dayjs(arrivalTime);
+        if (d2.isAfter(d1)) {
+            return <>&nbsp;(+1 <Trans k="day" />)</>;    
+        }
+        return undefined;
     }
 
     
@@ -59,7 +72,10 @@ export default function FlightData() {
                 </Typography>
             </Grid>
             <Grid size={5}>
-                <Trans k="arrivalTime" />&nbsp;{formatTime(arrivalTime)}
+                <Trans k="arrivalTime" />
+                &nbsp;
+                {formatTime(arrivalTime)}
+                {nextDay(departureTime, arrivalTime)}
             </Grid>
             {showPremium && <>
                 <Grid size={1}>
@@ -99,10 +115,19 @@ export default function FlightData() {
         </Grid>
         <Grid container sx={{ mt: 4 }} spacing={1} display={{ xs: 'flex', md: 'none'}}>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneDeparture} /><Typography ml={1} fontWeight={700} component="span">{departureAirport?.iata}</Typography> @ {formatTime(departureTime)}
+                <FontAwesomeIcon icon={faPlaneDeparture} />
+                <Typography ml={1} fontWeight={700} component="span">
+                    {departureAirport?.iata}
+                </Typography> 
+                @ {formatTime(departureTime)}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneArrival} /><Typography ml={1} fontWeight={700} component="span">{arrivalAirport?.iata}</Typography> @ {formatTime(arrivalTime)}
+                <FontAwesomeIcon icon={faPlaneArrival} />
+                <Typography ml={1} fontWeight={700} component="span">
+                    {arrivalAirport?.iata}
+                </Typography> 
+                @ {formatTime(arrivalTime)} 
+                {nextDay(departureTime, arrivalTime)}
             </Grid>
             {showPremium && <>
                 <Grid size={12}>
