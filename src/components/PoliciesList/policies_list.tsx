@@ -8,18 +8,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
-import { RiskData } from "../../types/risk_data";
 import { formatAmount } from "../../utils/amount";
 import { dayjs } from "../../utils/date";
 import Trans from "../Trans/trans";
 
 
-export default function PoliciesList() {
+export default function PoliciesList({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
     const { t } = useTranslation();
     const isConnected = useSelector((state: RootState) => state.wallet.isConnected);
-    const loading = useSelector((state: RootState) => state.policies.loading);
-    const policies = useSelector((state: RootState) => state.policies.policies);
-    const risks = useSelector((state: RootState) => state.policies.risks);
     const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
 
     
@@ -76,10 +72,6 @@ export default function PoliciesList() {
         </Typography>;
     }
 
-    function findRisk(riskId: string): RiskData | null {
-        return risks.find(risk => risk.riskId === riskId) || null;
-    }
-
     function formatPayoutAmount(payoutAmount: string, status: string): JSX.Element {
         if (status == 'S') {
             return <></>;
@@ -102,7 +94,6 @@ export default function PoliciesList() {
             field: 'carrier',
             headerName: t('table.header.carrier'),
             flex: 0.4,
-            valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
             sortComparator: (v1, v2) => {
                 if (v1 === null || v1.carrier === null) {
                     return -1;
@@ -112,19 +103,14 @@ export default function PoliciesList() {
                 }
                 return v1.carrier.localeCompare(v2.carrier);
             },
-            renderCell: (params) => {
-                if (params.value === null) {
-                    return '';
-                }
-                
-                return params.value.carrier;
-            }
+            // renderCell: (params) => {
+            //     return params.value.carrier;
+            // }
         },
         {
             field: 'flightNumber',
             headerName: t('table.header.flightNumber'),
             flex: 0.4,
-            valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
             sortComparator: (v1, v2) => {
                 if (v1 === null || v1.flightNumber === null) {
                     return -1;
@@ -134,47 +120,35 @@ export default function PoliciesList() {
                 }
                 return v1.flightNumber.localeCompare(v2.flightNumber);
             },
-            renderCell: (params) => {
-                if (params.value === null) {
-                    return '';
-                }
-                
-                return params.value.flightNumber;
-            }
+            // renderCell: (params) => {
+            //     return params.value.flightNumber;
+            // }
         },
         {
             field: 'departureDate',
             headerName: t('table.header.departureDate'),
             flex: 0.7,
-            valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
             sortComparator: (v1, v2) => {
-                if (v1 === null || v1.departureDate === null) {
+                if (v1 === null || v1 === null) {
                     return -1;
                 }
-                if (v2 === null || v2.departureDate === null) {
+                if (v2 === null || v2 === null) {
                     return 1;
                 }
-                return v1.departureDate.localeCompare(v2.departureDate);
+                return v1.localeCompare(v2);
             },
             renderCell: (params) => {
-                if (params.value === null) {
-                    return '';
-                }
-                const d = params.value.departureDate;
+                const d = params.value;
                 return `${d.substr(0, 4)}-${d.substr(4, 2)}-${d.substr(6, 2)}`;
             }
         },
         {
-            field: 'flightData',
+            field: 'flightPlan',
             headerName: t('table.header.flightData'),
             flex: 1,
             sortable: false,
-            valueGetter: (_value, row: PolicyData) => findRisk(row.riskId),
             renderCell: (params) => {
-                if (params.value === null) {
-                    return '';
-                }
-                return <FlightData value={params.value.flightPlan as FlightPlan} />
+                return <FlightData value={params.value} />
             }
         },
         {
@@ -184,13 +158,9 @@ export default function PoliciesList() {
             sortable: false,
             valueGetter: (_value, row: PolicyData) => row,
             renderCell: (params) => {
-                const risk = findRisk(params.value.riskId)
-                if (risk === null) {
-                    return '';
-                }
                 return <>
-                    {formatState(risk.flightPlan as FlightPlan)}
-                    {formatPayoutAmount(params.value.payoutAmount, risk.flightPlan?.status || 'S')}
+                    {formatState(params.value.flightPlan as FlightPlan)}
+                    {formatPayoutAmount(params.value.payoutAmount, params.value.flightPlan?.status || 'S')}
                 </>;
             }
         }
@@ -212,6 +182,7 @@ export default function PoliciesList() {
     }
 
     function FlightData({ value }: { value: FlightPlan }) {
+        // console.log("FlightData", value);
         const departue = dayjs.tz(value.departureTimeLocal, value.departureTimeLocalTimezone!);
         const arrival = dayjs.tz(value.arrivalTimeLocal, value.arrivalTimeLocalTimezone!);
         let day = <></>;

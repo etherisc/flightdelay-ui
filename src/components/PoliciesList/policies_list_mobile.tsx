@@ -6,13 +6,12 @@ import Grid from '@mui/material/Grid2';
 import { useTranslation } from "react-i18next";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
-import { RiskData } from "../../types/risk_data";
 import { dayjs } from "../../utils/date";
 import Trans from "../Trans/trans";
 import { useEnvContext } from "next-runtime-env";
 import { formatAmount } from "../../utils/amount";
 
-export default function PoliciesListMobile({ policies, risks, loading }: { policies: PolicyData[], risks: RiskData[], loading: boolean }) {
+export default function PoliciesListMobile({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
 
     let loadingIndicator = undefined;
     if (loading) {
@@ -27,12 +26,12 @@ export default function PoliciesListMobile({ policies, risks, loading }: { polic
     return (<>
         {loadingIndicator}
         {policies.map((policy) => {
-            return <Policy policy={policy} risk={risks.find(risk => risk.riskId === policy.riskId)} key={policy.nftId} />
+            return <Policy policy={policy} key={policy.nftId} />
         })}
     </>);
 }
 
-function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefined }) {
+function Policy({ policy }: { policy: PolicyData }) {
     const { t } = useTranslation();
     const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
 
@@ -93,22 +92,12 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
         }
     }
 
-    if (risk === undefined) {
-        return (<Box sx={{ pb: 1, mb: 1, borderBottom: '1px solid', borderBottomColor: grey[300] }}>
-            <Grid container spacing={1}>
-                <Grid size={6}>
-                    {t("table.header.nftId")}: {policy.nftId}
-                </Grid>
-            </Grid>
-        </Box>);
-    }
-    
     let departure = undefined;
     let arrival = undefined;
 
-    if (risk.flightPlan !== null) {
-        departure = dayjs.tz(risk.flightPlan.departureTimeLocal, risk.flightPlan.departureTimeLocalTimezone!);
-        arrival = dayjs.tz(risk.flightPlan.arrivalTimeLocal, risk.flightPlan.arrivalTimeLocalTimezone!);
+    if (policy.flightPlan !== null) {
+        departure = dayjs.tz(policy.flightPlan.departureTimeLocal, policy.flightPlan.departureTimeLocalTimezone!);
+        arrival = dayjs.tz(policy.flightPlan.arrivalTimeLocal, policy.flightPlan.arrivalTimeLocalTimezone!);
     }
 
     return (<Box sx={{ pb: 1, mb: 1, borderBottom: '1px solid', borderBottomColor: grey[300] }}>
@@ -117,17 +106,17 @@ function Policy({ policy, risk }: { policy: PolicyData, risk: RiskData | undefin
                 {t("table.header.nftId")}: {policy.nftId}
             </Grid>
             <Grid size={6} sx={{ textAlign: 'right'}}>
-                <b>{t('flight')}: {risk.carrier} {risk.flightNumber}</b>
+                <b>{t('flight')}: {policy.carrier} {policy.flightNumber}</b>
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {risk.flightPlan?.departureAirportFsCode} @ {departure?.format('HH:mm')}
+                <FontAwesomeIcon icon={faPlaneDeparture} /> {t('from')} {policy.flightPlan?.departureAirportFsCode} @ {departure?.format('HH:mm')}
             </Grid>
             <Grid size={12}>
-                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {risk.flightPlan?.arrivalAirportFsCode} @ {arrival?.format('HH:mm')}
+                <FontAwesomeIcon icon={faPlaneArrival} /> {t('to')} {policy.flightPlan?.arrivalAirportFsCode} @ {arrival?.format('HH:mm')}
             </Grid>
             <Grid size={12}>
-                {formatState(risk.flightPlan!)}
-                {formatPayoutAmount(policy.payoutAmount, risk.flightPlan?.status || 'S')}
+                {formatState(policy.flightPlan!)}
+                {formatPayoutAmount(policy.payoutAmount, policy.flightPlan?.status || 'S')}
             </Grid>
         </Grid>
     </Box>);

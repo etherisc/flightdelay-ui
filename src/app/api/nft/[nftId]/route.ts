@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params } : { params: { nftId: 
     const signer = await getStatisticsProviderSigner();
 
     const flightNft = FlightNft__factory.connect(FLIGHT_NFT_CONTRACT_ADDRESS, signer);
-    const riskData = await flightNft.getRiskData(params.nftId);
+    const riskData = await flightNft.getPolicyData(params.nftId);
     LOGGER.debug(`risk data for: ${params.nftId}: ${riskData}`);
 
     // this is a workaround for issue #142 to handle the case when the data is stored as bytes32 and as string

@@ -1,30 +1,32 @@
-import { BytesLike, getNumber, hexlify, toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { IRisk } from "../contracts/gif/instance/InstanceReader";
-import { addOrUpdatePolicy, addOrUpdateRisk, resetPolicies, setLoading, setPayoutAmount } from "../redux/slices/policies";
-import { RiskData } from "../types/risk_data";
+import { addOrUpdatePolicy, resetPolicies, setLoading, setPayoutAmount } from "../redux/slices/policies";
+import { FlightPlan } from "../types/flight_plan";
+import { PolicyData } from "../types/policy_data";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
 import { useERC721Contract } from "./onchain/use_erc721_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
+import { FlightPolicyData, useFlightNftContract } from "./onchain/use_flightnft_contract";
 import { useInstanceReaderContract } from "./onchain/use_instance_reader";
 import { useRegistryContract } from "./onchain/use_registry_contract";
-import { decodeOzShortString } from "../utils/oz_shortstring";
+import { toUtf8String } from "ethers";
+import { adjustToUtc } from "../utils/time";
 
 const NFT_ID_TYPE_POLICY = BigInt(21);
 
 export function useMyPolicies() {
     const [ error, setError ] = useState<Error | undefined>(undefined);
-    const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS } = useEnvContext();
+    const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS } = useEnvContext();
     // const router = useRouter();
 
     const dispatch = useDispatch();
     const { getNftIds } = useERC721Contract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { getObjectInfos } = useRegistryContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { getNftId, decodeRiskData } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
-    const { getPolicyInfos, getRiskInfos, getPayoutAmount } = useInstanceReaderContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getNftId } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getPayoutAmount } = useInstanceReaderContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
+    const { getFlightPolicyData } = useFlightNftContract(NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS!);
 
     async function fetchPolicies() {
         dispatch(resetPolicies());
@@ -46,23 +48,11 @@ export function useMyPolicies() {
             // console.log("found policy object infos", objectInfos);
 
             // 2. fetch policy data for each nft id
-            const policyInfos = await getPolicyInfos(policyNftIds, (nftId, info) => 
-                dispatch(addOrUpdatePolicy({
-                    nftId: nftId.toString(),
-                    riskId: hexlify(info.riskId),
-                    payoutAmount: BigInt(0).toString(),
-                })));
+            const policyInfos = await getFlightPolicyData(policyNftIds, (nftId, data) => 
+                dispatch(addOrUpdatePolicy(extractPolicyData(nftId, data))));
             console.log("found policy infos", policyInfos);
 
-            // 3. fetch flight data from the risk the policy is covering
-            const riskIDs = policyInfos.map(info => info.riskId).filter((item, i, ar) => ar.indexOf(item) === i);
-            console.log("found risk ids", riskIDs);
-            const riskInfos = await getRiskInfos(riskIDs, async (riskId, info) => {
-                dispatch(addOrUpdateRisk(await convertRiskData(riskId, info)));
-            });
-            console.log("found risk infos", riskInfos);
-
-            // 4. fetch claim/payout data for policy nft id
+            // 3. fetch claim/payout data for policy nft id
             policyNftIds.forEach(async policyNftId => {
                 if (policyNftIds.length > 5) { // when too many, sleep a bit to avoid rate limiting on the rpc node
                     await new Promise(resolve => setTimeout(resolve, 50));
@@ -81,33 +71,34 @@ export function useMyPolicies() {
         }
     }
 
-    async function convertRiskData(riskId: BytesLike, info: IRisk.RiskInfoStruct): Promise<RiskData> {
-        const flightRiskData = await decodeRiskData(info.data);
-        const flightDataTokens = decodeOzShortString(flightRiskData.flightData).split(" ");
-        console.log("converting risk data", riskId, flightDataTokens, flightRiskData);
+    function extractPolicyData(nftId: bigint, data: FlightPolicyData): PolicyData {
+        const flightPlanTokens = data.flightData.split(" ");
+
         // this is a workaround for issue #142 to handle the case when the data is stored as bytes32 and as string
-        const departureTimeLocal = flightRiskData.departureTimeLocal.startsWith("0x") ? toUtf8String(flightRiskData.departureTimeLocal) :  flightRiskData.departureTimeLocal;
-        const arrivalTimeLocal = flightRiskData.arrivalTimeLocal.startsWith("0x") ? toUtf8String(flightRiskData.arrivalTimeLocal) :  flightRiskData.arrivalTimeLocal;
-        const statusStr = toUtf8String(flightRiskData.status);
-        const status = ( statusStr !== '\0') ? toUtf8String(flightRiskData.status) : "S";
+        const departureTimeLocal = data.departureTimeLocal.startsWith("0x") ? toUtf8String(data.departureTimeLocal) : data.departureTimeLocal;
+        const arrivalTimeLocal = data.arrivalTimeLocal.startsWith("0x") ? toUtf8String(data.arrivalTimeLocal) : data.arrivalTimeLocal;
+        const status = data.status === "0x00" ? "S" : toUtf8String(data.status);
+
         return {
-            riskId: hexlify(riskId),
-            carrier: flightDataTokens[0],
-            flightNumber: flightDataTokens[1],
-            departureDate: flightDataTokens[4],
+            nftId: nftId.toString(),
+            riskId: data.riskId,
+            payoutAmount: "0",
+            carrier: flightPlanTokens[0],
+            flightNumber: flightPlanTokens[1],
+            departureDate: flightPlanTokens[4],
             flightPlan: {
                 status: status,
-                departureAirportFsCode: flightDataTokens[2],
-                arrivalAirportFsCode: flightDataTokens[3],
-                departureTimeUtc: getNumber(flightRiskData.departureTime),
+                departureAirportFsCode: flightPlanTokens[2],
+                arrivalAirportFsCode: flightPlanTokens[3],
+                departureTimeUtc: adjustToUtc(departureTimeLocal.split(" ")[0], departureTimeLocal.split(" ")[1]).unix(),
                 departureTimeLocal: departureTimeLocal.split(" ")[0],
                 departureTimeLocalTimezone: departureTimeLocal.split(" ")[1],
-                arrivalTimeUtc: getNumber(flightRiskData.arrivalTime),
+                arrivalTimeUtc: adjustToUtc(arrivalTimeLocal.split(" ")[0], arrivalTimeLocal.split(" ")[1]).unix(),
                 arrivalTimeLocal: arrivalTimeLocal.split(" ")[0],
                 arrivalTimeLocalTimezone: arrivalTimeLocal.split(" ")[1],
-                delay: getNumber(flightRiskData.delayMinutes), 
-            }
-        };
+                delay: parseInt(data.delayMinutes.toString()),
+            } as FlightPlan,
+        } as PolicyData;
     }
 
     function handleError(err: unknown) {
