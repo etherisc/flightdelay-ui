@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import commonReducer from './slices/common';
 import flightDataReducer from './slices/flightData';
 import policiesReducer from './slices/policies';
+import policyReducer from './slices/policy';
 import purchaseReducer from './slices/purchase';
 import walletReducer from './slices/wallet';
 
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     wallet: walletReducer,
     flightData: flightDataReducer,
     policies: policiesReducer,
+    policy: policyReducer,
     purchase: purchaseReducer,
 })
 

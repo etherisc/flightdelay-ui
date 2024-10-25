@@ -13,6 +13,7 @@ import { useInstanceReaderContract } from "./onchain/use_instance_reader";
 import { useRegistryContract } from "./onchain/use_registry_contract";
 import { toUtf8String } from "ethers";
 import { adjustToUtc } from "../utils/time";
+import { resetPolicy, setLoadingPolicy, setPolicy } from "../redux/slices/policy";
 
 const NFT_ID_TYPE_POLICY = BigInt(21);
 
@@ -71,6 +72,41 @@ export function useMyPolicies() {
         }
     }
 
+    async function fetchPolicy(nftId: string) {
+        dispatch(resetPolicy());
+        dispatch(setLoadingPolicy(true));
+
+        try {
+            console.log("fetching policy " + nftId);
+
+            // 1. get all policy nft ids for the address and check they are valid and belong to the product
+            const productNftId = await getNftId();
+            console.log("found product nft id", productNftId);
+            // 2. fetch policy data for each nft id
+            const policyInfos = await getFlightPolicyData([BigInt(nftId)], (nftId, data) => 
+                dispatch(setPolicy(extractPolicyData(nftId, data))));
+            console.log("found policy infos", policyInfos);
+
+            // FIXME: make this work again
+            // 3. fetch claim/payout data for policy nft id
+            // policyNftIds.forEach(async policyNftId => {
+            //     if (policyNftIds.length > 5) { // when too many, sleep a bit to avoid rate limiting on the rpc node
+            //         await new Promise(resolve => setTimeout(resolve, 50));
+            //     }
+            //     const payoutAmount = await getPayoutAmount(policyNftId);
+            //     if (payoutAmount !== null && payoutAmount > BigInt(0)) {
+            //         dispatch(setPayoutAmount({ policyNftId: policyNftId.toString(), payoutAmount: payoutAmount.toString() }));
+            //     }
+            // });
+
+            
+        } catch(err) {
+            handleError(err);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     function extractPolicyData(nftId: bigint, data: FlightPolicyData): PolicyData {
         const flightPlanTokens = data.flightData.split(" ");
 
@@ -110,5 +146,6 @@ export function useMyPolicies() {
     return {
         error,
         fetchPolicies,
+        fetchPolicy,
     }
 }
