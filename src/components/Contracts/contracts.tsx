@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardHeader, Link } from "@mui/material";
+import { Badge, Box, Card, CardContent, CardHeader, Link } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
@@ -15,6 +15,7 @@ export default function Contracts() {
         NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL,
         NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS,
         NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL,
+        NEXT_PUBLIC_CONTRACTS_BADGE_TEXT
     } = useEnvContext();
 
     const etherscanBaseUrl = (NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL ? NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL : "https://basescan.org/") + "address/";
@@ -39,45 +40,67 @@ export default function Contracts() {
                             <Trans k="contracts.product_contract" />
                         </Grid>
                         <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
-                            <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
-                                {NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS}
-                            </Link>
+                            <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
+                                <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
+                                    {NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS}
+                                </Link>
+                            </BadgeWrapper>
                         </Grid>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Trans k="contracts.tokenhandler_contract" />
                         </Grid>
                         <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
-                            <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
-                                {NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}
-                            </Link>
+                            <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
+                                <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
+                                    {NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}
+                                </Link>
+                            </BadgeWrapper>
                         </Grid>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Trans k="contracts.nft_contract" />
                         </Grid>
                         <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
-                            <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
-                                {NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}
-                            </Link>
+                            <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
+                                <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
+                                    {NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}
+                                </Link>
+                            </BadgeWrapper>
                         </Grid>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Trans k="contracts.flight_nft_contract" />
                         </Grid>
                         <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
-                            <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
-                                {NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS}
-                            </Link>
+                            <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
+                                <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
+                                    {NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS}
+                                </Link>
+                            </BadgeWrapper>
                         </Grid>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Trans k="contracts.token_contract" values={{ token: NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL }} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
-                            <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
-                                {NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS}
-                            </Link>
+                            <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
+                                <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
+                                    {NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS}
+                                </Link>
+                            </BadgeWrapper>
                         </Grid>
                     </Grid>
                 </Box>
             </CardContent>
         </Card>
     </>);
+}
+
+function BadgeWrapper({ children, badgeContent }: { children: React.ReactNode, badgeContent: string | undefined }) {
+    if (!badgeContent) {
+        return <>{children}</>;
+    }
+
+    return (
+        <Badge badgeContent={badgeContent} color="secondary" anchorOrigin={{ horizontal: 'left' }}>
+            {children}
+        </Badge>
+    );
 }
