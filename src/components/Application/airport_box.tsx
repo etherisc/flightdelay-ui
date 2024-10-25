@@ -15,6 +15,7 @@ export function AirportBox({ airport, time, isNextDay }: { airport: { name: stri
     }
 
     return <>
+        {/* desktop view */}
         <Box sx={{ 
                 display: { xs: 'none', md: 'block'},
                 p: 2, 
@@ -28,6 +29,7 @@ export function AirportBox({ airport, time, isNextDay }: { airport: { name: stri
             </Typography>
             @&nbsp;{formatTime(time)} {isNextDay && <>&nbsp;(+1 <Trans k="day" />)</>}
         </Box>
+        {/* mobile view */}
         <Box sx={{
                 display: { xs: 'block', md: 'none'},
                 p: 2, 
@@ -49,6 +51,7 @@ export function AirportBox({ airport, time, isNextDay }: { airport: { name: stri
 
 export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null }) {
     return <>
+        {/* desktop view */}
         <Box sx={{ 
                 display: { xs: 'none', md: 'block'},
                 flex: 1,
@@ -72,6 +75,7 @@ export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null 
                 {ontimepercent ? (ontimepercent * 100).toFixed(0) : ""}%
             </Typography>
         </Box>
+        {/* mobile view */}
         <Box sx={{ 
                 display: { xs: 'block', md: 'none'},
                 flex: 1,
