@@ -1,11 +1,9 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import { Reason } from '../../types/errors';
 import { Airport as FsAirport } from '../../types/flightstats/airport';
 import { logErrorOnBackend } from '../../utils/logger';
+import { adjustToUtc } from '../../utils/time';
 import { fetchFlightData, fetchQuote } from '../thunks/flightData';
 
 export interface FlightDataState {
@@ -138,9 +136,9 @@ export const flightDataSlice = createSlice({
                 state.departureAirport = extractAirportData(response.flights[0].departureAirportFsCode, response.airports, state.airportsWhitelist, state.airportsBlacklist);
                 state.arrivalAirport = extractAirportData(response.flights[0].arrivalAirportFsCode, response.airports, state.airportsWhitelist, state.airportsBlacklist);
                 state.departureTime = response.flights[0].departureTime;
-                state.departureTimeUTC = adjustToUtc(response.flights[0].departureTime, state.departureAirport.timeZoneRegionName);
+                state.departureTimeUTC = adjustToUtc(response.flights[0].departureTime, state.departureAirport.timeZoneRegionName).toISOString();
                 state.arrivalTime = response.flights[0].arrivalTime;
-                state.arrivalTimeUTC = adjustToUtc(response.flights[0].arrivalTime, state.arrivalAirport.timeZoneRegionName);
+                state.arrivalTimeUTC = adjustToUtc(response.flights[0].arrivalTime, state.arrivalAirport.timeZoneRegionName).toISOString();
             }
         });
         builder.addCase(fetchFlightData.rejected, (state, action) => {
@@ -204,14 +202,6 @@ function extractAirportData(airportFsCode: string, airports: FsAirport[], whitel
         whitelisted: whitelist.length > 0 ? whitelist.includes(ap?.iata) : true,
         blacklisted: blacklist.length > 0 ? blacklist.includes(ap?.iata) : false,
     } as Airport;
-}
-
-function adjustToUtc(time: string, tzRegionName: string): string {
-    // convert to UTC
-    dayjs.extend(utc);
-    dayjs.extend(timezone);
-    return dayjs.tz(time, tzRegionName).utc().toISOString();
-
 }
 
 // Action creators are generated for each case reducer function
