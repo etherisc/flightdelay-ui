@@ -5,7 +5,7 @@ import { useDebounce } from "@react-hooks-hub/use-debounce";
 import dayjs from "dayjs";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import { resetErrors, resetFlightData, setAirportWhitelist, setFlight } from "..
 import { resetPurchase } from "../../redux/slices/purchase";
 import { AppDispatch, RootState } from "../../redux/store";
 import { fetchFlightData } from "../../redux/thunks/flightData";
+import { formatAmount } from "../../utils/amount";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import { ApplicationError } from "./application_error";
@@ -22,7 +23,6 @@ import ApplicationForm, { IApplicationFormValues } from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseExecutionModal from "./purchase_execution_modal";
 import PurchaseSuccess from "./purchase_success";
-import { formatAmount } from "../../utils/amount";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -44,8 +44,6 @@ export default function Application() {
     const loadingFlightData = flightDataState.loading;
     const loadingQuote = flightDataState.loadingQuote;
     const flightFound = ! flightDataState.loading && !flightDataState.loadingQuote && flightDataState.arrivalAirport !== null && flightDataState.premium !== null;
-
-    const flightDataRef = useRef(null);
 
     const sendFlightDataRequest = async (carrier: string, flightNumber: string, departureDate: dayjs.Dayjs) => {
         // only send again if data is changed
@@ -87,13 +85,6 @@ export default function Application() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        if (flightFound) {
-            // @ts-expect-error: scrollIntoView is a valid function
-            flightDataRef.current?.scrollIntoView({ behavior: "smooth" });
-        }
-    }, [flightFound]);
-
     function resetForm() {
         dispatch(resetPurchase());
         dispatch(resetFlightData());
@@ -101,7 +92,7 @@ export default function Application() {
     }
 
     let button = <Button color="primary" fullwidth onClick={connectWallet}>
-        <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
+        <SvgIcon sx={{ mr: 1 }} fontSize="small" >
             <FontAwesomeIcon icon={faWallet} />
         </SvgIcon>
         <Trans k="action.connect" />
@@ -109,7 +100,7 @@ export default function Application() {
 
     if (walletIsConnected) {
         button = <Button color="primary" fullwidth onClick={purchaseProtection} disabled={purchaseSuccessful}>
-            <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
+            <SvgIcon sx={{ mr: 1 }} fontSize="small" >
                 <FontAwesomeIcon icon={faCartShopping} />
             </SvgIcon>
             {t('action.purchase')} {NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(flightDataState.premium ?? 0), 6, 0)}

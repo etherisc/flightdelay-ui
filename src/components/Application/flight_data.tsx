@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import dayjs from "dayjs";
+import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { AirportBox, ConnectionBox } from "./airport_box";
@@ -20,9 +21,16 @@ export default function FlightData() {
     const showPremium = premium !== null && premium > 0 && (arrivalAirport?.whitelisted == true || departureAirport?.whitelisted);
     const isArrivalNextDay = dayjs(arrivalTime).day() !== dayjs(departureTime).day();
     
+    const boxRef = useRef(null);
+
+    useEffect(() => {
+        // @ts-expect-error: scrollIntoView is a valid function
+        boxRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, []);
+
     return <Box>
         <Grid container display="flex">
-            <Grid size={4}>
+            <Grid size={4} ref={boxRef}>
                 <AirportBox airport={departureAirport!} time={departureTime} />
             </Grid>
             <Grid size={4}>
