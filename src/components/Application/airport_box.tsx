@@ -1,7 +1,10 @@
-import { Box, Typography } from "@mui/material";
+import { faPlane } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Divider, SvgIcon, Typography } from "@mui/material";
 import dayjs from "dayjs";
+import Trans from "../Trans/trans";
 
-export default function AirportBox({ airport, time }: { airport: { name: string, iata: string }, time: string | null }) {
+export function AirportBox({ airport, time }: { airport: { name: string, iata: string }, time: string | null }) {
 
     function formatTime(date: string | null) {
         if (date === null) {
@@ -11,19 +14,78 @@ export default function AirportBox({ airport, time }: { airport: { name: string,
         return <>{d.format('HH:mm')}</>;
     }
 
-    return <Box sx={{ 
-            p: 2, 
-            m: 1, 
-            height: '100%',
-            border: '1px', 
-            borderRadius: 4,
-            // backgroundColor: '#E3E6F060',
-            textAlign: 'center',
-            alignContent: 'center',
-        }}>
-        <Typography fontWeight={500}>
-            {airport?.name} ({airport?.iata})
-        </Typography>
-        @&nbsp;{formatTime(time)}
-    </Box>;
+    return <>
+        <Box sx={{ 
+                display: { xs: 'none', md: 'block'},
+                p: 2, 
+                m: 1, 
+                height: '100%',
+                textAlign: 'center',
+                alignContent: 'center',
+            }}>
+            <Typography fontWeight={500}>
+                {airport?.name} ({airport?.iata})
+            </Typography>
+            @&nbsp;{formatTime(time)}
+        </Box>
+        <Box sx={{
+                display: { xs: 'block', md: 'none'},
+                p: 2, 
+                m: 1, 
+                height: '100%',
+                textAlign: 'center',
+                alignContent: 'center',
+            }}>
+            <Typography fontWeight={500}>
+                {airport?.iata}
+            </Typography>
+            {formatTime(time)}
+        </Box>
+    </>;
+}
+
+export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null }) {
+    return <>
+        <Box sx={{ 
+                display: { xs: 'none', md: 'block'},
+                flex: 1,
+                flexGrow: 1,
+                p: 2,
+                pt: 3, 
+                m: 1, 
+                height: '100%',
+                textAlign: 'center',
+                alignContent: 'center',
+            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                <Divider sx={{ flex: 1, flexGrow: 1}} />
+                <SvgIcon sx={{ flex: 1, flexGrow: 1}} >
+                    <FontAwesomeIcon icon={faPlane} />
+                </SvgIcon>
+                <Divider sx={{ flex: 1, flexGrow: 1}} />
+            </Box>
+            <Typography variant="caption">
+                <Trans k="ontimepercent" />&nbsp;
+                {ontimepercent ? (ontimepercent * 100).toFixed(1) : ""}%
+            </Typography>
+        </Box>
+        <Box sx={{ 
+                display: { xs: 'block', md: 'none'},
+                flex: 1,
+                flexGrow: 1,
+                m: 1, 
+                height: '100%',
+                textAlign: 'center',
+                alignContent: 'center',
+            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                <SvgIcon sx={{ flex: 1, flexGrow: 1}} >
+                    <FontAwesomeIcon icon={faPlane} />
+                </SvgIcon>
+            </Box>
+            <Typography variant="caption" sx={{ lineHeight: 0.5 }}>
+                {ontimepercent ? (ontimepercent * 100).toFixed(1) : ""}%
+            </Typography>
+        </Box>
+    </>
 }

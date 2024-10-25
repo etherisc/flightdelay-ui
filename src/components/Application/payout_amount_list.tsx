@@ -6,7 +6,7 @@ import { formatAmount } from "../../utils/amount";
 
 export default function PayoutAmountsList({ amounts } : { amounts: PayoutAmounts | null }) {
     const { t } = useTranslation();
-    return <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+    return <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
         <Element amount={amounts?.delayed} text={t('delayed')} />
         <Element amount={amounts?.cancelled} text={t('cancelled')} />
         <Element amount={amounts?.diverted} text={t('diverted')} />
