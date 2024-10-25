@@ -33,7 +33,6 @@ export function AirportBox({ airport, time, isNextDay }: { airport: { name: stri
         <Box sx={{
                 display: { xs: 'block', md: 'none'},
                 p: 2, 
-                m: 1, 
                 height: '100%',
                 textAlign: 'center',
                 alignContent: 'center',
@@ -49,7 +48,7 @@ export function AirportBox({ airport, time, isNextDay }: { airport: { name: stri
     </>;
 }
 
-export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null }) {
+export function ConnectionBox({ ontimepercent, carrier, flightNumber }: { ontimepercent: number | null, carrier: string, flightNumber: string }) {
     return <>
         {/* desktop view */}
         <Box sx={{ 
@@ -80,11 +79,13 @@ export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null 
                 display: { xs: 'block', md: 'none'},
                 flex: 1,
                 flexGrow: 1,
-                m: 1, 
                 height: '100%',
                 textAlign: 'center',
                 alignContent: 'center',
             }}>
+            <Typography variant="caption">
+                {carrier} {flightNumber}
+            </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <SvgIcon sx={{ flex: 1, flexGrow: 1}} >
                     <FontAwesomeIcon icon={faPlane} />
