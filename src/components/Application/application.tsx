@@ -122,7 +122,7 @@ export default function Application() {
             <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
                 <FontAwesomeIcon icon={faCartShopping} />
             </SvgIcon>
-            {buttonText}
+            Buy for USDC 15
         </Button>;
     }
 

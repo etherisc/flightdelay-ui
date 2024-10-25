@@ -23,7 +23,7 @@ function Element({ amount, text }: { amount?: bigint, text?: string }) {
         m: 1, 
         border: '1px', 
         borderRadius: 4,
-        backgroundColor: '#D1E5DD',
+        backgroundColor: '#D1E5DD80',
         textAlign: 'center',
     }}
     >
