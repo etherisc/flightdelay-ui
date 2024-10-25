@@ -23,6 +23,7 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_ERC20_TOKEN_VERSION`: Token version, default is "1", needs to be set to "2" for USDC on Base
 - `NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL`: The symbol of the premium token
 - `NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS`: The number of decimals of the premium token
+- `NEXT_PUBLIC_CONTRACTS_BADGE_TEXT`: The badge text to show on the contracts page (optional). Used to indicate the environment (e.g. "test", ...)
 
 - `STATISTICS_PROVIDER_MNEMONIC`: The mnemonic of the statistics provider. This account is used to create the policies. 
 - `STATISTICS_PROVIDER_MIN_BALANCE`: The minimum balance of the statistics provider. If the balance is below this value, the provider will not be able to create new policies and the readiness check will fail.
