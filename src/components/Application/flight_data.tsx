@@ -9,6 +9,7 @@ import Trans from "../Trans/trans";
 import { formatAmount } from "../../utils/amount";
 import { useTranslation } from "react-i18next";
 import { useEnvContext } from "next-runtime-env";
+import PayoutAmountsList from "./payout_amount_list";
 
 export default function FlightData() {
     const { t } = useTranslation();
@@ -105,11 +106,7 @@ export default function FlightData() {
                     <Trans k="payout" />
                 </Grid>
                 <Grid size={9}>
-                    {t('delayed')} <Typography fontWeight={700} component="span">{NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.delayed)}</Typography>
-                    / 
-                    {t('cancelled')} <Typography fontWeight={700} component="span">{NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.cancelled)}</Typography>
-                    / 
-                    {t('diverted')} <Typography fontWeight={700} component="span">{NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(payoutAmounts?.diverted)}</Typography>
+                    <PayoutAmountsList amounts={payoutAmounts} />
                 </Grid>
             </>}
         </Grid>
