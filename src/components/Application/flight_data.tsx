@@ -99,13 +99,7 @@ export default function FlightData() {
                         {NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}
                     </Typography>
                 </Grid>
-                <Grid size={1}>
-                    <FontAwesomeIcon icon={faSackDollar} />
-                </Grid>
-                <Grid size={2}>
-                    <Trans k="payout" />
-                </Grid>
-                <Grid size={9}>
+                <Grid size={12}>
                     <PayoutAmountsList amounts={payoutAmounts} />
                 </Grid>
             </>}
