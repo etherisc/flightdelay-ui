@@ -47,7 +47,7 @@ export default function FlightData() {
 
     
     return <Box>
-        <Grid container spacing={1} display={{ xs: 'none', md: 'flex'}}>
+        <Grid container display={{ xs: 'none', md: 'flex'}}>
             <Grid size={4}>
                 <AirportBox airport={departureAirport!} time={departureTime} />
             </Grid>
