@@ -27,7 +27,7 @@ export default function ApplicationForm({disableForm, formState, control}: {disa
     return (
         <form style={{ height: '100%' }}>
             <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 5}}>
+                <Grid size={{ xs: 12, md: 4}}>
                     <Controller
                         name="carrier"
                         control={control}
@@ -59,7 +59,7 @@ export default function ApplicationForm({disableForm, formState, control}: {disa
                         />
                     
                 </Grid>
-                <Grid size={{ xs: 12, md: 3}}>
+                <Grid size={{ xs: 12, md: 4}}>
                     <Controller
                         name="flightNumber"
                         control={control}

@@ -22,12 +22,13 @@ import ApplicationForm, { IApplicationFormValues } from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseExecutionModal from "./purchase_execution_modal";
 import PurchaseSuccess from "./purchase_success";
+import { formatAmount } from "../../utils/amount";
 
 export default function Application() {
     const { t } = useTranslation();
     const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
     const { connectWallet } = useWallet();
-    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS } = useEnvContext();
+    const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
     const dispatch = useDispatch() as AppDispatch;
     const { purchaseProtection, fetchRiskpoolCapacity } = useApplication();
 
@@ -99,30 +100,19 @@ export default function Application() {
         reset();
     }
 
-    let flightDataLoading = <></>;
-    if (loadingFlightData || loadingQuote) {
-        flightDataLoading = <LinearProgress />;
-    }
-
-    let flightData = <></>;
-    console.log("flightFound", flightFound);
-    if (flightFound) {
-        flightData = <FlightData />;
-    }
-
     let button = <Button color="primary" fullwidth onClick={connectWallet}>
         <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
             <FontAwesomeIcon icon={faWallet} />
         </SvgIcon>
         <Trans k="action.connect" />
     </Button>;
+
     if (walletIsConnected) {
-        const buttonText = isSmallScreen ? t('action.purchase_short') : t('action.purchase');
         button = <Button color="primary" fullwidth onClick={purchaseProtection} disabled={purchaseSuccessful}>
             <SvgIcon sx={{ mr: 1 }} fontSize="small" ref={flightDataRef} >
                 <FontAwesomeIcon icon={faCartShopping} />
             </SvgIcon>
-            {buttonText}
+            {t('action.purchase')} {NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(flightDataState.premium ?? 0), 6, 0)}
         </Button>;
     }
 
@@ -142,11 +132,11 @@ export default function Application() {
                     disableForm={executingPurchase || purchaseSuccessful}
                     formState={formState}
                     control={control} />
-                {flightDataLoading}
-                {flightData}
+                {(loadingFlightData || loadingQuote) && <LinearProgress />}
+                {flightFound && <FlightData />}
                 <ApplicationError flightFound={flightFound} flightData={flightDataState} />
             </CardContent>
-            <CardActions sx={{ flexDirection: 'column'}}>
+            <CardActions sx={{ flexDirection: 'column', p: 2}}>
                 <Actions 
                     button={button} 
                     executingPurchase={executingPurchase} 

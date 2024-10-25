@@ -71,7 +71,7 @@ const initialState: FlightDataState = {
     errorLevel: null,
     errorReasonApi: null,
     errorDataApi: null,
-    premium: null,
+    premium: 15000000,
     ontime: null,
     statistics: null,
     payoutAmounts: null,
