@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
 export const PRIMARY_BLUE = '#5180F3';
+export const SECONDARY = "#D1E5DD";
 // TODO: remove when no longer needed
 export const BLUE_LIGHT = PRIMARY_BLUE; 
 export const INPUT_VARIANT = 'outlined';
@@ -20,10 +21,11 @@ export const customTheme = createTheme({
         primary: {
             main: PRIMARY_BLUE,
         },
-        // secondary: {
-        //     main: SECONDARY_YELLOW,
+        secondary: {
+            main: SECONDARY,
+
         //     contrastText: SECONDARY_CONTRAST_TEXT 
-        // },
+        },
     },
     components: {
         MuiIcon: {

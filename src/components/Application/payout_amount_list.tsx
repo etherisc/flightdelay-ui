@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useEnvContext } from "next-runtime-env";
 import { useTranslation } from "react-i18next";
 import { PayoutAmounts } from "../../redux/slices/flightData";
@@ -15,6 +15,7 @@ export default function PayoutAmountsList({ amounts } : { amounts: PayoutAmounts
 
 function Element({ amount, text }: { amount?: bigint, text?: string }) {
     const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
+    const theme = useTheme();
     
     return <Box sx={{ 
         flex: 1,
@@ -23,7 +24,7 @@ function Element({ amount, text }: { amount?: bigint, text?: string }) {
         m: 1, 
         border: '1px', 
         borderRadius: 4,
-        backgroundColor: '#D1E5DD80',
+        backgroundColor: theme.palette.secondary.main + "80", // 50% opacity
         textAlign: 'center',
     }}
     >
