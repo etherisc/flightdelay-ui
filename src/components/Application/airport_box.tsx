@@ -4,7 +4,7 @@ import { Box, Divider, SvgIcon, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import Trans from "../Trans/trans";
 
-export function AirportBox({ airport, time }: { airport: { name: string, iata: string }, time: string | null }) {
+export function AirportBox({ airport, time, isNextDay }: { airport: { name: string, iata: string }, time: string | null, isNextDay?: boolean }) {
 
     function formatTime(date: string | null) {
         if (date === null) {
@@ -26,7 +26,7 @@ export function AirportBox({ airport, time }: { airport: { name: string, iata: s
             <Typography fontWeight={500}>
                 {airport?.name} ({airport?.iata})
             </Typography>
-            @&nbsp;{formatTime(time)}
+            @&nbsp;{formatTime(time)} {isNextDay && <>&nbsp;(+1 <Trans k="day" />)</>}
         </Box>
         <Box sx={{
                 display: { xs: 'block', md: 'none'},
@@ -40,6 +40,9 @@ export function AirportBox({ airport, time }: { airport: { name: string, iata: s
                 {airport?.iata}
             </Typography>
             {formatTime(time)}
+            
+            {isNextDay && 
+                <Typography variant="caption" component="div">(+1d)</Typography>}
         </Box>
     </>;
 }
@@ -66,7 +69,7 @@ export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null 
             </Box>
             <Typography variant="caption">
                 <Trans k="ontimepercent" />&nbsp;
-                {ontimepercent ? (ontimepercent * 100).toFixed(1) : ""}%
+                {ontimepercent ? (ontimepercent * 100).toFixed(0) : ""}%
             </Typography>
         </Box>
         <Box sx={{ 
@@ -84,7 +87,7 @@ export function ConnectionBox({ ontimepercent }: { ontimepercent: number | null 
                 </SvgIcon>
             </Box>
             <Typography variant="caption" sx={{ lineHeight: 0.5 }}>
-                {ontimepercent ? (ontimepercent * 100).toFixed(1) : ""}%
+                {ontimepercent ? (ontimepercent * 100).toFixed(0) : ""}%
             </Typography>
         </Box>
     </>
