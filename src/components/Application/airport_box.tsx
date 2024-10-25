@@ -12,8 +12,6 @@ export default function AirportBox({ airport, time }: { airport: { name: string,
     }
 
     return <Box sx={{ 
-            flex: 1,
-            flexGrow: 1,
             p: 2, 
             m: 1, 
             height: '100%',

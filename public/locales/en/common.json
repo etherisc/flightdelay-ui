@@ -11,7 +11,7 @@
     "action": {
         "connect": "Connect wallet",
         "connect_short": "Connect",
-        "purchase": "Purchase protection",
+        "purchase": "Buy for",
         "purchase_short": "Buy protection",
         "refresh": "Refresh",
         "switch": "Switch network",

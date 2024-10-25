@@ -1,16 +1,16 @@
-import { faClock, faHandHoldingDollar, faPlane, faPlaneArrival, faPlaneDeparture, faSackDollar } from "@fortawesome/free-solid-svg-icons";
+import { faHandHoldingDollar, faPlane, faPlaneArrival, faPlaneDeparture, faSackDollar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Divider, SvgIcon, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import dayjs from "dayjs";
+import { useEnvContext } from "next-runtime-env";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import Trans from "../Trans/trans";
 import { formatAmount } from "../../utils/amount";
-import { useTranslation } from "react-i18next";
-import { useEnvContext } from "next-runtime-env";
-import PayoutAmountsList from "./payout_amount_list";
+import Trans from "../Trans/trans";
 import AirportBox from "./airport_box";
+import PayoutAmountsList from "./payout_amount_list";
 
 export default function FlightData() {
     const { t } = useTranslation();
@@ -48,54 +48,7 @@ export default function FlightData() {
     
     return <Box>
         <Grid container spacing={1} display={{ xs: 'none', md: 'flex'}}>
-            {/* <Grid size={1}>
-                <FontAwesomeIcon icon={faPlaneDeparture} />
-            </Grid>
-            <Grid size={2}>
-                <Trans k="departureAirport" />
-            </Grid>
             <Grid size={4}>
-                <Typography fontWeight={700}>
-                    {departureAirport?.name} ({departureAirport?.iata})
-                </Typography>
-            </Grid>
-            <Grid size={5}>
-            <Trans k="departureTime" />&nbsp;{formatTime(departureTime)}
-            </Grid>
-            <Grid size={1}>
-                <FontAwesomeIcon icon={faPlaneArrival} />
-            </Grid>
-            <Grid size={2}>
-                <Trans k="arrivalAirport" />
-            </Grid>
-            <Grid size={4}>
-                <Typography fontWeight={700}>
-                    {arrivalAirport?.name} ({arrivalAirport?.iata})
-                </Typography>
-            </Grid>
-            <Grid size={5}>
-                <Trans k="arrivalTime" />
-                &nbsp;
-                {formatTime(arrivalTime)}
-                {nextDay(departureTime, arrivalTime)}
-            </Grid> */}
-            <Grid size={4}>
-                {/* <Box sx={{ 
-                        flex: 1,
-                        flexGrow: 1,
-                        p: 2, 
-                        m: 1, 
-                        border: '1px', 
-                        borderRadius: 4,
-                        backgroundColor: '#E3E6F060',
-                        textAlign: 'center',
-                    }}>
-                    <Typography fontWeight={600}>
-                        {departureAirport?.name} ({departureAirport?.iata})
-                    </Typography>
-                    
-                    <Trans k="departureTime" />&nbsp;{formatTime(departureTime)}
-                </Box> */}
                 <AirportBox airport={departureAirport!} time={departureTime} />
             </Grid>
             <Grid size={4}>
@@ -106,9 +59,6 @@ export default function FlightData() {
                         pt: 3, 
                         m: 1, 
                         height: '100%',
-                        // border: '1px', 
-                        // borderRadius: 4,
-                        // backgroundColor: '#D1E5DD',
                         textAlign: 'center',
                         alignContent: 'center',
                     }}>
@@ -119,17 +69,6 @@ export default function FlightData() {
                         </SvgIcon>
                         <Divider sx={{ flex: 1, flexGrow: 1}} />
                     </Box>
-                    
-                    {/* <SvgIcon>
-                        <FontAwesomeIcon icon={faPlane} />
-                    </SvgIcon> */}
-                    
-                    {/* <Trans k="premium" />
-                    &nbsp;
-                    <Typography fontWeight={700} component="span">
-                        {NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL} {formatAmount(BigInt(premium!))}
-                    </Typography>
-                    <br /> */}
                     <Typography variant="caption">
                         <Trans k="ontimepercent" />&nbsp;
                         {ontimepercent ? (ontimepercent * 100).toFixed(1) : ""}%
@@ -137,21 +76,6 @@ export default function FlightData() {
                 </Box>
             </Grid>
             <Grid size={4}>
-                {/* <Box sx={{ 
-                        flex: 1,
-                        flexGrow: 1,
-                        p: 2, 
-                        m: 1, 
-                        border: '1px', 
-                        borderRadius: 4,
-                        backgroundColor: '#E3E6F060',
-                        textAlign: 'center',
-                    }}>
-                    <Typography fontWeight={600}>
-                        {arrivalAirport?.name} ({arrivalAirport?.iata})
-                    </Typography>
-                    <Trans k="arrivalTime" />&nbsp;{formatTime(arrivalTime)}
-                </Box> */}
                 <AirportBox airport={arrivalAirport!} time={arrivalTime} />
             </Grid>
 
