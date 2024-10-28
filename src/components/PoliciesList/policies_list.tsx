@@ -189,6 +189,10 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             paginationModel={paginationModel}
             pageSizeOptions={[5, 10, 20, 50]}
             onPaginationModelChange={setPaginationModel}
+            onRowClick={(params) => {
+                console.log("row clicked", params);
+                window.location.href = `/policies/${params.row.nftId}`;
+            }}
             disableRowSelectionOnClick={true}
             disableColumnMenu={true}
             sx={{
