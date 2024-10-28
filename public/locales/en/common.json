@@ -15,7 +15,8 @@
         "purchase_short": "Buy protection",
         "refresh": "Refresh",
         "switch": "Switch network",
-        "continue": "Continue"
+        "continue": "Continue",
+        "details": "Details"
     },
     "policy_title": "Policy {{policyId}}",
     "application_instructions": "Enter airline, flight number, and departure date to get a quote for flight delay protection.",

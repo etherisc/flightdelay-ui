@@ -1,6 +1,6 @@
 import { faPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Box, Divider, SvgIcon, Typography } from "@mui/material";
+import { Box, Divider, SvgIcon, Theme, Typography, useMediaQuery } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
@@ -33,14 +33,17 @@ export default function PolicyDetails({
     flightState: string,
     delay: number
 }) {
+    const boxRef = useRef(null);
+    const { t } = useTranslation();
     const showPremium = premium !== null && premium > 0 && (arrivalAirport?.whitelisted == true || departureAirport?.whitelisted);
     
-    const boxRef = useRef(null);
-
+    
     useEffect(() => {
         // @ts-expect-error: scrollIntoView is a valid function
         boxRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, []);
+
+    const { text: statusText, color: statusColor } = getFlightStateText(flightState, dayjs(departureTime).utc().unix(), delay, t);
 
     return <Box>
         <Grid container display="flex">
@@ -53,6 +56,14 @@ export default function PolicyDetails({
             <Grid size={4}>
                 <AirportBox airport={arrivalAirport!} time={arrivalTime} />
             </Grid>
+            <Grid size={12} ref={boxRef} sx={{ display: {xs: 'block', md: 'none'}, pl: 1, pb: 1 }}>
+                Date {dayjs(departureTime).format('YYYY-MM-DD')}
+            </Grid>
+            <Grid size={12} sx={{ display: {xs: 'block', md: 'none'}, pl: 1, pb: 1 }}>
+                <Typography color={statusColor}>
+                    {statusText}
+                </Typography>
+            </Grid>
             {showPremium && <Grid size={12}>
                 <PayoutAmountsList amounts={payoutAmounts} state={flightState} delay={delay} />
             </Grid>}       
@@ -61,12 +72,16 @@ export default function PolicyDetails({
 }
 
 function AirportBox({ airport, time}: { airport: { name: string, iata: string }, time: string | null }) {
+    const isMobileScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
     function formatTime(date: string | null) {
         if (date === null) {
             return '';
         }
         const d = dayjs(date);
+        if (isMobileScreen) {
+            return <>{d.format('HH:mm')}</>;
+        }
         return <>{d.format('YYYY-MM-DD HH:mm')}</>;
     }
 
@@ -149,7 +164,7 @@ function ConnectionBox(
                 textAlign: 'center',
                 alignContent: 'center',
             }}>
-            <Typography variant="caption">
+            <Typography>
                 {carrier} {flightNumber}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
@@ -157,9 +172,6 @@ function ConnectionBox(
                     <FontAwesomeIcon icon={faPlane} />
                 </SvgIcon>
             </Box>
-            <Typography color={color} sx={{ lineHeight: 0.5, pt: 1 }}>
-                {text}
-            </Typography>
         </Box>
     </>
 }

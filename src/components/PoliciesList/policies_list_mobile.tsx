@@ -10,6 +10,7 @@ import { PolicyData } from "../../types/policy_data";
 import { formatAmount } from "../../utils/amount";
 import { dayjs } from "../../utils/date";
 import { getFlightStateText } from "../../utils/flightstate";
+import Button from "../Button/button";
 import Trans from "../Trans/trans";
 
 export default function PoliciesListMobile({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
@@ -84,6 +85,10 @@ function Policy({ policy }: { policy: PolicyData }) {
             <Grid size={12}>
                 {formatState(policy.flightPlan!)}
                 {formatPayoutAmount(policy.payoutAmount, policy.flightPlan?.status || 'S')}
+            </Grid>
+            {/** align right */}
+            <Grid size={12} sx={{ textAlign: 'right' }}>
+                <Button variant="text" onClick={() => window.location.href = "/policies/" + policy.nftId}>{t('action.details')}</Button>
             </Grid>
         </Grid>
     </Box>);
