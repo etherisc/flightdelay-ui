@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Card, CardActions, CardContent, CardHeader } from "@mui/material";
 import { t } from "i18next";
 import { PolicyData } from "../../types/policy_data";
+import Button from "../Button/button";
 import PolicyDetails from "./policy_details";
 
 export function Policy({ policy } : { policy: PolicyData }) {
@@ -37,5 +38,8 @@ export function Policy({ policy } : { policy: PolicyData }) {
                 delay={policy?.flightPlan?.delay || 0}
                 />
         </CardContent>
+        <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <Button variant="text" sx={{ mr: 2 }} onClick={() => history.back() }>Back to policies</Button>
+        </CardActions>
     </Card>;
 }
