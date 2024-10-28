@@ -6,22 +6,23 @@ import { DataGrid, GridActionsCellItem, gridClasses, GridColDef } from "@mui/x-d
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { formatAmount } from "../../utils/amount";
 import { dayjs } from "../../utils/date";
 import { getFlightStateText } from "../../utils/flightstate";
 import Trans from "../Trans/trans";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { useRouter } from "next/navigation";
 
 
 export default function PoliciesList({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
     const { t } = useTranslation();
-    const isConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
+    const router = useRouter();
+    const isConnected = useSelector((state: RootState) => state.wallet.isConnected);
 
-    
     const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 });
 
     
@@ -144,7 +145,7 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
                         key={params.row.nftId}  
                         icon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
                         label="Show details" 
-                        onClick={() => window.location.href = `/policies/${params.row.nftId}`} 
+                        onClick={() => router.push(`/policies/${params.row.nftId}`)}
                         showInMenu 
                         />,
                 ];
