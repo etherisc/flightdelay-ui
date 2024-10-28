@@ -17,6 +17,7 @@
         "switch": "Switch network",
         "continue": "Continue"
     },
+    "policy_title": "Policy {{policyId}}",
     "application_instructions": "Enter airline, flight number, and departure date to get a quote for flight delay protection.",
     "purchase_disclaimer": "Purchase flight delay protection with <0>USDC</0> on the <1>Base blockchain</1>.",
     "carrier": "Airline",
