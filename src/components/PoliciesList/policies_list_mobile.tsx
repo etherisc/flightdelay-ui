@@ -12,9 +12,9 @@ import { dayjs } from "../../utils/date";
 import { getFlightStateText } from "../../utils/flightstate";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
+import { useRouter } from "next/navigation";
 
 export default function PoliciesListMobile({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
-
     let loadingIndicator = undefined;
     if (loading) {
         loadingIndicator = <LinearProgress />;
@@ -34,6 +34,8 @@ export default function PoliciesListMobile({ policies, loading }: { policies: Po
 }
 
 function Policy({ policy }: { policy: PolicyData }) {
+    const router = useRouter();
+
     const { t } = useTranslation();
     const { NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
 
@@ -88,7 +90,7 @@ function Policy({ policy }: { policy: PolicyData }) {
             </Grid>
             {/** align right */}
             <Grid size={12} sx={{ textAlign: 'right' }}>
-                <Button variant="text" onClick={() => window.location.href = "/policies/" + policy.nftId}>{t('action.details')}</Button>
+                <Button variant="text" onClick={() => router.push(`/policies/${policy.nftId}`)}>{t('action.details')}</Button>
             </Grid>
         </Grid>
     </Box>);
