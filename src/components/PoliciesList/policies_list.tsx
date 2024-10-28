@@ -1,6 +1,8 @@
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Box, LinearProgress, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, gridClasses, GridColDef } from "@mui/x-data-grid";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -129,6 +131,24 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
                     {formatPayoutAmount(params.value.payoutAmount, params.value.flightPlan?.status || 'S')}
                 </>;
             }
+        },
+        {
+            field: 'actions',
+            type: 'actions',
+            flex: 0.1,
+            sortable: false,
+            valueGetter: (_value, row: PolicyData) => row,
+            getActions: (params) => {
+                return [
+                    <GridActionsCellItem 
+                        key={params.row.nftId}  
+                        icon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+                        label="Show details" 
+                        onClick={() => window.location.href = `/policies/${params.row.nftId}`} 
+                        showInMenu 
+                        />,
+                ];
+            }
         }
     ];
 
@@ -189,10 +209,6 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             paginationModel={paginationModel}
             pageSizeOptions={[5, 10, 20, 50]}
             onPaginationModelChange={setPaginationModel}
-            onRowClick={(params) => {
-                console.log("row clicked", params);
-                window.location.href = `/policies/${params.row.nftId}`;
-            }}
             disableRowSelectionOnClick={true}
             disableColumnMenu={true}
             sx={{
