@@ -46,6 +46,7 @@
     "blacklisted_airports": "Blacklisted airports",
     "blacklisted_airports_explanation": "Flights departing from or arriving at these blacklisted airports cannot be protected.",
     "no_policies_mobile": "No policies found",
+    "expected_payouts": "Expected payout",
     "table": {
         "header": {
             "nftId": "Policy ID",

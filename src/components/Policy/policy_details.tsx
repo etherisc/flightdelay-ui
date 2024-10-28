@@ -54,7 +54,7 @@ export default function PolicyDetails({
                 <AirportBox airport={arrivalAirport!} time={arrivalTime} />
             </Grid>
             {showPremium && <Grid size={12}>
-                <PayoutAmountsList amounts={payoutAmounts} />
+                <PayoutAmountsList amounts={payoutAmounts} state={flightState} delay={delay} />
             </Grid>}       
         </Grid>
     </Box>;

@@ -76,6 +76,8 @@ export function useMyPolicies() {
         dispatch(resetPolicy());
         dispatch(setLoadingPolicy(true));
 
+        // TODO: handle nft not from this wallet
+
         try {
             console.log("fetching policy " + nftId);
 
@@ -134,6 +136,7 @@ export function useMyPolicies() {
                 arrivalTimeLocalTimezone: arrivalTimeLocal.split(" ")[1],
                 delay: parseInt(data.delayMinutes.toString()),
             } as FlightPlan,
+            payoutAmounts: data.payoutAmounts.slice(2).map(a => a.toString()),
         } as PolicyData;
     }
 

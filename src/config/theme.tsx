@@ -81,10 +81,10 @@ export const customTheme = createTheme({
     typography: {
         fontFamily: 'Poppins, Arial,sans-serif',
         fontSize: 18,
-        // h1: {
-        //     fontSize: '24px',
-        //     fontWeight: 600,
-        // },
+        h1: {
+            fontSize: '1.4rem',
+            fontWeight: 600,
+        },
         h2: {
             fontSize: '1.2rem',
             fontWeight: 500,

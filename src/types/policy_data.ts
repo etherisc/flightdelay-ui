@@ -9,4 +9,5 @@ export type PolicyData = {
     flightNumber: string;
     departureDate: string;
     flightPlan: FlightPlan | null;
+    payoutAmounts: string[] | null;
 }
