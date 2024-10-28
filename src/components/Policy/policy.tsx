@@ -24,8 +24,8 @@ export function Policy({ policy } : { policy: PolicyData }) {
         <CardHeader title={t('policy_title', { ns: 'common', policyId: policy.nftId})} />
         <CardContent>
             <PolicyDetails
-                departureAirport={{ name: "TODO", iata: policy?.flightPlan?.arrivalAirportFsCode || "", whitelisted: true }}
-                arrivalAirport={{ name: "TODO", iata: policy?.flightPlan?.departureAirportFsCode || "", whitelisted: true }}
+                departureAirport={{ name: "", iata: policy?.flightPlan?.arrivalAirportFsCode || "", whitelisted: true }}
+                arrivalAirport={{ name: "", iata: policy?.flightPlan?.departureAirportFsCode || "", whitelisted: true }}
                 departureTime={policy?.flightPlan?.departureTimeLocal || ""}
                 arrivalTime={policy?.flightPlan?.arrivalTimeLocal || ""}
                 ontimepercent={-1}

@@ -70,6 +70,11 @@ function AirportBox({ airport, time}: { airport: { name: string, iata: string },
         return <>{d.format('YYYY-MM-DD HH:mm')}</>;
     }
 
+    let name = airport?.iata;
+    if (airport?.name) {
+        name = airport?.name + " (" + airport?.iata + ")";
+    }
+
     return <>
         {/* desktop view */}
         <Box sx={{ 
@@ -81,7 +86,7 @@ function AirportBox({ airport, time}: { airport: { name: string, iata: string },
                 alignContent: 'center',
             }}>
             <Typography fontWeight={500}>
-                {airport?.name} ({airport?.iata})
+                {name}
             </Typography>
             {formatTime(time)}
         </Box>
