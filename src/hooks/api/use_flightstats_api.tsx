@@ -55,8 +55,32 @@ export function useFlightstatsApi() {
         return j;
     }
 
+    async function fetchAirport(iata: string): Promise<Airport> {
+        console.log("fetching airport data for", iata);
+        const uri = `/api/flightstats/airport/iata/${iata}`;
+        const res = await fetch(uri);
+
+        if (! res.ok) {
+            throw new Error(`Error fetching airport data: ${res.statusText}`);
+        }
+
+        const jsonResponse = await res.json();
+        
+        console.log("airports response", jsonResponse);
+
+        if (jsonResponse.airports === undefined) {
+            console.log("No airport data found");
+        }
+        if (jsonResponse.airports.length === 0) {
+            console.log("No airport data found");
+        }
+
+        return jsonResponse.airports[0] as Airport;
+    }
+
     return {
         fetchFlightData,
         fetchQuote,
+        fetchAirport,
     }
 }

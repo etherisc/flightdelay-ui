@@ -16,6 +16,7 @@ export default function Content({ nftId } : { nftId: string }) {
 
     const address = useSelector((state: RootState) => (state.wallet.address));
     const loading = useSelector((state: RootState) => state.policy.loadingPolicy);
+    const loadingAirports = useSelector((state: RootState) => state.policy.loadingAirports) > 0;
     const policy = useSelector((state: RootState) => state.policy.policy);
 
     const { fetchPolicy } = useMyPolicies();
@@ -36,10 +37,13 @@ export default function Content({ nftId } : { nftId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [address]); 
 
-    if (policy === null) {
-        return <LinearProgress />;
+    if (policy === null && ! loading && !loadingAirports) {
+        return <div>Policy not found</div>;
     }
 
-    return <Policy policy={policy} />;
+    return <>
+        { (loading || loadingAirports) && <LinearProgress /> }
+        { policy !== null && <Policy policy={policy} />}
+    </>;
 }
 
