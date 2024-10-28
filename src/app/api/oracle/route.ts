@@ -244,7 +244,7 @@ async function sendOracleResponse(reqId: string, flightOracle: FlightOracle, req
             return BigInt(0);
         }
 
-            LOGGER.info(`[${reqId}] finished oracle response to request ${requestId} with status ${status} and delay ${delay} (${flightPlan})`);
+            LOGGER.info(`[${reqId}] finished oracle response to request ${requestId} with status ${status} and delay ${delay} (${flightPlan}). tx ${tx.hash}`);
 
         return getFieldFromLogs(tx.logs, FlightProduct__factory.createInterface(), "LogFlightPoliciesProcessed", "policiesRemaining") as bigint;
     } catch (err) {
@@ -292,7 +292,7 @@ async function resendRequest(reqId: string, flightProduct: FlightProduct, reques
             return BigInt(0);
         }
 
-        LOGGER.info(`[${reqId}] resend request ${requestId}`);
+        LOGGER.info(`[${reqId}] resend request ${requestId}. tx ${tx.hash}`);
 
         return getFieldFromLogs(tx.logs, FlightProduct__factory.createInterface(), "LogFlightPoliciesProcessed", "policiesRemaining") as bigint;
     } catch (err) {
