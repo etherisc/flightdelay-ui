@@ -1,5 +1,5 @@
 import { Alert, Box, LinearProgress, Stack, Typography } from "@mui/material";
-import { blue, green, grey, red } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import { DataGrid, gridClasses, GridColDef } from "@mui/x-data-grid";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
@@ -10,6 +10,7 @@ import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";
 import { formatAmount } from "../../utils/amount";
 import { dayjs } from "../../utils/date";
+import { getFlightStateText } from "../../utils/flightstate";
 import Trans from "../Trans/trans";
 
 
@@ -28,45 +29,10 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
     }
 
     function formatState(flightData: FlightPlan) {
-        let text;
-        let color = grey[900] as string;
         const state = flightData.status;
         const delay = flightData.delay;
-        const nowUtc = dayjs.utc().unix();
+        const { text, color } = getFlightStateText(state, flightData.departureTimeUtc!, delay, t);
         
-        switch (state) {
-            case 'S': // scheduled
-                if (flightData.departureTimeUtc !== null && flightData.departureTimeUtc < nowUtc) {
-                    text = t('flight_state.en_route');
-                    color = blue[600];
-                } else {
-                    text = t('flight_state.scheduled');
-                }
-                break;
-            case 'A': // active
-                text = t('flight_state.en_route');
-                color = blue[600];
-                break;
-            case 'L': // landed
-                if (delay !== null && delay > 0) {
-                    text = <>{t('flight_state.delayed')} {delay} <Trans k="minutes" /></> ;
-                    if (delay > 45) {
-                        color = red[500];
-                    }
-                } else {
-                    text = t('flight_state.punctual');
-                    color = green[600];
-                }
-                break;
-            case 'C': // cancelled
-                text = t('flight_state.cancelled');
-                color = red[500];
-                break;
-            case 'D': // diverted
-                text = t('flight_state.diverted');
-                color = red[500];
-                break;
-        }
         return <Typography color={color} variant="body2">
             {text}
         </Typography>;
@@ -223,6 +189,10 @@ export default function PoliciesList({ policies, loading }: { policies: PolicyDa
             paginationModel={paginationModel}
             pageSizeOptions={[5, 10, 20, 50]}
             onPaginationModelChange={setPaginationModel}
+            onRowClick={(params) => {
+                console.log("row clicked", params);
+                window.location.href = `/policies/${params.row.nftId}`;
+            }}
             disableRowSelectionOnClick={true}
             disableColumnMenu={true}
             sx={{

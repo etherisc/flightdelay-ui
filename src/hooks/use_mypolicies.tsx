@@ -1,18 +1,21 @@
+import { toUtf8String } from "ethers";
 import { useEnvContext } from "next-runtime-env";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addOrUpdatePolicy, resetPolicies, setLoading, setPayoutAmount } from "../redux/slices/policies";
+import { resetPolicy, setLoadingPolicy, setPolicy } from "../redux/slices/policy";
+import { AppDispatch } from "../redux/store";
+import { fetchAirportData } from "../redux/thunks/policy";
 import { FlightPlan } from "../types/flight_plan";
 import { PolicyData } from "../types/policy_data";
 import { ensureError } from "../utils/error";
 import { logErrorOnBackend } from "../utils/logger";
+import { adjustToUtc } from "../utils/time";
 import { useERC721Contract } from "./onchain/use_erc721_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { FlightPolicyData, useFlightNftContract } from "./onchain/use_flightnft_contract";
 import { useInstanceReaderContract } from "./onchain/use_instance_reader";
 import { useRegistryContract } from "./onchain/use_registry_contract";
-import { toUtf8String } from "ethers";
-import { adjustToUtc } from "../utils/time";
 
 const NFT_ID_TYPE_POLICY = BigInt(21);
 
@@ -21,7 +24,7 @@ export function useMyPolicies() {
     const { NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS, NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS } = useEnvContext();
     // const router = useRouter();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch() as AppDispatch;
     const { getNftIds } = useERC721Contract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { getObjectInfos } = useRegistryContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { getNftId } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
@@ -71,6 +74,47 @@ export function useMyPolicies() {
         }
     }
 
+    async function fetchPolicy(nftId: string) {
+        dispatch(resetPolicy());
+        dispatch(setLoadingPolicy(true));
+
+        // TODO: handle nft not from this wallet
+
+        try {
+            console.log("fetching policy " + nftId);
+
+            // 1. get all policy nft ids for the address and check they are valid and belong to the product
+            const productNftId = await getNftId();
+            console.log("found product nft id", productNftId);
+            // 2. fetch policy data for each nft id
+            const policyInfos = await getFlightPolicyData([BigInt(nftId)], (nftId, data) => {
+                const pd = extractPolicyData(nftId, data);
+                dispatch(setPolicy(pd));
+                dispatch(fetchAirportData({ iata: pd.flightPlan?.departureAirportFsCode}));
+                dispatch(fetchAirportData({ iata: pd.flightPlan?.arrivalAirportFsCode}));
+            });
+            console.log("found policy infos", policyInfos);
+
+            // FIXME: make this work again
+            // 3. fetch claim/payout data for policy nft id
+            // policyNftIds.forEach(async policyNftId => {
+            //     if (policyNftIds.length > 5) { // when too many, sleep a bit to avoid rate limiting on the rpc node
+            //         await new Promise(resolve => setTimeout(resolve, 50));
+            //     }
+            //     const payoutAmount = await getPayoutAmount(policyNftId);
+            //     if (payoutAmount !== null && payoutAmount > BigInt(0)) {
+            //         dispatch(setPayoutAmount({ policyNftId: policyNftId.toString(), payoutAmount: payoutAmount.toString() }));
+            //     }
+            // });
+
+            
+        } catch(err) {
+            handleError(err);
+        } finally {
+            dispatch(setLoadingPolicy(false));
+        }
+    }
+
     function extractPolicyData(nftId: bigint, data: FlightPolicyData): PolicyData {
         const flightPlanTokens = data.flightData.split(" ");
 
@@ -98,6 +142,7 @@ export function useMyPolicies() {
                 arrivalTimeLocalTimezone: arrivalTimeLocal.split(" ")[1],
                 delay: parseInt(data.delayMinutes.toString()),
             } as FlightPlan,
+            payoutAmounts: data.payoutAmounts.slice(2).map(a => a.toString()),
         } as PolicyData;
     }
 
@@ -110,5 +155,6 @@ export function useMyPolicies() {
     return {
         error,
         fetchPolicies,
+        fetchPolicy,
     }
 }

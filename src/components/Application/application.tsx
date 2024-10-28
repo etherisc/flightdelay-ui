@@ -124,7 +124,17 @@ export default function Application() {
                     formState={formState}
                     control={control} />
                 {(loadingFlightData || loadingQuote) && <LinearProgress />}
-                {flightFound && <FlightData />}
+                {flightFound && <FlightData 
+                                    departureAirport={flightDataState.departureAirport!}
+                                    arrivalAirport={flightDataState.arrivalAirport!}
+                                    departureTime={flightDataState.departureTime!}
+                                    arrivalTime={flightDataState.arrivalTime!}
+                                    ontimepercent={flightDataState.ontime!}
+                                    premium={flightDataState.premium!}
+                                    payoutAmounts={flightDataState.payoutAmounts!}
+                                    carrier={flightDataState.carrier!}
+                                    flightNumber={flightDataState.flightNumber!}
+                                    />}
                 <ApplicationError flightFound={flightFound} flightData={flightDataState} />
             </CardContent>
             <CardActions sx={{ flexDirection: 'column', p: 2}}>

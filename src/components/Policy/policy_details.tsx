@@ -1,23 +1,25 @@
-import { faClock, faPlane } from "@fortawesome/free-solid-svg-icons";
+import { faPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Divider, SvgIcon, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { PayoutAmounts } from "../../redux/slices/flightData";
-import Trans from "../Trans/trans";
+import { getFlightStateText } from "../../utils/flightstate";
 import PayoutAmountsList from "./payout_amount_list";
 
-export default function FlightData({
+export default function PolicyDetails({
     departureAirport,
     arrivalAirport,
     departureTime,
     arrivalTime,
-    ontimepercent,
     premium,
     payoutAmounts,
     carrier,
-    flightNumber
+    flightNumber,
+    flightState,
+    delay,
 }: {
     departureAirport: { name: string, iata: string, whitelisted: boolean },
     arrivalAirport: { name: string, iata: string, whitelisted: boolean },
@@ -27,10 +29,11 @@ export default function FlightData({
     premium: number,
     payoutAmounts: PayoutAmounts,
     carrier: string,
-    flightNumber: string
+    flightNumber: string,
+    flightState: string,
+    delay: number
 }) {
     const showPremium = premium !== null && premium > 0 && (arrivalAirport?.whitelisted == true || departureAirport?.whitelisted);
-    const isArrivalNextDay = dayjs(arrivalTime).day() !== dayjs(departureTime).day();
     
     const boxRef = useRef(null);
 
@@ -45,26 +48,31 @@ export default function FlightData({
                 <AirportBox airport={departureAirport!} time={departureTime} />
             </Grid>
             <Grid size={4}>
-                <ConnectionBox ontimepercent={ontimepercent} carrier={carrier!} flightNumber={flightNumber!} />
+                <ConnectionBox carrier={carrier!} flightNumber={flightNumber!} flightState={flightState} delay={delay} departureTimeUtc={dayjs(departureTime).utc().unix()} />
             </Grid>
             <Grid size={4}>
-                <AirportBox airport={arrivalAirport!} time={arrivalTime} isNextDay={isArrivalNextDay} />
+                <AirportBox airport={arrivalAirport!} time={arrivalTime} />
             </Grid>
             {showPremium && <Grid size={12}>
-                <PayoutAmountsList amounts={payoutAmounts} />
+                <PayoutAmountsList amounts={payoutAmounts} state={flightState} delay={delay} />
             </Grid>}       
         </Grid>
     </Box>;
 }
 
-function AirportBox({ airport, time, isNextDay }: { airport: { name: string, iata: string }, time: string | null, isNextDay?: boolean }) {
+function AirportBox({ airport, time}: { airport: { name: string, iata: string }, time: string | null }) {
 
     function formatTime(date: string | null) {
         if (date === null) {
             return '';
         }
         const d = dayjs(date);
-        return <>{d.format('HH:mm')}</>;
+        return <>{d.format('YYYY-MM-DD HH:mm')}</>;
+    }
+
+    let name = airport?.iata;
+    if (airport?.name) {
+        name = airport?.name + " (" + airport?.iata + ")";
     }
 
     return <>
@@ -78,9 +86,9 @@ function AirportBox({ airport, time, isNextDay }: { airport: { name: string, iat
                 alignContent: 'center',
             }}>
             <Typography fontWeight={500}>
-                {airport?.name} ({airport?.iata})
+                {name}
             </Typography>
-            @&nbsp;{formatTime(time)} {isNextDay && <>&nbsp;(+1 <Trans k="day" />)</>}
+            {formatTime(time)}
         </Box>
         {/* mobile view */}
         <Box sx={{
@@ -94,14 +102,17 @@ function AirportBox({ airport, time, isNextDay }: { airport: { name: string, iat
                 {airport?.iata}
             </Typography>
             {formatTime(time)}
-            
-            {isNextDay && 
-                <Typography variant="caption" component="div">(+1d)</Typography>}
         </Box>
     </>;
 }
 
-function ConnectionBox({ ontimepercent, carrier, flightNumber }: { ontimepercent: number | null, carrier: string, flightNumber: string }) {
+function ConnectionBox(
+    { carrier, flightNumber, flightState, departureTimeUtc, delay }: 
+    { carrier: string, flightNumber: string, flightState: string, departureTimeUtc: number, delay: number 
+}) {
+    const { t } = useTranslation();
+    const { text, color } = getFlightStateText(flightState, departureTimeUtc, delay, t);
+
     return <>
         {/* desktop view */}
         <Box sx={{ 
@@ -125,9 +136,8 @@ function ConnectionBox({ ontimepercent, carrier, flightNumber }: { ontimepercent
                 </SvgIcon>
                 <Divider sx={{ flex: 1, flexGrow: 1}} />
             </Box>
-            <Typography variant="caption">
-                <Trans k="ontimepercent" />&nbsp;
-                {ontimepercent ? (ontimepercent * 100).toFixed(0) : ""}%
+            <Typography color={color} sx={{ pt: 1 }}>
+                {text}
             </Typography>
         </Box>
         {/* mobile view */}
@@ -147,10 +157,8 @@ function ConnectionBox({ ontimepercent, carrier, flightNumber }: { ontimepercent
                     <FontAwesomeIcon icon={faPlane} />
                 </SvgIcon>
             </Box>
-            <Typography variant="caption" sx={{ lineHeight: 0.5 }}>
-                <FontAwesomeIcon icon={faClock} />
-                &nbsp;
-                {ontimepercent ? (ontimepercent * 100).toFixed(0) : ""}%
+            <Typography color={color} sx={{ lineHeight: 0.5, pt: 1 }}>
+                {text}
             </Typography>
         </Box>
     </>
