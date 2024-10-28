@@ -115,6 +115,9 @@ function ConnectionBox({ ontimepercent, carrier, flightNumber }: { ontimepercent
                 textAlign: 'center',
                 alignContent: 'center',
             }}>
+            <Typography variant="caption">
+                {carrier} {flightNumber}
+            </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <Divider sx={{ flex: 1, flexGrow: 1}} />
                 <SvgIcon sx={{ flex: 1, flexGrow: 1}} >
