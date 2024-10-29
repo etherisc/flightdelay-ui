@@ -23,11 +23,14 @@ export function useAnalytics() {
     }
 
     function trackPageView(title: string, path: string, options: EventOptions = {}) {
-        trackEvent("page_view", {
+        const opts = {
             page_title: title,
             page_path: path,
+            environment: envId || null,
             ...options,
-        });
+        };
+        
+        trackEvent("page_view", opts);
     }
     
     return {
