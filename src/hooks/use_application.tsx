@@ -14,7 +14,7 @@ import { useERC20Contract } from "./onchain/use_erc20_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { useWallet } from "./onchain/use_wallet";
 import { setGeneralErrorMessage } from "../redux/slices/common";
-import { EVENT_API_ERROR, EVENT_BLACKLISTED_ARRIVAL_AIRPORT, EVENT_BLACKLISTED_DEPARTURE_AIRPORT, EVENT_INSUFFICIENT_BALANCE, EVENT_INVALID_CHAIN, EVENT_NON_WHITELISTED_AIRPORT, EVENT_PERMIT_SIGNED, EVENT_PURACHASE_SUCCESSFUL, EVENT_PURCHASE_FAILED_UNKNOWN_ERROR, EVENT_PURCHASE_NOT_POSSIBLE, EVENT_RISKPOOL_FULL, EVENT_USER_REJECTED, useAnalytics } from "./use_analytics";
+import { EVENT_API_ERROR, EVENT_BLACKLISTED_ARRIVAL_AIRPORT, EVENT_BLACKLISTED_DEPARTURE_AIRPORT, EVENT_INSUFFICIENT_BALANCE, EVENT_INVALID_CHAIN, EVENT_NON_WHITELISTED_AIRPORT, EVENT_PERMIT_SIGNED, EVENT_PURACHASE_SUCCESSFUL, EVENT_PURCHASE_FAILED_UNKNOWN_ERROR, EVENT_PURCHASE_NOT_POSSIBLE, EVENT_PURCHASE_STARTED, EVENT_RISKPOOL_FULL, EVENT_USER_REJECTED, useAnalytics } from "./use_analytics";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -56,6 +56,7 @@ export default function useApplication() {
     }
     
     async function purchaseProtection() {
+        console.log("purchaseProtection");
         dispatch(resetErrors());
         dispatch(resetPurchase());
         // do nothing, just log for now
@@ -78,13 +79,13 @@ export default function useApplication() {
                 trackEvent(EVENT_RISKPOOL_FULL, { category: "purchase"});
             } else if (isDepartureAirportBlackListed) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
-                trackEvent(EVENT_BLACKLISTED_DEPARTURE_AIRPORT, { category: "purchase"});
+                trackEvent(EVENT_BLACKLISTED_DEPARTURE_AIRPORT, { category: "purchase", airport: departureAirport?.iata});
             } else if (isArrivalAirportBlackListed) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
-                trackEvent(EVENT_BLACKLISTED_ARRIVAL_AIRPORT, { category: "purchase"});
+                trackEvent(EVENT_BLACKLISTED_ARRIVAL_AIRPORT, { category: "purchase", airport: arrivalAirport?.iata});
             } else if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
-                trackEvent(EVENT_NON_WHITELISTED_AIRPORT, { category: "purchase"});
+                trackEvent(EVENT_NON_WHITELISTED_AIRPORT, { category: "purchase", departure: departureAirport?.iata, arrival: arrivalAirport?.iata});
             } else if (errorReasonApi !== null) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
                 trackEvent(EVENT_API_ERROR, { category: "purchase"});
@@ -101,6 +102,8 @@ export default function useApplication() {
             trackEvent(EVENT_INSUFFICIENT_BALANCE, { category: "purchase"});
             return;
         }
+
+        trackEvent(EVENT_PURCHASE_STARTED, { category: "purchase"});
 
         console.log("purchaseProtection");
         dispatch(setExecuting(true));

@@ -13,12 +13,14 @@ export function useAnalytics() {
     const envId = process.env.NEXT_PUBLIC_GA_ENVIRONMENT_ID;
 
     function trackEvent(eventName: string, options: EventOptions = {}) {
+        // console.log("trackEvent", eventName, options);
         if ( gaMeasurementId === undefined) { 
             return;
         }
         if ( envId !== undefined && envId !== "") {
             options.environment = envId;
         }
+        // console.log("trackEvent2", eventName, options);
         event(eventName, options);
     }
 
@@ -51,3 +53,7 @@ export const EVENT_PERMIT_SIGNED = "permit_signed";
 export const EVENT_USER_REJECTED = "user_rejected";
 export const EVENT_PURCHASE_FAILED_UNKNOWN_ERROR = "purchase_failed_unknown_error";
 export const EVENT_PURACHASE_SUCCESSFUL = "purchase_successful";
+export const EVENT_QUOTE_NOT_ENOUGH_DATA = "quote_not_enough_data";
+export const EVENT_QUOTE_POOL_CAPACITY_EXCEEDED = "quote_pool_capacity_exceeded";
+export const EVENT_NO_FLIGHT_FOUND = "no_flight_found";
+export const EVENT_PURCHASE_STARTED = "purchase_started";
