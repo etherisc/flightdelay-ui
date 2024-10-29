@@ -10,7 +10,6 @@ import { RootState } from "../../redux/store";
 import { stringifyBigInt } from "../../utils/bigint";
 import { chainId } from "../../utils/chain";
 import { getBalance } from "../../utils/ierc20";
-import { EVENT_CONNECT_WALLET, EVENT_CONNECT_WALLET_NO_WALLET, EVENT_DISCONNECT_WALLET, useAnalytics } from "../use_analytics";
 
 export function useWallet() {
     const dispatch = useDispatch();
@@ -25,7 +24,6 @@ export function useWallet() {
         NEXT_PUBLIC_EXPECTED_CHAIN_TOKEN_DECIMALS,
     } = useEnvContext();
     const { isAccountSwitchListenerConnected, isChainChangedListenerConnected, isConnected } = useSelector((state: RootState) => (state.wallet));
-    const { trackEvent } = useAnalytics();
 
     const canAddNetwork = NEXT_PUBLIC_EXPECTED_CHAIN_ID !== undefined 
         && NEXT_PUBLIC_EXPECTED_CHAIN_NAME !== undefined 
@@ -81,14 +79,12 @@ export function useWallet() {
     }, [dispatch, NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS, getSigner]);
 
     const connectWallet = useCallback(async () => {
-        trackEvent(EVENT_CONNECT_WALLET);
         dispatch(setConnecting(true));
         dispatch(resetAccount());
         dispatch(resetPolicies());
         try {
             const signer = await getSigner();
             if (signer === undefined) {
-                trackEvent(EVENT_CONNECT_WALLET_NO_WALLET);
                 return;
             }
 
@@ -109,10 +105,9 @@ export function useWallet() {
         } finally {
             setConnecting(false);
         }
-    }, [dispatch, getSigner, NEXT_PUBLIC_EXPECTED_CHAIN_ID, getAddressAndBalance, trackEvent]);
+    }, [dispatch, getSigner, NEXT_PUBLIC_EXPECTED_CHAIN_ID, getAddressAndBalance]);
 
     async function disconnectWallet() {
-        trackEvent(EVENT_DISCONNECT_WALLET);
         dispatch(resetAccount());
         dispatch(resetPolicies());
     }
