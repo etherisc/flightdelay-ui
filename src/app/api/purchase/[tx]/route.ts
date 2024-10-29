@@ -18,7 +18,8 @@ BigInt.prototype.toJSON = function () {
 /**
  * check if a purchase request is pending or finished
  */
-export async function GET(request: NextRequest, { params } : { params: { tx: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ tx: string }> }) {
+    const params = await props.params;
     const reqId = nanoid();
     const txHash = params.tx;
     const signer = await getBackendVoidSigner();
@@ -52,7 +53,7 @@ async function checkPolicyCreated(
             return { policyNftId: BigInt(0), riskId: "" };
         }
     
-        if (! tx.isMined || tx.blockNumber === null || await tx.confirmations() < 1) {
+        if (! tx.isMined || tx.blockNumber === null || (await tx.confirmations()) < 1) {
             LOGGER.debug(`[${reqId}] tx is not mined and confirmed yet`);
             return { policyNftId: BigInt(0), riskId: "" };
         }

@@ -29,7 +29,11 @@ function bigIntMax(...args: bigint[]): bigint {
  * get rating from flightstats and calculate payout amounts via smart contract call 
  * flightstats docs: https://developer.flightstats.com/api-docs/ratings/v1
  */
-export async function GET(request: NextRequest, { params } : { params: { carrier: string, flightNumber: string } }) {
+export async function GET(
+    request: NextRequest,
+    props: { params: Promise<{ carrier: string, flightNumber: string }> }
+) {
+    const params = await props.params;
     const reqId = nanoid();
     const carrier = params.carrier;
     const flightNumber = params.flightNumber;
@@ -41,7 +45,7 @@ export async function GET(request: NextRequest, { params } : { params: { carrier
     if (rating === null) {
         return Response.json({ error: 'No rating data found' }, { status: 404 });
     }
-    
+
     let payouts = {
         delayed: BigInt(0),
         cancelled: BigInt(0),
