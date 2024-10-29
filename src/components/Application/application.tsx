@@ -23,6 +23,7 @@ import ApplicationForm, { IApplicationFormValues } from "./application_form";
 import FlightData from "./flight_data";
 import PurchaseExecutionModal from "./purchase_execution_modal";
 import PurchaseSuccess from "./purchase_success";
+import { EVENT_FETCH_FLIGHT_DATA, useAnalytics } from "../../hooks/use_analytics";
 
 export default function Application() {
     const { t } = useTranslation();
@@ -31,6 +32,7 @@ export default function Application() {
     const { NEXT_PUBLIC_AIRPORTS_WHITELIST, NEXT_PUBLIC_AIRPORTS_BLACKLIST, NEXT_PUBLIC_DEPARTURE_DATE_DATE_FROM, NEXT_PUBLIC_DEPARTURE_DATE_MIN_DAYS, NEXT_PUBLIC_PREMIUM_TOKEN_SYMBOL } = useEnvContext();
     const dispatch = useDispatch() as AppDispatch;
     const { purchaseProtection, fetchRiskpoolCapacity } = useApplication();
+    const { trackEvent } = useAnalytics();
 
     const flightDataState = useSelector((state: RootState) => state.flightData);
     const walletIsConnected = useSelector((state: RootState) => state.wallet.isConnected);
@@ -52,6 +54,7 @@ export default function Application() {
             dispatch(resetErrors());
             dispatch(setFlight({ carrier, flightNumber, departureDate: departureDate.toISOString() }));
             dispatch(fetchFlightData({carrier, flightNumber, departureDate}));
+            trackEvent(EVENT_FETCH_FLIGHT_DATA, { category: 'flight_search', carrier, flightNumber, departureDate: departureDate.format('YYYY-MM-DD') });
         }
     };
 

@@ -57,3 +57,4 @@ export const EVENT_QUOTE_NOT_ENOUGH_DATA = "quote_not_enough_data";
 export const EVENT_QUOTE_POOL_CAPACITY_EXCEEDED = "quote_pool_capacity_exceeded";
 export const EVENT_NO_FLIGHT_FOUND = "no_flight_found";
 export const EVENT_PURCHASE_STARTED = "purchase_started";
+export const EVENT_FETCH_FLIGHT_DATA = "fetch_flight_data";
