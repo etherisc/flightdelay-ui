@@ -1,3 +1,4 @@
+import { useEnvContext } from "next-runtime-env";
 import { event } from "nextjs-google-analytics";
 
 type EventOptions = Record<string, unknown> & {
@@ -9,16 +10,15 @@ type EventOptions = Record<string, unknown> & {
 };
 
 export function useAnalytics() {
-    const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-    const envId = process.env.NEXT_PUBLIC_GA_ENVIRONMENT_ID;
-
+    const { NEXT_PUBLIC_GA_MEASUREMENT_ID, NEXT_PUBLIC_GA_ENVIRONMENT_ID } = useEnvContext();
+    
     function trackEvent(eventName: string, options: EventOptions = {}) {
         // console.log("trackEvent", eventName, options);
-        if ( gaMeasurementId === undefined) { 
+        if ( NEXT_PUBLIC_GA_MEASUREMENT_ID === undefined) { 
             return;
         }
-        if ( envId !== undefined && envId !== "") {
-            options.environment = envId;
+        if ( NEXT_PUBLIC_GA_ENVIRONMENT_ID !== undefined && NEXT_PUBLIC_GA_ENVIRONMENT_ID !== "") {
+            options.environment = NEXT_PUBLIC_GA_ENVIRONMENT_ID;
         }
         // console.log("trackEvent2", eventName, options);
         event(eventName, options);
@@ -28,7 +28,7 @@ export function useAnalytics() {
         const opts = {
             page_title: title,
             page_path: path,
-            environment: envId || null,
+            environment: NEXT_PUBLIC_GA_ENVIRONMENT_ID || null,
             ...options,
         };
         
