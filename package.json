@@ -30,6 +30,7 @@
     "@mui/x-date-pickers": "^7.22.0",
     "@react-hooks-hub/use-debounce": "^1.1.5",
     "@reduxjs/toolkit": "^2.3.0",
+    "@types/ua-parser-js": "^0.7.39",
     "@uidotdev/usehooks": "^2.4.1",
     "abi-coder": "^5.0.0",
     "axios": "^1.6.2",
@@ -50,6 +51,7 @@
     "react-i18next": "^15.1.0",
     "react-redux": "^9.0.0",
     "react-swipeable": "^7.0.1",
+    "ua-parser-js": "^1.0.39",
     "utf-8-validate": "^6.0.3",
     "winston": "^3.15.0"
   },

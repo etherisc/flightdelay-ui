@@ -16,7 +16,8 @@
         "refresh": "Refresh",
         "switch": "Switch network",
         "continue": "Continue",
-        "details": "Details"
+        "details": "Details",
+        "switch_browser": "Open"
     },
     "policy_title": "Policy {{policyId}}",
     "application_instructions": "Enter airline, flight number, and departure date to get a quote for flight delay protection.",
@@ -99,5 +100,8 @@
         "not_enough_data": "Currently not enough data available to protect this flight. Please try again in the future.",
         "riskpool_full": "No new flights can be protected right now, because the capacity of the risk pool is exhausted. Please wait until capacity is available again.",
         "riskpool_not_enough_caoacity_for_flight": "The capacity of the risk pool is not sufficient to protect this flight. Please wait until capacity is available again."
+    },
+    "info": {
+        "use_mobile_wallet_browser": "For the best experience, open this page in a mobile wallet browser (e.g. Metamask)."
     }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Alert, Container } from "@mui/material";
+import { Box, Alert, Container, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import TopBar from "../components/TopBar/topbar";
 import { RootState } from "../redux/store";
@@ -9,6 +9,8 @@ import { useEnvContext } from "next-runtime-env";
 import Button from "../components/Button/button";
 import { useWallet } from "../hooks/onchain/use_wallet";
 import { GoogleAnalytics } from "nextjs-google-analytics";
+import { UAParser } from "ua-parser-js";
+import { useEffect, useState } from "react";
 
 export function AppBaseLayout({
     children,
@@ -20,6 +22,33 @@ export function AppBaseLayout({
     const { NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
     const { switchChain } = useWallet();   
     const { NEXT_PUBLIC_GA_MEASUREMENT_ID } = useEnvContext();
+    const uaParser = new UAParser();
+    const deviceType = uaParser.getDevice().type;
+    const os = uaParser.getOS().name;
+    const browser = uaParser.getBrowser().name;
+    const [showMobileBrowserInfo, setShowMobileBrowserInfo] = useState(false);
+
+    
+    useEffect(() => {
+        const dontShowMobileBrowserInfo = window.localStorage.getItem('dontShowMobileBrowserInfo');
+        console.log('deviceType', deviceType, 'os', os, "browser", browser);
+        setShowMobileBrowserInfo(
+            deviceType === 'mobile' 
+            && (os === 'iOS' || os === 'Android')
+            && (browser === 'Mobile Safari' || browser === 'Chrome' || browser === 'Firefox')
+            && (dontShowMobileBrowserInfo === null)
+        );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+        
+    function openDapp() {
+        window.location.href = 'dapp://flightdelay.app/';
+    }
+
+    function dismissMobileBrowserInfo() {
+        localStorage.setItem('dontShowMobileBrowserInfo', 'true');
+        setShowMobileBrowserInfo(false);
+    }
 
     let generalError = undefined;
 
@@ -54,6 +83,21 @@ export function AppBaseLayout({
                 <TopBar />
             </Container>
             <Container maxWidth="lg" sx={{ p: 2, py: 1 }}>
+                {showMobileBrowserInfo && 
+                    <Alert 
+                    severity='info' 
+                    sx={{ m: 2 }}
+                    action={
+                        <Button variant="text" size="small" onClick={openDapp}><Trans k="action.switch_browser" /></Button>
+                    }
+                    >
+                        <Trans k='info.use_mobile_wallet_browser' />
+                        <br/>
+                        <Button variant="text" size="small" onClick={dismissMobileBrowserInfo}>
+                            <Typography variant="caption">Dismiss this message</Typography>
+                        </Button>
+                    </Alert>}
+                
                 {generalError}
                 {children}
             </Container>
