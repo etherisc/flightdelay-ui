@@ -1,6 +1,7 @@
 import Content from "./content";
 
-function Page({ params }: { params: { nftId: string } }) {
+async function Page(props: { params: Promise<{ nftId: string }> }) {
+    const params = await props.params;
     return <Content nftId={params.nftId} />;
 }
 

@@ -9,7 +9,8 @@ import { getStatisticsProviderSigner } from "../../_utils/chain";
 /**
  * NFT metadata for tokenUri for specified tokenId (nftId)
  */
-export async function GET(request: NextRequest, { params } : { params: { nftId: string } }): Promise<Response> {
+export async function GET(request: NextRequest, props: { params: Promise<{ nftId: string }> }): Promise<Response> {
+    const params = await props.params;
     LOGGER.debug(`getting token uri for: ${params.nftId}`);
 
     if (process.env.RPC_NODE_URL === undefined) {
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest, { params } : { params: { nftId: 
     // this is a workaround for issue #142 to handle the case when the data is stored as bytes32 and as string
     const departureTimeLocal = riskData.departureTimeLocal.startsWith("0x") ? toUtf8String(riskData.departureTimeLocal) :  riskData.departureTimeLocal;
     const arrivalTimeLocal = riskData.arrivalTimeLocal.startsWith("0x") ? toUtf8String(riskData.arrivalTimeLocal) :  riskData.arrivalTimeLocal;
-        
+
     return Response.json({
         "name": `Etherisc Policy NFT - #${params.nftId}`,
         "description": `Protected flight: ${riskData.flightData}\nScheduled departure at: ${departureTimeLocal}\nScheduled arrival at: ${arrivalTimeLocal}\nDISCLAIMER: Due diligence is imperative when assessing this NFT.`,

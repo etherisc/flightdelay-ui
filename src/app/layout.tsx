@@ -20,12 +20,14 @@ export const metadata: Metadata = {
     description: 'Flight delay insurance for everyone',
 }
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
-    const nonce = headers().get('X-Nonce');
+export default async function RootLayout(
+    {
+        children,
+    }: {
+        children: React.ReactNode
+    }
+) {
+    const nonce = (await headers()).get('X-Nonce');
     // console.log('nonce', nnnonce);
     
     return (
