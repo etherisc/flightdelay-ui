@@ -14,6 +14,7 @@ import { useERC20Contract } from "./onchain/use_erc20_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { useWallet } from "./onchain/use_wallet";
 import { setGeneralErrorMessage } from "../redux/slices/common";
+import { EVENT_API_ERROR, EVENT_BLACKLISTED_ARRIVAL_AIRPORT, EVENT_BLACKLISTED_DEPARTURE_AIRPORT, EVENT_INSUFFICIENT_BALANCE, EVENT_INVALID_CHAIN, EVENT_NON_WHITELISTED_AIRPORT, EVENT_PERMIT_SIGNED, EVENT_PURACHASE_SUCCESSFUL, EVENT_PURCHASE_FAILED_UNKNOWN_ERROR, EVENT_PURCHASE_NOT_POSSIBLE, EVENT_RISKPOOL_FULL, EVENT_USER_REJECTED, useAnalytics } from "./use_analytics";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function useApplication() {
     const { hasBalance, getNonce, getName } = useERC20Contract(NEXT_PUBLIC_ERC20_TOKEN_CONTRACT_ADDRESS!, parseInt(NEXT_PUBLIC_PREMIUM_TOKEN_DECIMALS || '6'));
     const { getProductTokenHandlerAddress } = useFlightDelayProductContract(NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS!);
     const { sendPurchaseProtectionRequest, checkPurchaseCompleted, checkRiskpoolCapacity } = useLocalApi();
+    const { trackEvent } = useAnalytics();
     const dispatch = useDispatch();
     
     const isExpectedChain = useSelector((state: RootState) => state.wallet.isExpectedChain);
@@ -70,12 +72,25 @@ export default function useApplication() {
         if (!canPurchase) {
             if (! isExpectedChain) {
                 dispatch(setError({ message: t("error.switch_chain_first"), level: "error" }));
+                trackEvent(EVENT_INVALID_CHAIN, { category: "purchase"});
             } else if (! riskpoolHasCapacity) {
                 dispatch(setError({ message: t("error.riskpool_full"), level: "error" }));
-            } else if (isDepartureAirportBlackListed || isArrivalAirportBlackListed || ! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed  || errorReasonApi !== null) {
+                trackEvent(EVENT_RISKPOOL_FULL, { category: "purchase"});
+            } else if (isDepartureAirportBlackListed) {
                 dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
+                trackEvent(EVENT_BLACKLISTED_DEPARTURE_AIRPORT, { category: "purchase"});
+            } else if (isArrivalAirportBlackListed) {
+                dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
+                trackEvent(EVENT_BLACKLISTED_ARRIVAL_AIRPORT, { category: "purchase"});
+            } else if (! isDepartureAirportWhiteListed || ! isArrivalAirportWhiteListed) {
+                dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
+                trackEvent(EVENT_NON_WHITELISTED_AIRPORT, { category: "purchase"});
+            } else if (errorReasonApi !== null) {
+                dispatch(setError({ message: t("error.change_flight"), level: "warning" }));    
+                trackEvent(EVENT_API_ERROR, { category: "purchase"});
             } else {
                 dispatch(setError({ message: t("error.purchase_protection_not_possible"), level: "error" }));
+                trackEvent(EVENT_PURCHASE_NOT_POSSIBLE, { category: "purchase"});
             }
             return;
         }
@@ -83,6 +98,7 @@ export default function useApplication() {
         // 1. Check if user has enough balance
         if (! await hasBalance(BigInt(premium!), (await getSigner())!)) {
             dispatch(setError({ message: t("error.insufficient_balance"), level: "warning" }));
+            trackEvent(EVENT_INSUFFICIENT_BALANCE, { category: "purchase"});
             return;
         }
 
@@ -94,6 +110,7 @@ export default function useApplication() {
             // 2. Calculate erc20 permit signature 
             const signature = await calculateErc20PermitSignature(BigInt(premium!));
             dispatch(setSigning(false));
+            trackEvent(EVENT_PERMIT_SIGNED, { category: "purchase"});
             console.log("signature", signature);
 
             // 3. send all data relevant for tx to the backend
@@ -126,6 +143,7 @@ export default function useApplication() {
             console.log("purchase request data", permit, application);
             const { tx } = await sendPurchaseProtectionRequest(permit, application);
             console.log("purchase request tx created", tx);
+            trackEvent(EVENT_PURACHASE_SUCCESSFUL, { category: "purchase"});
 
             let result = { policyNftId: "0", riskId: "" };
 
@@ -152,10 +170,12 @@ export default function useApplication() {
                     // @ts-expect-error code is custom field for metamask error
                     if (err.code === "ACTION_REJECTED") {
                         dispatch(setError({ message: t("error.user_rejected"), level: "error" }));
+                        trackEvent(EVENT_USER_REJECTED, { category: "purchase"});
                     }
                 } else {
                     console.error("purchase failed", err);
                     dispatch(setError({ message: t("error.unknown_error"), level: "error" }));
+                    trackEvent(EVENT_PURCHASE_FAILED_UNKNOWN_ERROR, { category: "purchase"});
                 }
             }
         } finally {

@@ -39,3 +39,15 @@ export function useAnalytics() {
     }
 }
 
+export const EVENT_INVALID_CHAIN = "invalid_chain";
+export const EVENT_RISKPOOL_FULL = "riskpool_full";
+export const EVENT_BLACKLISTED_DEPARTURE_AIRPORT = "blacklisted_departure_airport";
+export const EVENT_BLACKLISTED_ARRIVAL_AIRPORT = "blacklisted_arrival_airport";
+export const EVENT_NON_WHITELISTED_AIRPORT = "non_whitelisted_airport";
+export const EVENT_API_ERROR = "api_error";
+export const EVENT_PURCHASE_NOT_POSSIBLE = "purchase_not_possible";
+export const EVENT_INSUFFICIENT_BALANCE = "insufficient_balance";
+export const EVENT_PERMIT_SIGNED = "permit_signed";
+export const EVENT_USER_REJECTED = "user_rejected";
+export const EVENT_PURCHASE_FAILED_UNKNOWN_ERROR = "purchase_failed_unknown_error";
+export const EVENT_PURACHASE_SUCCESSFUL = "purchase_successful";
