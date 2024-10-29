@@ -8,6 +8,7 @@ import Trans from "../components/Trans/trans";
 import { useEnvContext } from "next-runtime-env";
 import Button from "../components/Button/button";
 import { useWallet } from "../hooks/onchain/use_wallet";
+import { GoogleAnalytics } from "nextjs-google-analytics";
 
 export function AppBaseLayout({
     children,
@@ -18,6 +19,7 @@ export function AppBaseLayout({
     const generalErrorMessage = useSelector((state: RootState) => state.common.generalErrorMessage);
     const { NEXT_PUBLIC_EXPECTED_CHAIN_NAME } = useEnvContext();
     const { switchChain } = useWallet();   
+    const { NEXT_PUBLIC_GA_MEASUREMENT_ID } = useEnvContext();
 
     let generalError = undefined;
 
@@ -47,6 +49,7 @@ export function AppBaseLayout({
 
     return (
         <Box>
+            <GoogleAnalytics gaMeasurementId={NEXT_PUBLIC_GA_MEASUREMENT_ID} />
             <Container disableGutters maxWidth={false}>
                 <TopBar />
             </Container>

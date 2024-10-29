@@ -13,7 +13,7 @@ export function useAnalytics() {
     const { NEXT_PUBLIC_GA_MEASUREMENT_ID, NEXT_PUBLIC_GA_ENVIRONMENT_ID } = useEnvContext();
     
     function trackEvent(eventName: string, options: EventOptions = {}) {
-        // console.log("trackEvent", eventName, options);
+        console.log("trackEvent", eventName, options);
         if ( NEXT_PUBLIC_GA_MEASUREMENT_ID === undefined) { 
             return;
         }
@@ -25,6 +25,7 @@ export function useAnalytics() {
     }
 
     function trackPageView(title: string, path: string, options: EventOptions = {}) {
+        console.log("trackPageView", title, path, options);
         const opts = {
             page_title: title,
             page_path: path,
