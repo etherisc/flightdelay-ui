@@ -51,6 +51,12 @@ The webapp is configured via environment variables. The following variables are 
 - `NEXT_PUBLIC_GA_ENVIRONMENT_ID`: The Google Analytics environment identifier 
 - `CSP_ENABLED`: Set to `true` to enable the Content Security Policy
 
+### Contract generation
+
+The webapp uses [Typechain](https://github.com/dethcrypto/TypeChain) to generate smart contract bindings. The generated files are stored in the `src/contracts` directory (which is not commited to git, to ensure the latest artifacts are used). The generation is done automatically after running `npm install`. 
+
+Currently not all smart contracts are compiled automatically, due to the huge number of classes this would generate. 
+Which contracts are compiled is defined in the `package.json` file in tasks `typechainOpenzeppelinTypes`, `typechainGif` and `typechainFlight`. 
 
 ### Start
 
