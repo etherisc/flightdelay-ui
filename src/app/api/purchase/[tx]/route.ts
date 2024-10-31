@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ tx: s
     const { policyNftId, riskId } = await checkPolicyCreated(reqId, txHash, signer);
 
     if (policyNftId === BigInt(0)) {
-        return Response.json({ error: 'Policy not created yet' }, { status: 202 });
+        return Response.json({ message: 'Policy not created yet' }, { status: 202 });
     }
 
     return Response.json({
