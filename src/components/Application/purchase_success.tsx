@@ -1,6 +1,6 @@
 import { Alert, Dialog, DialogActions, DialogContent } from "@mui/material";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import Button from "../Button/button";
@@ -12,6 +12,12 @@ export default function PurchaseSuccess({ purchaseSuccessful, resetForm } : { pu
     const departureDate = useSelector((state: RootState) => state.flightData.departureDate);
     const policyNftId = useSelector((state: RootState) => state.purchase.policyNftId);
     const [visible, setVisible] = useState(true);
+
+    useEffect(() => {
+        if (policyNftId === null) {
+            setVisible(true);
+        }
+    }, [policyNftId]);
 
     if ( ! purchaseSuccessful) {
         return undefined;
