@@ -32,6 +32,7 @@ The webapp is configured via environment variables. The following variables are 
 - `RISKPOOL_MIN_CAPACITY`: The minimum capacity of the risk pool in wei. If the capacity is below this value, the policy creation will not be possible.
 - `ORACLE_ARRIVAL_CHECK_DELAY_SECONDS`: The delay in seconds for the oracle to check the arrival status after the exected arrival time
 - `GAS_LIMIT`: The gas limit for oracle responses (defaults to `5000000`)
+- `RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS`: The lookahead time in seconds for the risk pool maximum payout check (executed during readyness checks). Defaults to 172800 seconds (2 days). 
 
 - `NEXT_PUBLIC_EXPECTED_CHAIN_ID`: The expected chain ID
 - `NEXT_PUBLIC_EXPECTED_CHAIN_NAME`: The expected chain name (optional, required for automatic chain adding)

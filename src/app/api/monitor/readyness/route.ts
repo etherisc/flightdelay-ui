@@ -1,7 +1,7 @@
 import { formatUnits, getNumber, parseUnits, Signer } from "ethers";
 import { checkSignerBalance, getStatisticsProviderSigner, getStatusProviderSigner } from "../../_utils/chain";
 import { FlightOracle__factory, FlightPool__factory, FlightProduct, FlightProduct__factory } from "../../../../contracts/flight";
-import { ORACLE_CONTRACT_ADDRESS, POOL_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS, RISKPOOL_CAPACITY_CHECK_LOOKAHEAD_SECONDS, TOKEN_CONTRACT_ADDRESS, TOKEN_DECIMALS } from "../../_utils/api_constants";
+import { ORACLE_CONTRACT_ADDRESS, POOL_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS, RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, TOKEN_CONTRACT_ADDRESS, TOKEN_DECIMALS } from "../../_utils/api_constants";
 import { IInstance__factory, InstanceReader__factory } from "../../../../contracts/gif";
 import { collectActiveRequestIds, processOracleRequest } from "../../_utils/flight_oracle";
 import { LOGGER } from "../../../../utils/logger_backend";
@@ -102,7 +102,7 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer): Promise<{
 
 async function checkFlightArrivesWithinRiskWindow(logReqId: string, flightRisk: FlightProduct.FlightRiskStruct): Promise<boolean> {
     const arrivalTimeUtc = flightRisk.arrivalTime;
-    const riskWindowEnd = dayjs.utc().add(RISKPOOL_CAPACITY_CHECK_LOOKAHEAD_SECONDS, 's').unix();
+    const riskWindowEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's').unix();
     const isInSlot = getNumber(arrivalTimeUtc) < riskWindowEnd;
     LOGGER.debug(`[${logReqId}] ${isInSlot} - arrival time: ${dayjs.unix(getNumber(arrivalTimeUtc)).format()} (${arrivalTimeUtc}) | risk window end: ${dayjs.unix(getNumber(riskWindowEnd)).format()} (${riskWindowEnd})`);
     return isInSlot;
