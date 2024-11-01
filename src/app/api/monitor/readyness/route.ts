@@ -71,6 +71,8 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
 
     // if status == null and request id !== null => resend request
     // let oracleResponses = [] as { requestId: bigint, status: string | null, delay: number, riskId: string | null, flightPlan: string }[];
+    const responses = [];
+    
     for (const requestId of requestIds) {
         const requestState = await flightOracle.getRequestState(requestId);
 
@@ -79,7 +81,7 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
         }
 
         try {
-            const response = await processOracleRequest(
+            responses.push(await processOracleRequest(
                 logReqId, 
                 flightProduct, 
                 flightOracle, 
@@ -90,16 +92,7 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
                     const isInSlot = getNumber(arrivalTimeUtc) < expectedPayoutCheckEnd;
                     LOGGER.debug(`[${logReqId}] ${isInSlot} - arrival time: ${dayjs.unix(getNumber(arrivalTimeUtc)).format()} (${arrivalTimeUtc}) | risk window end: ${dayjs.unix(getNumber(expectedPayoutCheckEnd)).format()} (${expectedPayoutCheckEnd})`);
                     return isInSlot;
-                });
-            
-            if (response === null) {
-                continue;
-            }
-
-            const maxPayout = response.flightRisk.sumOfSumInsuredAmounts;
-            LOGGER.info(`[${logReqId}] max payout for ${response.flightPlan}: ${formatUnits(maxPayout, TOKEN_DECIMALS)}`);
-            maxExpectedPayout += BigInt(maxPayout);
-            flightPlans.push(`${response.flightPlan} / ${formatUnits(maxPayout, TOKEN_DECIMALS)}`);
+                }));
         } catch (err) {
             // @ts-expect-error error handling
             LOGGER.error(`[${logReqId}] ${err.message}`);
@@ -110,6 +103,13 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
             await new Promise(resolve => setTimeout(resolve, 50));
         }
     }
+
+    responses.filter(r => r !== null).sort((r1, r2) => getNumber(r1.flightRisk.departureTime) - getNumber(r2.flightRisk.departureTime)).forEach(response => {
+        const maxPayout = response.flightRisk.sumOfSumInsuredAmounts;
+        LOGGER.info(`[${logReqId}] max payout for ${response.flightPlan}: ${formatUnits(maxPayout, TOKEN_DECIMALS)}`);
+        maxExpectedPayout += BigInt(maxPayout);
+        flightPlans.push(`${response.flightPlan} / ${formatUnits(maxPayout, TOKEN_DECIMALS)}`);
+    });
 
     const riskpoolWalletBalance = await token.balanceOf(await flightRiskpool.getWallet());
     LOGGER.info(`[${logReqId}] riskpool wallet balance: ${formatUnits(riskpoolWalletBalance, TOKEN_DECIMALS)} | max expected payout: ${formatUnits(maxExpectedPayout, TOKEN_DECIMALS)} | payoutPossible: ${riskpoolWalletBalance >= maxExpectedPayout}`);
