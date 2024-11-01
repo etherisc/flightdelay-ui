@@ -5,9 +5,9 @@ import { ORACLE_CONTRACT_ADDRESS, POOL_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRES
 import { IInstance__factory, InstanceReader__factory } from "../../../../contracts/gif";
 import { collectActiveRequestIds, processOracleRequest } from "../../_utils/flight_oracle";
 import { LOGGER } from "../../../../utils/logger_backend";
-import dayjs from "dayjs";
 import { IERC20__factory } from "../../../../contracts/openzeppelin-contracts";
 import { nanoid } from "nanoid";
+import { dayjs } from "../../../../utils/date";
 
 const REQUEST_STATE_ACTIVE = 5;
 
@@ -29,23 +29,31 @@ export async function GET() {
     const applicationSignerHasBalance = await checkSignerBalance(applicationSigner, minBalanceApplication);
     const oracleSignerHasBalance = await checkSignerBalance(oracleSigner, minBalanceOracle);
 
-    const { riskpoolHasBalance, riskpoolWalletBalance, maxExpectedPayout } = await checkRiskpoolBalance(logReqId, oracleSigner);
+    const expectedPayoutCheckEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's');
+    
+    const { riskpoolHasBalance, riskpoolWalletBalance, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, oracleSigner, expectedPayoutCheckEnd.unix());
 
     const isReady = applicationSignerHasBalance && oracleSignerHasBalance && riskpoolHasBalance;
 
     return Response.json({
         applicationSignerHasBalance,
         oracleSignerHasBalance,
-        riskpoolHasBalance,
-        riskpoolWalletBalance: `${formatUnits(riskpoolWalletBalance, TOKEN_DECIMALS)} (${riskpoolWalletBalance})`,
-        maxExpectedPayout: `${formatUnits(maxExpectedPayout, TOKEN_DECIMALS)} (${maxExpectedPayout})`,
+        maxExpectedPayoutCheck: {
+            riskpoolHasBalance,
+            riskpoolWalletBalance: `${formatUnits(riskpoolWalletBalance, TOKEN_DECIMALS)} (${riskpoolWalletBalance})`,
+            maxExpectedPayout: `${formatUnits(maxExpectedPayout, TOKEN_DECIMALS)} (${maxExpectedPayout})`,
+            maxExpectedPayoutUntil: expectedPayoutCheckEnd.toISOString(),
+            flightPlans,
+        }
+        
     }, { status: isReady ? 200 : 500 });
 }
 
-async function checkRiskpoolBalance(logReqId: string, signer: Signer): Promise<{
+async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPayoutCheckEnd: number): Promise<{
     riskpoolHasBalance: boolean,
     riskpoolWalletBalance: bigint,
-    maxExpectedPayout: bigint
+    maxExpectedPayout: bigint, 
+    flightPlans: string[]
 }> {
 
     const flightProduct = FlightProduct__factory.connect(PRODUCT_CONTRACT_ADDRESS, signer);
@@ -59,6 +67,7 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer): Promise<{
     
     let maxExpectedPayout = BigInt(0);
     const requestIds = await collectActiveRequestIds(logReqId, flightOracle);
+    const flightPlans = [] as string[];
 
     // if status == null and request id !== null => resend request
     // let oracleResponses = [] as { requestId: bigint, status: string | null, delay: number, riskId: string | null, flightPlan: string }[];
@@ -70,7 +79,18 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer): Promise<{
         }
 
         try {
-            const response = await processOracleRequest(logReqId, flightProduct, flightOracle, instanceReader, requestId, checkFlightArrivesWithinRiskWindow);
+            const response = await processOracleRequest(
+                logReqId, 
+                flightProduct, 
+                flightOracle, 
+                instanceReader, 
+                requestId, 
+                async (logReqId: string, flightRisk: FlightProduct.FlightRiskStruct) => {
+                    const arrivalTimeUtc = flightRisk.arrivalTime;
+                    const isInSlot = getNumber(arrivalTimeUtc) < expectedPayoutCheckEnd;
+                    LOGGER.debug(`[${logReqId}] ${isInSlot} - arrival time: ${dayjs.unix(getNumber(arrivalTimeUtc)).format()} (${arrivalTimeUtc}) | risk window end: ${dayjs.unix(getNumber(expectedPayoutCheckEnd)).format()} (${expectedPayoutCheckEnd})`);
+                    return isInSlot;
+                });
             
             if (response === null) {
                 continue;
@@ -79,14 +99,15 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer): Promise<{
             const maxPayout = response.flightRisk.sumOfSumInsuredAmounts;
             LOGGER.info(`[${logReqId}] max payout for ${response.flightPlan}: ${formatUnits(maxPayout, TOKEN_DECIMALS)}`);
             maxExpectedPayout += BigInt(maxPayout);
+            flightPlans.push(`${response.flightPlan} / ${formatUnits(maxPayout, TOKEN_DECIMALS)}`);
         } catch (err) {
             // @ts-expect-error error handling
-            LOGGER.error(`[${reqId}] ${err.message}`);
+            LOGGER.error(`[${logReqId}] ${err.message}`);
             // @ts-expect-error error handling
-            LOGGER.error(`[${reqId}] ${err.stack}`);
+            LOGGER.error(`[${logReqId}] ${err.stack}`);
         } finally {
             // sleep 100ms to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 50));
         }
     }
 
@@ -96,14 +117,7 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer): Promise<{
     return {
         riskpoolHasBalance: riskpoolWalletBalance >= maxExpectedPayout,
         riskpoolWalletBalance,
-        maxExpectedPayout
+        maxExpectedPayout,
+        flightPlans
     };
-}
-
-async function checkFlightArrivesWithinRiskWindow(logReqId: string, flightRisk: FlightProduct.FlightRiskStruct): Promise<boolean> {
-    const arrivalTimeUtc = flightRisk.arrivalTime;
-    const riskWindowEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's').unix();
-    const isInSlot = getNumber(arrivalTimeUtc) < riskWindowEnd;
-    LOGGER.debug(`[${logReqId}] ${isInSlot} - arrival time: ${dayjs.unix(getNumber(arrivalTimeUtc)).format()} (${arrivalTimeUtc}) | risk window end: ${dayjs.unix(getNumber(riskWindowEnd)).format()} (${riskWindowEnd})`);
-    return isInSlot;
 }
