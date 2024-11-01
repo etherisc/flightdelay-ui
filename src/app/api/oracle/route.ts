@@ -1,11 +1,9 @@
 import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import { getNumber, hexlify, parseUnits, Signer, toUtf8Bytes } from "ethers";
 import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { FlightLib__factory, FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
-import { IBundleService__factory, IInstance__factory, InstanceReader, InstanceReader__factory, IOracleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../contracts/gif";
+import { IBundleService__factory, IInstance__factory, InstanceReader__factory, IOracleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../contracts/gif";
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
 import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
 import { getFieldFromLogs } from "../../../utils/chain";
@@ -13,6 +11,7 @@ import { LOGGER } from "../../../utils/logger_backend";
 import { decodeOzShortString } from "../../../utils/oz_shortstring";
 import { FLIGHTSTATS_BASE_URL, GAS_LIMIT, ORACLE_ARRIVAL_CHECK_DELAY_SECONDS, ORACLE_CONTRACT_ADDRESS, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getStatusProviderSigner, getTxOpts } from "../_utils/chain";
+import { collectActiveRequestIds, processOracleRequest } from "../_utils/flight_oracle";
 import { sendRequestAndReturnResponse } from "../_utils/proxy";
 
 // @ts-expect-error BigInt is not defined in the global scope
@@ -56,9 +55,12 @@ export async function POST(request: Request) {
             if (requestState.readyForResponse) {
                 LOGGER.debug(`[${reqId}] request ${requestId} is ready for response`);
                 try {
-                    const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId);
+                    const response = await processOracleRequest(reqId, flightProduct, flightOracle, instanceReader, requestId, checkFlightRisk);
                     if (response === null) {
                         continue;
+                    }
+                    if (response.delay === undefined) {
+                        response.delay = 0;
                     }
                     oracleResponses.push(response);
                 } catch (err) {
@@ -109,80 +111,36 @@ export async function POST(request: Request) {
     }
 }
 
-async function collectActiveRequestIds(reqId: string, flightOracle: FlightOracle): Promise<bigint[]> {
-    const activeRequests = await flightOracle.activeRequests();
-    LOGGER.debug(`active requests: ${activeRequests}`);
-    const requestIds = [] as bigint[];
-    await Promise.allSettled([...Array(getNumber(activeRequests))].map(async (_, i) => {
-        const requestId = await flightOracle.getActiveRequest(i);
-        requestIds.push(requestId);
-    }));
-    LOGGER.debug(`[${reqId}] active requestIds: ${requestIds}`);
-    return requestIds;
-}
-
-async function processOracleRequest(
-    reqId: string, 
-    flightProduct: FlightProduct, 
-    flightOracle: FlightOracle, 
-    instanceReader: InstanceReader, 
-    requestId: bigint
-): Promise<{ requestId: bigint, status: string, delay: number, riskId: string, flightPlan: string } | null> {
-    // this needs to be done per thread
-    dayjs.extend(utc);
-    dayjs.extend(timezone);
-    LOGGER.debug(`[${reqId}] processing request ${requestId}`);
-
-    // 1. extract flight risk from oracle request data
-    const { risk: flightRisk, riskId, flightPlan } = await readFlightRisk(instanceReader, flightProduct, flightOracle, requestId);
+async function checkFlightRisk(logReqId: string, flightRisk: FlightProduct.FlightRiskStruct, requestId: bigint, flightPlan: string): Promise<boolean> {
     // LOGGER.debug(JSON.stringify(flightRisk));
     const arrivalTimeUtc = flightRisk.arrivalTime;
     const nowUtc = dayjs.utc().unix();
-    LOGGER.debug(`[${reqId}] arrivalTime(utc): ${arrivalTimeUtc} (${dayjs.unix(getNumber(arrivalTimeUtc)).format()}) < now(utc): ${nowUtc} (${dayjs.unix(nowUtc).format()}) | delay ${ORACLE_ARRIVAL_CHECK_DELAY_SECONDS}s`);
+    LOGGER.debug(`[${logReqId}] arrivalTime(utc): ${arrivalTimeUtc} (${dayjs.unix(getNumber(arrivalTimeUtc)).format()}) < now(utc): ${nowUtc} (${dayjs.unix(nowUtc).format()}) | delay ${ORACLE_ARRIVAL_CHECK_DELAY_SECONDS}s`);
 
     // 2. check flight should have arrives
     if (nowUtc < (getNumber(arrivalTimeUtc) + ORACLE_ARRIVAL_CHECK_DELAY_SECONDS)) {
-        LOGGER.debug(`[${reqId}] request ${requestId} not yet due`);
-        return null;
+        LOGGER.debug(`[${logReqId}] request ${requestId} not yet due`);
+        return false;
     }
 
     // 3. fetch flight status 
-    const {status, delay} = await fetchFlightStatus(reqId, flightRisk);
-    // LOGGER.debug(`[${reqId}] flight status: ${JSON.stringify(flightstatus)}`);
-    LOGGER.info(`[${reqId}] flight status: ${status}, delay: ${delay} - flightPlan: ${flightPlan}`);
+    const {status, delay} = await fetchFlightStatus(logReqId, flightRisk);
+    LOGGER.info(`[${logReqId}] flight status: ${status}, delay: ${delay} - flightPlan: ${flightPlan}`);
 
     switch (status) {
         case 'S': // scheduled
         case 'A': // active
-            return null;
+            return false;
             
         case 'L': // landed
         case 'C': // cancelled
         case 'D': // diverted
-            if (delay === undefined) {
-                LOGGER.debug(`[${reqId}] flight without delay information`);
-                return { requestId, status, delay: 0, riskId, flightPlan };
-            }
-            return { requestId, status, delay, riskId, flightPlan };
+            return true;
 
         default:
-            LOGGER.error(`[${reqId}] unknown flight status: ${status}`);
+            LOGGER.error(`[${logReqId}] unknown flight status: ${status}`);
             throw new Error("FLIGHT_STATUS_UNKNOWN");
     }
-}
-
-async function readFlightRisk(instanceReader: InstanceReader, flightProduct: FlightProduct, flightOracle: FlightOracle, requestId: bigint): Promise<{ riskId: string, risk: FlightProduct.FlightRiskStruct, flightPlan: string}> {
-    const requestInfo = await instanceReader.getRequestInfo(requestId);
-    // LOGGER.debug(JSON.stringify(requestInfo.requestData));
-    const requestData = await flightOracle.decodeFlightStatusRequestData(requestInfo.requestData);
-    // LOGGER.debug(JSON.stringify(requestData));
-    const riskInfo = await instanceReader.getRiskInfo(requestData.riskId);
-    // LOGGER.debug(JSON.stringify(riskInfo));
-    const risk = await flightProduct.decodeFlightRiskData(riskInfo.data);
-    LOGGER.debug(JSON.stringify(risk.flightData));
-    const flightPlan = decodeOzShortString(risk.flightData).trim();
-    // const flightPlan = (await instanceReader.toString(risk.flightData)).trim();
-    return { riskId: requestData.riskId, risk, flightPlan };
 }
 
 async function fetchFlightStatus(reqId: string, flightRisk: FlightProduct.FlightRiskStruct): 
