@@ -25,7 +25,7 @@ export async function processOracleRequest(
     flightOracle: FlightOracle, 
     instanceReader: InstanceReader, 
     requestId: bigint,
-    evaluateRisk: (logReqId: string, flightRisk: FlightProduct.FlightRiskStruct, requestId: bigint, flightPlan: string) => Promise<boolean> 
+    evaluateRisk: (logReqId: string, flightRisk: FlightProduct.FlightRiskStruct, requestId: bigint, flightPlan: string) => Promise<{ hasLanded: boolean, delay:number, status: string}> 
 ): Promise<{ requestId: bigint, status: string, delay: number, riskId: string, flightPlan: string, flightRisk: FlightProduct.FlightRiskStruct } | null> {
     // this needs to be done per thread
     dayjs.extend(utc);
@@ -35,8 +35,11 @@ export async function processOracleRequest(
     // 1. extract flight risk from oracle request data
     const { risk: flightRisk, riskId, flightPlan } = await readFlightRisk(instanceReader, flightProduct, flightOracle, requestId);
 
-    if (await evaluateRisk(reqId, flightRisk, requestId, flightPlan)) {
-        return { requestId, status: "L", delay: 0, riskId, flightPlan, flightRisk };
+    
+    const { hasLanded, delay, status } = await evaluateRisk(reqId, flightRisk, requestId, flightPlan);
+
+    if (hasLanded) {
+        return { requestId, status, delay, riskId, flightPlan, flightRisk };
     } else {
         return null;
     }

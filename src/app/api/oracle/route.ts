@@ -111,7 +111,9 @@ export async function POST(request: Request) {
     }
 }
 
-async function checkFlightRisk(logReqId: string, flightRisk: FlightProduct.FlightRiskStruct, requestId: bigint, flightPlan: string): Promise<boolean> {
+async function checkFlightRisk(
+    logReqId: string, flightRisk: FlightProduct.FlightRiskStruct, requestId: bigint, flightPlan: string
+): Promise<{ hasLanded: boolean, delay:number, status: string}> {
     // LOGGER.debug(JSON.stringify(flightRisk));
     const arrivalTimeUtc = flightRisk.arrivalTime;
     const nowUtc = dayjs.utc().unix();
@@ -120,7 +122,7 @@ async function checkFlightRisk(logReqId: string, flightRisk: FlightProduct.Fligh
     // 2. check flight should have arrives
     if (nowUtc < (getNumber(arrivalTimeUtc) + ORACLE_ARRIVAL_CHECK_DELAY_SECONDS)) {
         LOGGER.debug(`[${logReqId}] request ${requestId} not yet due`);
-        return false;
+        return { hasLanded: false, delay: 0, status: "S" };
     }
 
     // 3. fetch flight status 
@@ -130,12 +132,12 @@ async function checkFlightRisk(logReqId: string, flightRisk: FlightProduct.Fligh
     switch (status) {
         case 'S': // scheduled
         case 'A': // active
-            return false;
+            return { hasLanded: false, delay: delay ?? 0, status };
             
         case 'L': // landed
         case 'C': // cancelled
         case 'D': // diverted
-            return true;
+            return { hasLanded: true, delay: delay ?? 0, status };
 
         default:
             LOGGER.error(`[${logReqId}] unknown flight status: ${status}`);
