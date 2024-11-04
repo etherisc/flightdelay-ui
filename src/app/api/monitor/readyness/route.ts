@@ -31,16 +31,18 @@ export async function GET() {
 
     const expectedPayoutCheckEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's');
     
-    const { riskpoolHasBalance, riskpoolWalletBalance, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, oracleSigner, expectedPayoutCheckEnd.unix());
+    const { riskpoolWalletBalanceSufficient, riskpoolWalletBalance, riskpoolWalletAllowance, riskpoolWalletAllowanceSufficient, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, oracleSigner, expectedPayoutCheckEnd.unix());
 
-    const isReady = applicationSignerHasBalance && oracleSignerHasBalance && riskpoolHasBalance;
+    const isReady = applicationSignerHasBalance && oracleSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient;
 
     return Response.json({
         applicationSignerHasBalance,
         oracleSignerHasBalance,
         maxExpectedPayoutCheck: {
-            riskpoolHasBalance,
+            riskpoolWalletBalanceSufficient,
+            riskpoolWalletAllowanceSufficient,
             riskpoolWalletBalance: `${formatUnits(riskpoolWalletBalance, TOKEN_DECIMALS)} (${riskpoolWalletBalance})`,
+            riskpoolWalletAllowance: `${formatUnits(riskpoolWalletAllowance, TOKEN_DECIMALS)} (${riskpoolWalletAllowance})`,
             maxExpectedPayout: `${formatUnits(maxExpectedPayout, TOKEN_DECIMALS)} (${maxExpectedPayout})`,
             maxExpectedPayoutUntil: expectedPayoutCheckEnd.toISOString(),
             flightPlans,
@@ -50,8 +52,10 @@ export async function GET() {
 }
 
 async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPayoutCheckEnd: number): Promise<{
-    riskpoolHasBalance: boolean,
+    riskpoolWalletBalanceSufficient: boolean,
     riskpoolWalletBalance: bigint,
+    riskpoolWalletAllowanceSufficient: boolean,
+    riskpoolWalletAllowance: bigint,
     maxExpectedPayout: bigint, 
     flightPlans: string[]
 }> {
@@ -112,11 +116,17 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
     });
 
     const riskpoolWalletBalance = await token.balanceOf(await flightRiskpool.getWallet());
+    const tokenHandler = await flightRiskpool.getTokenHandler();
+    const riskpoolWalletAllowance = await token.allowance(await flightRiskpool.getWallet(), tokenHandler);
+    const riskpoolWalletAllowanceSufficient = riskpoolWalletAllowance >= maxExpectedPayout;
     LOGGER.info(`[${logReqId}] riskpool wallet balance: ${formatUnits(riskpoolWalletBalance, TOKEN_DECIMALS)} | max expected payout: ${formatUnits(maxExpectedPayout, TOKEN_DECIMALS)} | payoutPossible: ${riskpoolWalletBalance >= maxExpectedPayout}`);
+    LOGGER.info(`[${logReqId}] riskpool wallet allowance: ${formatUnits(riskpoolWalletAllowance, TOKEN_DECIMALS)} | max expected payout: ${formatUnits(maxExpectedPayout, TOKEN_DECIMALS)} | payoutPossible: ${riskpoolWalletAllowance >= maxExpectedPayout}`);
 
     return {
-        riskpoolHasBalance: riskpoolWalletBalance >= maxExpectedPayout,
+        riskpoolWalletBalanceSufficient: riskpoolWalletBalance >= maxExpectedPayout,
+        riskpoolWalletAllowanceSufficient,
         riskpoolWalletBalance,
+        riskpoolWalletAllowance,
         maxExpectedPayout,
         flightPlans
     };
