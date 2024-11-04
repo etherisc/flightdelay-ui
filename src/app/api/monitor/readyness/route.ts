@@ -91,7 +91,7 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
                     const arrivalTimeUtc = flightRisk.arrivalTime;
                     const isInSlot = getNumber(arrivalTimeUtc) < expectedPayoutCheckEnd;
                     LOGGER.debug(`[${logReqId}] ${isInSlot} - arrival time: ${dayjs.unix(getNumber(arrivalTimeUtc)).format()} (${arrivalTimeUtc}) | risk window end: ${dayjs.unix(getNumber(expectedPayoutCheckEnd)).format()} (${expectedPayoutCheckEnd})`);
-                    return isInSlot;
+                    return { hasLanded: isInSlot, delay: 0, status: "S" };
                 }));
         } catch (err) {
             // @ts-expect-error error handling
