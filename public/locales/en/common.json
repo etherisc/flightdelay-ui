@@ -70,6 +70,7 @@
     "contracts": {
         "title": "Flight delay contract addresses",
         "product_contract": "Flight delay product contract",
+        "oracle_contract": "Flight oracle contract",
         "tokenhandler_contract": "Token handler contract",
         "nft_contract": "NFT contract",
         "flight_nft_contract": "Flight NFT contract (Metadata)",

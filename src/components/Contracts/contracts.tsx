@@ -10,6 +10,7 @@ export default function Contracts() {
     const { 
         NEXT_PUBLIC_PRODUCT_CONTRACT_ADDRESS,
         NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS,
+        NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS,
         NEXT_PUBLIC_NFT_CONTRACT_ADDRESS,
         NEXT_PUBLIC_FLIGHT_NFT_CONTRACT_ADDRESS,
         NEXT_PUBLIC_EXPECTED_CHAIN_BLOCK_EXPLORER_URL,
@@ -53,6 +54,16 @@ export default function Contracts() {
                             <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
                                 <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
                                     {NEXT_PUBLIC_PRODUCT_TOKENHANDLER_CONTRACT_ADDRESS}
+                                </Link>
+                            </BadgeWrapper>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                            <Trans k="contracts.oracle_contract" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 8 }} sx={{ wordWrap: 'break-word' }}>
+                            <BadgeWrapper badgeContent={NEXT_PUBLIC_CONTRACTS_BADGE_TEXT}>
+                                <Link href={`${etherscanBaseUrl}${NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS}`} className="link" target="_blank" rel="noopener noreferrer">
+                                    {NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS}
                                 </Link>
                             </BadgeWrapper>
                         </Grid>
