@@ -53,7 +53,7 @@
     "react-swipeable": "^7.0.1",
     "ua-parser-js": "^1.0.39",
     "utf-8-validate": "^6.0.5",
-    "winston": "^3.15.0"
+    "winston": "^3.16.0"
   },
   "devDependencies": {
     "@etherisc/gif-next": "3.0.0-8200b30-160",
