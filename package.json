@@ -59,7 +59,7 @@
     "@etherisc/gif-next": "3.0.0-8200b30-160",
     "@hookform/devtools": "^4.3.1",
     "@openzeppelin/contracts": "5.0.2",
-    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.1",
     "@typechain/ethers-v6": "^0.5.1",
