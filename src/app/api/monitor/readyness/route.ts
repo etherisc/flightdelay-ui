@@ -20,24 +20,24 @@ export async function GET() {
     const logReqId = nanoid();
     
     // check min amounts for application and oracle signers
-    const applicationSigner = await getStatisticsProviderSigner();
-    const oracleSigner = await getStatusProviderSigner();
+    const statisticsProviderSigner = await getStatisticsProviderSigner();
+    const statusProviderSigner = await getStatusProviderSigner();
     
-    const minBalanceApplication = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
-    const minBalanceOracle = parseUnits(process.env.STATUS_PROVIDER_MIN_BALANCE! || "1", "wei");
+    const minBalanceStatisticsProvider = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
+    const minBalanceStatusProvider = parseUnits(process.env.STATUS_PROVIDER_MIN_BALANCE! || "1", "wei");
 
-    const applicationSignerHasBalance = await checkSignerBalance(applicationSigner, minBalanceApplication);
-    const oracleSignerHasBalance = await checkSignerBalance(oracleSigner, minBalanceOracle);
+    const statisticsProvoderSignerHasBalance = await checkSignerBalance(statisticsProviderSigner, minBalanceStatisticsProvider);
+    const statusProviderSignerHasBalance = await checkSignerBalance(statusProviderSigner, minBalanceStatusProvider);
 
     const expectedPayoutCheckEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's');
     
-    const { riskpoolWalletBalanceSufficient, riskpoolWalletBalance, riskpoolWalletAllowance, riskpoolWalletAllowanceSufficient, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, oracleSigner, expectedPayoutCheckEnd.unix());
+    const { riskpoolWalletBalanceSufficient, riskpoolWalletBalance, riskpoolWalletAllowance, riskpoolWalletAllowanceSufficient, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, statusProviderSigner, expectedPayoutCheckEnd.unix());
 
-    const isReady = applicationSignerHasBalance && oracleSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient;
+    const isReady = statisticsProvoderSignerHasBalance && statusProviderSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient;
 
     return Response.json({
-        applicationSignerHasBalance,
-        oracleSignerHasBalance,
+        statisticsProvoderSignerHasBalance,
+        statusProviderSignerHasBalance,
         maxExpectedPayoutCheck: {
             riskpoolWalletBalanceSufficient,
             riskpoolWalletAllowanceSufficient,

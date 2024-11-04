@@ -16,7 +16,7 @@ export async function GET() {
     const statisticsProviderSigner = await getStatisticsProviderSigner();
     
     const minBalanceApplication = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
-    const applicationSignerHasBalance = await checkSignerBalance(statisticsProviderSigner, minBalanceApplication);
+    const statisticsProviderSignerHasBalance = await checkSignerBalance(statisticsProviderSigner, minBalanceApplication);
 
     const minAvailableCapacity = parseUnits(process.env.RISKPOOL_MIN_CAPACITY! || "100000000", "wei");
     
@@ -29,7 +29,7 @@ export async function GET() {
 
     const poolHasCapacity = availableCapacity >= minAvailableCapacity;
 
-    const isReady = applicationSignerHasBalance && poolHasCapacity;
+    const isReady = statisticsProviderSignerHasBalance && poolHasCapacity;
 
     return Response.json({}, { status: isReady ? 200 : 503 });
 }
