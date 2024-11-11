@@ -8,6 +8,7 @@ import { LOGGER } from "../../../../utils/logger_backend";
 import { IERC20__factory } from "../../../../contracts/openzeppelin-contracts";
 import { nanoid } from "nanoid";
 import { dayjs } from "../../../../utils/date";
+import { getAvailableCapacity } from "../../../../utils/riskpool";
 
 const REQUEST_STATE_ACTIVE = 5;
 
@@ -25,20 +26,24 @@ export async function GET() {
     
     const minBalanceStatisticsProvider = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
     const minBalanceStatusProvider = parseUnits(process.env.STATUS_PROVIDER_MIN_BALANCE! || "1", "wei");
+    const minAvailableCapacity = parseUnits(process.env.RISKPOOL_MIN_CAPACITY! || "100000000", "wei");
+    const expectedPayoutCheckEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's');
 
     const statisticsProvoderSignerHasBalance = await checkSignerBalance(statisticsProviderSigner, minBalanceStatisticsProvider);
     const statusProviderSignerHasBalance = await checkSignerBalance(statusProviderSigner, minBalanceStatusProvider);
 
-    const expectedPayoutCheckEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's');
-    
     const { riskpoolWalletBalanceSufficient, riskpoolWalletBalance, riskpoolWalletAllowance, riskpoolWalletAllowanceSufficient, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, statusProviderSigner, expectedPayoutCheckEnd.unix());
-
-    const isReady = statisticsProvoderSignerHasBalance && statusProviderSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient;
+    
+    const { riskpoolAvailableCapacity, riskpoolHasCapacity } = await checkRiskpoolCapacity(statisticsProviderSigner, minAvailableCapacity);
+    
+    const isReady = statisticsProvoderSignerHasBalance && statusProviderSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient && riskpoolHasCapacity;
 
     return Response.json({
         statisticsProvoderSignerHasBalance,
         statusProviderSignerHasBalance,
         maxExpectedPayoutCheck: {
+            riskpoolHasCapacity,
+            riskpoolAvailableCapacity: `${formatUnits(riskpoolAvailableCapacity, TOKEN_DECIMALS)} (${riskpoolAvailableCapacity})`,
             riskpoolWalletBalanceSufficient,
             riskpoolWalletAllowanceSufficient,
             riskpoolWalletBalance: `${formatUnits(riskpoolWalletBalance, TOKEN_DECIMALS)} (${riskpoolWalletBalance})`,
@@ -129,5 +134,18 @@ async function checkRiskpoolBalance(logReqId: string, signer: Signer, expectedPa
         riskpoolWalletAllowance,
         maxExpectedPayout,
         flightPlans
+    };
+}
+
+async function checkRiskpoolCapacity(
+    signer: Signer, minAvailableCapacity: bigint
+): Promise<{ riskpoolAvailableCapacity: bigint, riskpoolHasCapacity: boolean }> {
+    const flightPool = FlightPool__factory.connect(POOL_CONTRACT_ADDRESS, signer);
+    const riskpoolAvailableCapacity = await getAvailableCapacity(flightPool, signer);
+    const riskpoolHasCapacity = riskpoolAvailableCapacity >= minAvailableCapacity;
+
+    return {
+        riskpoolAvailableCapacity,
+        riskpoolHasCapacity
     };
 }
