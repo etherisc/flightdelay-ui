@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
 import { LOGGER } from "../../../../../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL } from "../../../../../_utils/api_constants";
+import { flightstatsStatusUrl } from "../../../../../_utils/flightstats";
 import { sendRequestAndReturnResponse } from "../../../../../_utils/proxy";
 
 /** 
@@ -21,9 +21,5 @@ export async function GET(
     const year = departureDate.split('-')[0];
     const month = departureDate.split('-')[1];
     const day = departureDate.split('-')[2];
-    const statusUrl = FLIGHTSTATS_BASE_URL + '/flightstatus/rest/v2/json/flight/status/';
-    const url = `${statusUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
-        + `/dep/${encodeURIComponent(year)}/${encodeURIComponent(month)}/${encodeURIComponent(day)}`
-        + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
-    return sendRequestAndReturnResponse(reqId, url);
+    return sendRequestAndReturnResponse(reqId, flightstatsStatusUrl(carrier, flightNumber, year, month, day));
 }

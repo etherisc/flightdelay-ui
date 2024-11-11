@@ -5,6 +5,7 @@ import { Airport as FsAirport } from '../../types/flightstats/airport';
 import { logErrorOnBackend } from '../../utils/logger';
 import { adjustToUtc } from '../../utils/time';
 import { fetchFlightData, fetchQuote } from '../thunks/flightData';
+import { getNumber } from 'ethers';
 
 export interface FlightDataState {
     riskpoolHasCapacity: boolean;
@@ -28,7 +29,7 @@ export interface FlightDataState {
     premium: number | null;
     ontime: number | null;
     /** this is a list of 6 values: [observations, late15, late30, late45, cancelled, diverted] */
-    statistics: bigint[] | null;
+    statistics: number[] | null;
     payoutAmounts: PayoutAmounts | null;
 }
 
@@ -167,7 +168,7 @@ export const flightDataSlice = createSlice({
             state.premium = response.premium;
             state.ontime = response.ontimepercent;
             state.payoutAmounts = response.payouts;
-            state.statistics = response.statistics;
+            state.statistics = response.statistics.map((s: bigint) => getNumber(s));
         });
         builder.addCase(fetchQuote.rejected, (state, action) => {
             state.loadingQuote = false;

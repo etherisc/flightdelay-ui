@@ -1,8 +1,8 @@
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
 import { LOGGER } from "../../../../../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL } from "../../../../../_utils/api_constants";
 import { sendRequestAndReturnResponse } from "../../../../../_utils/proxy";
+import { flightstatsScheduleUrl } from "../../../../../_utils/flightstats";
 
 /** 
  * get flight schedule from flightstats. 
@@ -21,9 +21,5 @@ export async function GET(
     const year = departureDate.split('-')[0];
     const month = departureDate.split('-')[1];
     const day = departureDate.split('-')[2];
-    const scheduleUrl = FLIGHTSTATS_BASE_URL + '/schedules/rest/v1/json/flight';
-    const url = `${scheduleUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
-        + `/departing/${encodeURIComponent(year)}/${encodeURIComponent(month)}/${encodeURIComponent(day)}`
-        + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
-    return sendRequestAndReturnResponse(reqId, url);
+    return sendRequestAndReturnResponse(reqId, flightstatsScheduleUrl(carrier, flightNumber, year, month, day));
 }

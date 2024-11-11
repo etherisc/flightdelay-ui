@@ -1,17 +1,18 @@
+import { formatUnits, Signer } from "ethers";
+import { ErrorDecoder } from "ethers-decode-error";
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
 import { FlightLib__factory, FlightOracle__factory, FlightPool__factory, FlightProduct__factory, FlightUSD__factory } from "../../../../../contracts/flight";
+import { IBundleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../../../contracts/gif";
 import { PayoutAmounts } from "../../../../../redux/slices/flightData";
 import { Rating } from "../../../../../types/flightstats/rating";
-import { LOGGER } from "../../../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL, POOL_CONTRACT_ADDRESS, PREMIUM } from "../../../_utils/api_constants";
-import { getBackendVoidSigner } from "../../../_utils/chain";
-import { sendRequestAndReturnResponse } from "../../../_utils/proxy";
-import { ErrorDecoder } from "ethers-decode-error";
-import { IBundleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../../../contracts/gif";
-import { getAvailableCapacity } from "../../../../../utils/riskpool";
-import { formatUnits, Signer } from "ethers";
 import { CapacityError } from "../../../../../utils/error";
+import { LOGGER } from "../../../../../utils/logger_backend";
+import { getAvailableCapacity } from "../../../../../utils/riskpool";
+import { POOL_CONTRACT_ADDRESS, PREMIUM } from "../../../_utils/api_constants";
+import { getBackendVoidSigner } from "../../../_utils/chain";
+import { flightstatsRatingsUrl } from "../../../_utils/flightstats";
+import { sendRequestAndReturnResponse } from "../../../_utils/proxy";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -118,11 +119,7 @@ async function calculatePayoutAmounts(reqId: string, premium: bigint, rating: Ra
 async function fetchFlightstatsRating(reqId: string, carrier: string, flightNumber: string): Promise<Rating|null> {
     LOGGER.debug(`[${reqId}] fetching quote for ${carrier} ${flightNumber}`);
 
-    const scheduleUrl = FLIGHTSTATS_BASE_URL + '/ratings/rest/v1/json/flight';
-    const url = `${scheduleUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}`
-        + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
-
-    const response = await sendRequestAndReturnResponse(reqId, url);
+    const response = await sendRequestAndReturnResponse(reqId, flightstatsRatingsUrl(carrier, flightNumber));
     const jsonResponse = await response.json();
 
     if (jsonResponse.ratings === undefined || jsonResponse.ratings.length === 0) {
