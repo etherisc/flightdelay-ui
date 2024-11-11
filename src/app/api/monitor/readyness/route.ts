@@ -29,17 +29,17 @@ export async function GET() {
     const minAvailableCapacity = parseUnits(process.env.RISKPOOL_MIN_CAPACITY! || "100000000", "wei");
     const expectedPayoutCheckEnd = dayjs.utc().add(RISKPOOL_MAX_PAYOUT_CHECK_LOOKAHEAD_SECONDS, 's');
 
-    const statisticsProvoderSignerHasBalance = await checkSignerBalance(statisticsProviderSigner, minBalanceStatisticsProvider);
+    const statisticsProviderSignerHasBalance = await checkSignerBalance(statisticsProviderSigner, minBalanceStatisticsProvider);
     const statusProviderSignerHasBalance = await checkSignerBalance(statusProviderSigner, minBalanceStatusProvider);
 
     const { riskpoolWalletBalanceSufficient, riskpoolWalletBalance, riskpoolWalletAllowance, riskpoolWalletAllowanceSufficient, maxExpectedPayout, flightPlans } = await checkRiskpoolBalance(logReqId, statusProviderSigner, expectedPayoutCheckEnd.unix());
     
     const { riskpoolAvailableCapacity, riskpoolHasCapacity } = await checkRiskpoolCapacity(statisticsProviderSigner, minAvailableCapacity);
     
-    const isReady = statisticsProvoderSignerHasBalance && statusProviderSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient && riskpoolHasCapacity;
+    const isReady = statisticsProviderSignerHasBalance && statusProviderSignerHasBalance && riskpoolWalletBalanceSufficient && riskpoolWalletAllowanceSufficient && riskpoolHasCapacity;
 
     return Response.json({
-        statisticsProvoderSignerHasBalance,
+        statisticsProviderSignerHasBalance,
         statusProviderSignerHasBalance,
         maxExpectedPayoutCheck: {
             riskpoolHasCapacity,
