@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     try {
         await hasBalance(signer);
 
-        await validateFlight(jsonBody.application);
+        await validateFlightPlan(jsonBody.application);
         await validateStatistics(jsonBody.application);
 
         const permit = preparePermitData(jsonBody.permit);
@@ -83,7 +83,7 @@ async function hasBalance(signer: Signer) {
 /**
  * Fetch flight schedule from flightstats api and compare with application data
  */
-async function validateFlight(application: ApplicationData) {
+async function validateFlightPlan(application: ApplicationData) {
     try {
         const carrier = application.carrier;
         const flightNumber = application.flightNumber;
