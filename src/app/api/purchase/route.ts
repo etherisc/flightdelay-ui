@@ -118,6 +118,16 @@ async function validateFlight(application: ApplicationData) {
             throw new AirportNotWhitelistedError(JSON.stringify(airports));
         }
 
+        const departureAirportIataFlightStats = appendix.airports.find((airport: Airport) => airport.fs === scheduledFlights[0].departureAirportFsCode)?.iata;    
+        if (departureAirportIataFlightStats !== application.departureAirport) {
+            throw new Error("Departure airport invalid");
+        }
+
+        const arrivalAirportIataFlightStats = appendix.airports.find((airport: Airport) => airport.fs === scheduledFlights[0].arrivalAirportFsCode)?.iata;
+        if (arrivalAirportIataFlightStats !== application.arrivalAirport) {
+            throw new Error("Arrival airport invalid");
+        }
+
         LOGGER.debug('airports whitelisted');
     } catch (err) {
         // @ts-expect-error error has field message
