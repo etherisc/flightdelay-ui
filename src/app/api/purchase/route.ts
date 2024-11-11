@@ -80,6 +80,9 @@ async function hasBalance(signer: Signer) {
     }
 }
 
+/**
+ * Fetch flight schedule from flightstats api and compare with application data
+ */
 async function validateFlight(application: ApplicationData) {
     try {
         const carrier = application.carrier;
@@ -140,6 +143,9 @@ async function validateFlight(application: ApplicationData) {
     }
 }
 
+/**
+ * Fetch flight statistics from flightstats api and compare with application statistics
+ */
 async function validateStatistics(application: ApplicationData) {
     const carrier = application.carrier;
     const flightNumber = application.flightNumber;
@@ -166,7 +172,7 @@ async function validateStatistics(application: ApplicationData) {
     }
 
     LOGGER.debug(`stats: ${JSON.stringify(stats)}, application statistics: ${JSON.stringify(application.statistics)}`);
-    if (!stats.every((value, index) => BigInt(value) === BigInt(application.statistics[index]))) {
+    if (!stats.every((value, index) => value === application.statistics[index])) {
         throw new Error("Statistics mismatch");
     }
 }
@@ -206,7 +212,7 @@ function prepareApplicationData(application: ApplicationData) {
 async function createPolicy(
     signer: Signer,
     permit: { owner: string; spender: string; value: bigint; deadline: number; v: number; r: string; s: string; }, 
-    applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: bigint[]; v: number; r: string; s: string; 
+    applicationData: { flightData: string; departureTime: number; departureTimeLocal: string, arrivalTime: number; arrivalTimeLocal: string, premiumAmount: bigint; statistics: number[]; v: number; r: string; s: string; 
 }): Promise<{ tx: string }> {
     LOGGER.debug(`createPolicy for ${applicationData.flightData}`);
     LOGGER.debug(`permit: ${JSON.stringify(permit)}`);
