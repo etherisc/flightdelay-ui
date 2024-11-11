@@ -7,9 +7,10 @@ import { IBundleService__factory, IPoolService__factory } from "../../../contrac
 import { AirportBlacklistedError, AirportNotWhitelistedError, TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
-import { FLIGHTSTATS_BASE_URL, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
+import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getStatisticsProviderSigner, getTxOpts } from "../_utils/chain";
 import { Airport } from "../../../types/flightstats/airport";
+import { flightstatsScheduleUrl } from "../_utils/flightstats";
 
 /**
  * purchase protection for a flight
@@ -81,18 +82,18 @@ async function validateFlight(application: ApplicationData) {
         const flightNumber = application.flightNumber;
         const departureDate = application.departureDate;
         
-        const scheduleUrl = FLIGHTSTATS_BASE_URL + '/schedules/rest/v1/json/flight';
-        const url = `${scheduleUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
-            + `/departing/${encodeURIComponent(departureDate.substring(0,4))}/${encodeURIComponent(departureDate.substring(4,6))}/${encodeURIComponent(departureDate.substring(6,8))}`
-            + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
-        const response = await fetch(url);
+        const response = await fetch(flightstatsScheduleUrl(carrier, flightNumber, departureDate.substring(0, 4), departureDate.substring(4, 6), departureDate.substring(6, 8)));
 
         if (!response.ok) {
             throw new Error("Flight not found on flightstats api");
         }
 
         const flightData = await response.json();
-        LOGGER.debug(`flightData: ${JSON.stringify(flightData)}`);
+        
+        const scheduledFlights = flightData.scheduledFlights;
+        if (scheduledFlights.length === 0) {
+            throw new Error("Flight not found");
+        }
 
         const appendix = flightData.appendix;
         if (appendix.length === 0) {
