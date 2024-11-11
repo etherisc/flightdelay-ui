@@ -23,3 +23,15 @@ export class TransactionFailedException extends Error {
     }
 
 }
+
+export class AirportBlacklistedError extends Error {
+    constructor(airport: string) {
+        super(`Airport ${airport} is blacklisted`);
+    }
+}
+
+export class AirportNotWhitelistedError extends Error {
+    constructor(airport: string) {
+        super(`Airport ${airport} is not whitelisted`);
+    }
+}

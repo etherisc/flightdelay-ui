@@ -4,11 +4,12 @@ import { nanoid } from "nanoid";
 import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IPolicyService__factory } from "../../../contracts/gif";
 import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
-import { TransactionFailedException } from "../../../types/errors";
+import { AirportBlacklistedError, AirportNotWhitelistedError, TransactionFailedException } from "../../../types/errors";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
-import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
+import { FLIGHTSTATS_BASE_URL, PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getStatisticsProviderSigner, getTxOpts } from "../_utils/chain";
+import { Airport } from "../../../types/flightstats/airport";
 
 /**
  * purchase protection for a flight
@@ -22,6 +23,8 @@ export async function POST(request: Request) {
     const signer = await getStatisticsProviderSigner();
     try {
         await hasBalance(signer);
+
+        await validateFlight(jsonBody.application);
 
         const permit = preparePermitData(jsonBody.permit);
         const applicationData = prepareApplicationData(jsonBody.application);
@@ -38,6 +41,16 @@ export async function POST(request: Request) {
                 transaction: err.transaction,
                 decodedError: err.decodedError,
             }, { status: 500 });
+        } else if (err instanceof AirportBlacklistedError) {
+            return Response.json({
+                error: "AIRPORT_BLACKLISTED",
+                message: err.message,
+            }, { status: 400 });
+        } else if (err instanceof AirportNotWhitelistedError) {
+            return Response.json({
+                error: "AIRPORT_NOT_WHITELISTED",
+                message: err.message,
+            }, { status: 400 });
         } else {
             // @ts-expect-error balance error
             if (err.message === "BALANCE_ERROR") {
@@ -59,6 +72,56 @@ async function hasBalance(signer: Signer) {
     const minBalance = parseUnits(process.env.STATISTICS_PROVIDER_MIN_BALANCE! || "1", "wei");
     if (! await checkSignerBalance(signer, minBalance)) {
         throw new Error("BALANCE_ERROR");
+    }
+}
+
+async function validateFlight(application: ApplicationData) {
+    try {
+        const carrier = application.carrier;
+        const flightNumber = application.flightNumber;
+        const departureDate = application.departureDate;
+        
+        const scheduleUrl = FLIGHTSTATS_BASE_URL + '/schedules/rest/v1/json/flight';
+        const url = `${scheduleUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}` 
+            + `/departing/${encodeURIComponent(departureDate.substring(0,4))}/${encodeURIComponent(departureDate.substring(4,6))}/${encodeURIComponent(departureDate.substring(6,8))}`
+            + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Flight not found on flightstats api");
+        }
+
+        const flightData = await response.json();
+        LOGGER.debug(`flightData: ${JSON.stringify(flightData)}`);
+
+        const appendix = flightData.appendix;
+        if (appendix.length === 0) {
+            throw new Error("Flight not found");
+        }
+        const airports = appendix.airports.map((airport: Airport) => airport.iata) as string[];
+        LOGGER.debug(`airports in flightPlan: ${JSON.stringify(airports)}`);
+
+        const airportsBlacklistRaw = process.env.NEXT_PUBLIC_AIRPORTS_BLACKLIST?.trim() ?? '';
+        const airportsBlacklist = airportsBlacklistRaw !== '' ? airportsBlacklistRaw.split(',').map((airport) => airport.trim()) : [];
+
+        if (airportsBlacklist.some((airport) => airports.includes(airport))) {
+            throw new AirportBlacklistedError(JSON.stringify(airports));
+        }
+
+        LOGGER.debug('airports not blacklisted');
+
+        const airportsWhitelistRaw = process.env.NEXT_PUBLIC_AIRPORTS_WHITELIST?.trim() ?? '';
+        const airportsWhitelist = airportsWhitelistRaw !== '' ? airportsWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
+
+        if (airportsWhitelist.length > 0 && !airportsWhitelist.some((airport) => airports.includes(airport))) {
+            throw new AirportNotWhitelistedError(JSON.stringify(airports));
+        }
+
+        LOGGER.debug('airports whitelisted');
+    } catch (err) {
+        // @ts-expect-error error has field message
+        LOGGER.error(err.message);
+        throw new Error("Flight not found");
     }
 }
 
