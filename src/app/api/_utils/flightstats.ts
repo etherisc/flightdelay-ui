@@ -20,8 +20,16 @@ export function flightstatsStatusUrl(
 
 export function flightstatsAirportUrl(
     code: string
-) {
+): string {
     const url = FLIGHTSTATS_BASE_URL + '/airports/rest/v1/json/iata';
     return `${url}/${encodeURIComponent(code)}`
+        + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
+}
+
+export function flightstatsRatingsUrl(
+    carrier: string, flightNumber: string
+): string {
+    const scheduleUrl = FLIGHTSTATS_BASE_URL + '/ratings/rest/v1/json/flight';
+    return `${scheduleUrl}/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}`
         + `?appId=${process.env.FLIGHTSTATS_APP_ID}&appKey=${process.env.FLIGHTSTATS_APP_KEY}`;
 }

@@ -5,12 +5,13 @@ import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, Flig
 import { IPolicyService__factory } from "../../../contracts/gif";
 import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
 import { AirportBlacklistedError, AirportNotWhitelistedError, TransactionFailedException } from "../../../types/errors";
+import { Airport } from "../../../types/flightstats/airport";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
 import { PRODUCT_CONTRACT_ADDRESS } from "../_utils/api_constants";
 import { checkSignerBalance, getStatisticsProviderSigner, getTxOpts } from "../_utils/chain";
-import { Airport } from "../../../types/flightstats/airport";
-import { flightstatsScheduleUrl } from "../_utils/flightstats";
+import { flightstatsRatingsUrl, flightstatsScheduleUrl } from "../_utils/flightstats";
+import { Rating } from "../../../types/flightstats/rating";
 
 /**
  * purchase protection for a flight
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
         await hasBalance(signer);
 
         await validateFlight(jsonBody.application);
+        await validateStatistics(jsonBody.application);
 
         const permit = preparePermitData(jsonBody.permit);
         const applicationData = prepareApplicationData(jsonBody.application);
@@ -59,6 +61,8 @@ export async function POST(request: Request) {
                     error: "BALANCE_ERROR"
                 }, { status: 500 });
             } else {
+                // @ts-expect-error unknown error
+                LOGGER.error(`unexpected error: ${err.message}`);
                 return Response.json({
                     error: "unexpected error occured",
                     // @ts-expect-error unknown error
@@ -133,6 +137,37 @@ async function validateFlight(application: ApplicationData) {
         // @ts-expect-error error has field message
         LOGGER.error(err.message);
         throw new Error("Flight not found");
+    }
+}
+
+async function validateStatistics(application: ApplicationData) {
+    const carrier = application.carrier;
+    const flightNumber = application.flightNumber;
+    
+    const fsResponse = await fetch(flightstatsRatingsUrl(carrier, flightNumber));
+
+    if (!fsResponse.ok) {
+        throw new Error("Flight not found on flightstats api");
+    }
+
+    const fsData = await fsResponse.json();
+
+    if (fsData.ratings === undefined || fsData.ratings.length === 0) {
+        throw new Error("Flight ratings not found");
+    }
+
+    const rating = fsData.ratings[0] as Rating;
+
+    const stats = [rating.observations, rating.late15, rating.late30, rating.late45, rating.cancelled, rating.diverted];
+
+    // compare stats vs application statistics
+    if (stats.length !== application.statistics.length) {
+        throw new Error("Statistics length mismatch");
+    }
+
+    LOGGER.debug(`stats: ${JSON.stringify(stats)}, application statistics: ${JSON.stringify(application.statistics)}`);
+    if (!stats.every((value, index) => BigInt(value) === BigInt(application.statistics[index]))) {
+        throw new Error("Statistics mismatch");
     }
 }
 
