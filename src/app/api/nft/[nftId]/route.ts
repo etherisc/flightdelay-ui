@@ -11,7 +11,7 @@ import { getStatisticsProviderSigner } from "../../_utils/chain";
  */
 export async function GET(request: NextRequest, props: { params: Promise<{ nftId: string }> }): Promise<Response> {
     const params = await props.params;
-    LOGGER.debug(`getting token uri for: ${params.nftId}`);
+    LOGGER.info(`getting token uri for: ${params.nftId}`);
 
     if (process.env.RPC_NODE_URL === undefined) {
         return Response.json({

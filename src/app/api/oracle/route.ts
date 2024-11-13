@@ -21,13 +21,13 @@ BigInt.prototype.toJSON = function () {
 };
 
 /**
- * purchase protection for a flight
+ * execute oracle requests
  */
 export async function POST(request: Request) {
-    const jsonBody = await request.json() as OracleRequest;
-    LOGGER.info(`oracle request: ${JSON.stringify(jsonBody)}`);
-    
     const reqId = nanoid();
+    const jsonBody = await request.json() as OracleRequest;
+    LOGGER.info(`[${reqId}] oracle request: ${JSON.stringify(jsonBody)}`);
+    
     LOGGER.debug(`[${reqId}] oracle execution requested`);
 
     const signer = await getStatusProviderSigner();

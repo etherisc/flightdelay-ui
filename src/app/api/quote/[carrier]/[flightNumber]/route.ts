@@ -34,8 +34,9 @@ export async function GET(
     request: NextRequest,
     props: { params: Promise<{ carrier: string, flightNumber: string }> }
 ) {
-    const params = await props.params;
     const reqId = nanoid();
+    LOGGER.info(`[${reqId}] Quote request`);
+    const params = await props.params;
     const carrier = params.carrier;
     const flightNumber = params.flightNumber;
     const premium = BigInt(PREMIUM);

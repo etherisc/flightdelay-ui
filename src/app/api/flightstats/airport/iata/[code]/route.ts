@@ -9,9 +9,9 @@ import { sendRequestAndReturnResponse } from "../../../../_utils/proxy";
  * flightstats docs: https://developer.flightstats.com/api-docs/airports/v1
  */
 export async function GET(request: NextRequest, props: { params: Promise<{ code: string }> }) {
-    const params = await props.params;
     const reqId = nanoid();
+    const params = await props.params;
     const code = params.code;
-    LOGGER.debug(`[${reqId}] fetching airport data for ${code}`);
+    LOGGER.info(`[${reqId}] fetching airport data for ${code}`);
     return sendRequestAndReturnResponse(reqId, flightstatsAirportUrl(code));
 }

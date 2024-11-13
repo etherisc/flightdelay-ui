@@ -17,7 +17,7 @@ export async function GET(
     const carrier = params.carrier;
     const flightNumber = params.flightNumber;
     const departureDate = params.departureDate;
-    LOGGER.debug(`[${reqId}] fetching flight status for ${carrier} ${flightNumber} ${departureDate}`);
+    LOGGER.info(`[${reqId}] fetching flight status for ${carrier} ${flightNumber} ${departureDate}`);
     const year = departureDate.split('-')[0];
     const month = departureDate.split('-')[1];
     const day = departureDate.split('-')[2];

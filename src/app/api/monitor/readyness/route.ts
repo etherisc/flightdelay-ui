@@ -13,12 +13,13 @@ import { getAvailableCapacity } from "../../../../utils/riskpool";
 const REQUEST_STATE_ACTIVE = 5;
 
 export async function GET() {
+    const logReqId = nanoid();
+    LOGGER.info(`[${logReqId}] Readyness check`);
     if (process.env.RPC_NODE_URL === undefined || process.env.STATISTICS_PROVIDER_MNEMONIC === undefined || process.env.STATUS_PROVIDER_MNEMONIC === undefined) {
         return Response.json({
             error: "missing configuration"
         }, { status: 500 });
     }
-    const logReqId = nanoid();
     
     // check min amounts for application and oracle signers
     const statisticsProviderSigner = await getStatisticsProviderSigner();

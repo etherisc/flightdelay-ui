@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const jsonBody = await request.json() as PurchaseRequest;
     
     const reqId = nanoid();
-    LOGGER.debug(`[${reqId} purchase protection for flight ${jsonBody.application.carrier} ${jsonBody.application.flightNumber} ${jsonBody.application.departureDate}`);
+    LOGGER.info(`[${reqId} purchase protection for flight ${jsonBody.application.carrier} ${jsonBody.application.flightNumber} ${jsonBody.application.departureDate}`);
 
     const signer = await getStatisticsProviderSigner();
     try {
