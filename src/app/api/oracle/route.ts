@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import { FlightLib__factory, FlightOracle, FlightOracle__factory, FlightProduct, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IBundleService__factory, IInstance__factory, InstanceReader__factory, IOracleService__factory, IPolicyService__factory, IPoolService__factory } from "../../../contracts/gif";
 import { FlightStatus } from "../../../types/flightstats/flightStatus";
-import { OracleRequest, OracleResponse } from "../../../types/oracle_request";
+import { OracleResponse } from "../../../types/oracle_request";
 import { getFieldFromLogs } from "../../../utils/chain";
 import { LOGGER } from "../../../utils/logger_backend";
 import { decodeOzShortString } from "../../../utils/oz_shortstring";
@@ -23,12 +23,9 @@ BigInt.prototype.toJSON = function () {
 /**
  * execute oracle requests
  */
-export async function POST(request: Request) {
+export async function POST() {
     const reqId = nanoid();
-    const jsonBody = await request.json() as OracleRequest;
-    LOGGER.info(`[${reqId}] oracle request: ${JSON.stringify(jsonBody)}`);
-    
-    LOGGER.debug(`[${reqId}] oracle execution requested`);
+    LOGGER.info(`[${reqId}] oracle execution requested`);
 
     const signer = await getStatusProviderSigner();
     try {
