@@ -35,7 +35,7 @@ export function AppBaseLayout({
         setShowMobileBrowserInfo(
             deviceType === 'mobile' 
             && (os === 'iOS' || os === 'Android')
-            && (browser === 'Mobile Safari' || browser === 'Chrome' || browser === 'Firefox')
+            && (browser === 'Mobile Safari' || browser === 'Mobile Chrome' || browser === 'Mobile Firefox')
             && (dontShowMobileBrowserInfo === null)
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
