@@ -136,6 +136,9 @@ async function checkFlightRisk(
         case 'D': // diverted
             return { hasLanded: true, delay: delay ?? 0, status };
 
+        case 'U': // unknown
+            return { hasLanded: true, delay: 0, status: 'A' };
+
         default:
             LOGGER.error(`[${logReqId}] unknown flight status: ${status}`);
             throw new Error("FLIGHT_STATUS_UNKNOWN");
