@@ -8,7 +8,7 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       args:
-        VARIANT: 1-20
+        VARIANT: 22
     volumes:
       - ..:/workspaces/flightdelay-ui:cached
       #- $HOME/.ssh/:/home/vscode/.ssh/ # Mount the ssh folder to authenticate with github
