@@ -26,8 +26,8 @@ export async function POST(request: Request) {
     try {
         await hasBalance(signer);
 
-        await validateFlightPlan(jsonBody.application);
-        await validateStatistics(jsonBody.application);
+        await validateFlightPlan(reqId, jsonBody.application);
+        await validateStatistics(reqId, jsonBody.application);
 
         const permit = preparePermitData(jsonBody.permit);
         const applicationData = prepareApplicationData(jsonBody.application);
@@ -83,31 +83,33 @@ async function hasBalance(signer: Signer) {
 /**
  * Fetch flight schedule from flightstats api and compare with application data
  */
-async function validateFlightPlan(application: ApplicationData) {
+async function validateFlightPlan(reqId: string, application: ApplicationData) {
     try {
         const carrier = application.carrier;
         const flightNumber = application.flightNumber;
         const departureDate = application.departureDate;
+        const url = flightstatsScheduleUrl(carrier, flightNumber, departureDate.substring(0, 4), departureDate.substring(4, 6), departureDate.substring(6, 8))
+        LOGGER.debug(`[${reqId}] url: ${url}`);
         
-        const response = await fetch(flightstatsScheduleUrl(carrier, flightNumber, departureDate.substring(0, 4), departureDate.substring(4, 6), departureDate.substring(6, 8)));
+        const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error("Flight not found on flightstats api");
+            throw new Error(`[${reqId}] Flight not found on flightstats api`);
         }
 
         const flightData = await response.json();
         
         const scheduledFlights = flightData.scheduledFlights;
         if (scheduledFlights.length === 0) {
-            throw new Error("Flight not found");
+            throw new Error(`[${reqId}] Flight not found (1)`);
         }
 
         const appendix = flightData.appendix;
         if (appendix.length === 0) {
-            throw new Error("Flight not found");
+            throw new Error(`[${reqId}] Flight not found (2)`);
         }
         const airports = appendix.airports.map((airport: Airport) => airport.iata) as string[];
-        LOGGER.debug(`airports in flightPlan: ${JSON.stringify(airports)}`);
+        LOGGER.debug(`[${reqId}] airports in flightPlan: ${JSON.stringify(airports)}`);
 
         const airportsBlacklistRaw = process.env.NEXT_PUBLIC_AIRPORTS_BLACKLIST?.trim() ?? '';
         const airportsBlacklist = airportsBlacklistRaw !== '' ? airportsBlacklistRaw.split(',').map((airport) => airport.trim()) : [];
@@ -116,7 +118,7 @@ async function validateFlightPlan(application: ApplicationData) {
             throw new AirportBlacklistedError(JSON.stringify(airports));
         }
 
-        LOGGER.debug('airports not blacklisted');
+        LOGGER.debug('[${reqId}] airports not blacklisted');
 
         const airportsWhitelistRaw = process.env.NEXT_PUBLIC_AIRPORTS_WHITELIST?.trim() ?? '';
         const airportsWhitelist = airportsWhitelistRaw !== '' ? airportsWhitelistRaw.split(',').map((airport) => airport.trim()) : [];
@@ -127,39 +129,41 @@ async function validateFlightPlan(application: ApplicationData) {
 
         const departureAirportIataFlightStats = appendix.airports.find((airport: Airport) => airport.fs === scheduledFlights[0].departureAirportFsCode)?.iata;    
         if (departureAirportIataFlightStats !== application.departureAirport) {
-            throw new Error("Departure airport invalid");
+            throw new Error(`[${reqId}] Departure airport invalid`);
         }
 
         const arrivalAirportIataFlightStats = appendix.airports.find((airport: Airport) => airport.fs === scheduledFlights[0].arrivalAirportFsCode)?.iata;
         if (arrivalAirportIataFlightStats !== application.arrivalAirport) {
-            throw new Error("Arrival airport invalid");
+            throw new Error(`[${reqId}] Arrival airport invalid`);
         }
 
-        LOGGER.debug('airports whitelisted');
+        LOGGER.debug(`[${reqId}] airports whitelisted`);
     } catch (err) {
         // @ts-expect-error error has field message
         LOGGER.error(err.message);
-        throw new Error("Flight not found");
+        throw new Error(`[${reqId}] Flight not found`);
     }
 }
 
 /**
  * Fetch flight statistics from flightstats api and compare with application statistics
  */
-async function validateStatistics(application: ApplicationData) {
+async function validateStatistics(reqId: string, application: ApplicationData) {
     const carrier = application.carrier;
     const flightNumber = application.flightNumber;
+    const url = flightstatsRatingsUrl(carrier, flightNumber);
+    LOGGER.debug(`[${reqId}] url: ${url}`);
     
-    const fsResponse = await fetch(flightstatsRatingsUrl(carrier, flightNumber));
+    const fsResponse = await fetch(url);
 
     if (!fsResponse.ok) {
-        throw new Error("Flight not found on flightstats api");
+        throw new Error(`[${reqId}] Flight not found on flightstats api`);
     }
 
     const fsData = await fsResponse.json();
 
     if (fsData.ratings === undefined || fsData.ratings.length === 0) {
-        throw new Error("Flight ratings not found");
+        throw new Error(`[${reqId}] Flight ratings not found`);
     }
 
     const rating = fsData.ratings[0] as Rating;
@@ -168,12 +172,12 @@ async function validateStatistics(application: ApplicationData) {
 
     // compare stats vs application statistics
     if (stats.length !== application.statistics.length) {
-        throw new Error("Statistics length mismatch");
+        throw new Error(`[${reqId}] Statistics length mismatch`);
     }
 
     LOGGER.debug(`stats: ${JSON.stringify(stats)}, application statistics: ${JSON.stringify(application.statistics)}`);
     if (!stats.every((value, index) => value === application.statistics[index])) {
-        throw new Error("Statistics mismatch");
+        throw new Error(`[${reqId}] Statistics mismatch`);
     }
 }
 
