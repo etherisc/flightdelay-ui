@@ -3,7 +3,7 @@
 {
 	"name": "flightdelay-ui",
 	"dockerComposeFile": "docker-compose.yaml",
-	"initializeCommand": "docker pull mcr.microsoft.com/devcontainers/typescript-node:1-20",
+	"initializeCommand": "docker pull mcr.microsoft.com/devcontainers/typescript-node:22",
     "service": "webapp",
     "workspaceFolder": "/workspaces/flightdelay-ui",
 
@@ -43,12 +43,12 @@
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node",
 	"features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 	},
 
 	"containerEnv": {
 		"FONTAWESOME_NPM_AUTH_TOKEN": "${localEnv:ETHERISC_FONTAWESOME_NPM_AUTH_TOKEN}"
-	},
+	}
 
 	// "mounts": [
 	// 	"source=flightdelay-ui-node_modules,target=/workspaces/flightdelay-ui/node_modules,type=volume"

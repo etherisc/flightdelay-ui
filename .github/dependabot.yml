@@ -20,5 +20,5 @@ updates:
     open-pull-requests-limit: 30
     ignore:
       - dependency-name: "@types/node"
-        versions: ["22.x"]
+        versions: ["23.x"]
   
