@@ -131,7 +131,7 @@ export default function useApplication() {
                 flightNumber,
                 departureAirport: departureAirport.iata,
                 arrivalAirport: arrivalAirport!.iata,
-                departureDate: dayjs.utc(departureDateUTC).format('YYYYMMDD'),
+                departureDate: dayjs(departureTimeLocal).format('YYYYMMDD'),
                 departureTime: dayjs.utc(departureDateUTC).unix(),
                 departureTimeLocal: `${departureTimeLocal} ${departureAirport.timeZoneRegionName}`,
                 arrivalTime: dayjs.utc(arrivalDateUTC).unix(),
