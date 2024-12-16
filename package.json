@@ -17,7 +17,7 @@
     "coverage": "jest --coverage"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.5",
+    "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.13.5",
     "@fontsource/poppins": "^5.0.8",
     "@fontsource/roboto": "^5.0.8",
