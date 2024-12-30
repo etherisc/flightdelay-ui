@@ -236,7 +236,7 @@ async function resendRequest(reqId: string, flightProduct: FlightProduct, reques
         const txOpts = getTxOpts();
         txOpts['gasLimit'] = GAS_LIMIT;
 
-        const txResp = await flightProduct.resendRequest(requestId, getTxOpts());
+        const txResp = await flightProduct.resendRequest(requestId, txOpts);
         
         LOGGER.debug(`[${reqId}] waiting for tx: ${txResp.hash}`);
         const tx = await txResp.wait();
