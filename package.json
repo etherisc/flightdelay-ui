@@ -34,7 +34,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "abi-coder": "^5.0.0",
     "axios": "^1.7.9",
-    "bufferutil": "^4.0.8",
+    "bufferutil": "^4.0.9",
     "dayjs": "^1.11.10",
     "encoding": "^0.1.13",
     "ethers": "^6.13.4",
