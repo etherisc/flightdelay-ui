@@ -65,7 +65,8 @@
         "punctual": "On time",
         "delayed": "Delayed",
         "cancelled": "Cancelled",
-        "landed": "Landed"
+        "landed": "Landed",
+        "diverted": "Diverted"
     },
     "contracts": {
         "title": "Flight delay contract addresses",
