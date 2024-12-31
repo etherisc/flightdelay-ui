@@ -13,6 +13,7 @@ import { getFlightStateText } from "../../utils/flightstate";
 import Button from "../Button/button";
 import Trans from "../Trans/trans";
 import { useRouter } from "next/navigation";
+import { JSX } from "react";
 
 export default function PoliciesListMobile({ policies, loading }: { policies: PolicyData[], loading: boolean }) {
     let loadingIndicator = undefined;

@@ -4,7 +4,7 @@ import { Alert, Box, LinearProgress, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { DataGrid, GridActionsCellItem, gridClasses, GridColDef } from "@mui/x-data-grid";
 import { useEnvContext } from "next-runtime-env";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlightPlan } from "../../types/flight_plan";
 import { PolicyData } from "../../types/policy_data";

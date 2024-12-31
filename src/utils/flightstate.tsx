@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import Trans from "../components/Trans/trans";
 import { dayjs } from "./date";
 import { blue, green, grey, red } from "@mui/material/colors";

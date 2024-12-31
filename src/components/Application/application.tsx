@@ -5,7 +5,7 @@ import { useDebounce } from "@react-hooks-hub/use-debounce";
 import dayjs from "dayjs";
 import { useEnvContext } from "next-runtime-env";
 import Image from "next/image";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
