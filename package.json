@@ -28,7 +28,7 @@
     "@mui/material": "^6.5.0",
     "@mui/x-data-grid": "^7.28.2",
     "@mui/x-date-pickers": "^7.29.4",
-    "@react-hooks-hub/use-debounce": "^1.1.5",
+    "@react-hooks-hub/use-debounce": "^1.1.9",
     "@reduxjs/toolkit": "^2.6.1",
     "@types/ua-parser-js": "^0.7.39",
     "@uidotdev/usehooks": "^2.4.1",
