@@ -52,7 +52,7 @@
     "react-redux": "^9.2.0",
     "react-swipeable": "^7.0.2",
     "ua-parser-js": "^2.0.3",
-    "utf-8-validate": "^6.0.5",
+    "utf-8-validate": "^6.0.6",
     "winston": "^3.17.0"
   },
   "devDependencies": {
