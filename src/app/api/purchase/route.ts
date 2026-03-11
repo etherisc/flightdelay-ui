@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IPolicyService__factory } from "../../../contracts/gif";
 import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
-import { AirportBlacklistedError, AirportNotWhitelistedError, TransactionFailedException } from "../../../types/errors";
+import { AirportBlacklistedError, AirportNotWhitelistedError, FlightNotFoundError, InconsistentFlightDataError, TransactionFailedException } from "../../../types/errors";
 import { Airport } from "../../../types/flightstats/airport";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
@@ -52,6 +52,16 @@ export async function POST(request: Request) {
         } else if (err instanceof AirportNotWhitelistedError) {
             return Response.json({
                 error: "AIRPORT_NOT_WHITELISTED",
+                message: err.message,
+            }, { status: 400 });
+        } else if (err instanceof FlightNotFoundError) {
+            return Response.json({
+                error: "NO_FLIGHT_FOUND",
+                message: err.message,
+            }, { status: 404 });
+        } else if (err instanceof InconsistentFlightDataError) {
+            return Response.json({
+                error: "INCONSISTENT_DATA",
                 message: err.message,
             }, { status: 400 });
         } else {
@@ -141,7 +151,7 @@ async function validateFlightPlan(reqId: string, application: ApplicationData) {
     } catch (err) {
         // @ts-expect-error error has field message
         LOGGER.error(err.message);
-        throw new Error(`[${reqId}] Flight not found`);
+        throw new FlightNotFoundError(`[${reqId}] Flight not found`);
     }
 }
 
@@ -157,13 +167,13 @@ async function validateStatistics(reqId: string, application: ApplicationData) {
     const fsResponse = await fetch(url);
 
     if (!fsResponse.ok) {
-        throw new Error(`[${reqId}] Flight not found on flightstats api`);
+        throw new FlightNotFoundError(`[${reqId}] Flight not found on flightstats api`);
     }
 
     const fsData = await fsResponse.json();
 
     if (fsData.ratings === undefined || fsData.ratings.length === 0) {
-        throw new Error(`[${reqId}] Flight ratings not found`);
+        throw new FlightNotFoundError(`[${reqId}] Flight ratings not found`);
     }
 
     const rating = fsData.ratings[0] as Rating;
@@ -172,12 +182,12 @@ async function validateStatistics(reqId: string, application: ApplicationData) {
 
     // compare stats vs application statistics
     if (stats.length !== application.statistics.length) {
-        throw new Error(`[${reqId}] Statistics length mismatch`);
+        throw new InconsistentFlightDataError(`[${reqId}] Statistics length mismatch`);
     }
 
     LOGGER.debug(`stats: ${JSON.stringify(stats)}, application statistics: ${JSON.stringify(application.statistics)}`);
     if (!stats.every((value, index) => value === application.statistics[index])) {
-        throw new Error(`[${reqId}] Statistics mismatch`);
+        throw new InconsistentFlightDataError(`[${reqId}] Statistics mismatch`);
     }
 }
 

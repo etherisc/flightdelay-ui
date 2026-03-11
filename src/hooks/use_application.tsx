@@ -8,7 +8,8 @@ import { resetPurchase, setExecuting, setPolicy, setSigning } from "../redux/sli
 import { RootState } from "../redux/store";
 import { Erc20PermitSignature } from "../types/erc20permitsignature";
 import { ApplicationData, PermitData } from "../types/purchase_request";
-import { PurchaseFailedError, PurchaseNotPossibleError } from "../utils/error";
+import { PurchaseErrorCode } from "../types/errors";
+import { PurchaseFailedError, PurchaseNotPossibleError, PurchaseValidationError } from "../utils/error";
 import { useLocalApi } from "./api/use_local_api";
 import { useERC20Contract } from "./onchain/use_erc20_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
@@ -167,6 +168,22 @@ export default function useApplication() {
                 dispatch(setError({ message: `${t("error.purchase_failed")} (${err.decodedError?.reason || "unknown error"})`, level: "error" }));
             } else if (err instanceof PurchaseNotPossibleError) {
                 dispatch(setError({ message: t("error.purchase_currently_not_possible"), level: "error" }));
+            } else if (err instanceof PurchaseValidationError) {
+                switch (err.code) {
+                    case PurchaseErrorCode.NO_FLIGHT_FOUND:
+                        dispatch(setError({ message: t("error.no_flight_found"), level: "error" }));
+                        break;
+                    case PurchaseErrorCode.INCONSISTENT_DATA:
+                        dispatch(setError({ message: t("error.inconsistent_data"), level: "error" }));
+                        break;
+                    case PurchaseErrorCode.AIRPORT_BLACKLISTED:
+                    case PurchaseErrorCode.AIRPORT_NOT_WHITELISTED:
+                        dispatch(setError({ message: t("error.purchase_currently_not_possible"), level: "error" }));
+                        break;
+                    default:
+                        dispatch(setError({ message: t("error.unknown_error"), level: "error" }));
+                        break;
+                }
             } else {
                 // @ts-expect-error code is custom field for metamask error
                 if (err.code !== undefined) {
