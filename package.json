@@ -42,7 +42,7 @@
     "i18next": "^24.2.3",
     "jazzicon": "^1.5.0",
     "nanoid": "^5.1.6",
-    "next": "^15.5.12",
+    "next": "^16.2.3",
     "next-runtime-env": "^3.3.0",
     "nextjs-google-analytics": "^2.3.3",
     "react": "^18.3.0",
