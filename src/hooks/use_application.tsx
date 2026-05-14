@@ -14,7 +14,8 @@ import { useERC20Contract } from "./onchain/use_erc20_contract";
 import { useFlightDelayProductContract } from "./onchain/use_flightdelay_product";
 import { useWallet } from "./onchain/use_wallet";
 import { setGeneralErrorMessage } from "../redux/slices/common";
-import { EVENT_API_ERROR, EVENT_BLACKLISTED_ARRIVAL_AIRPORT, EVENT_BLACKLISTED_DEPARTURE_AIRPORT, EVENT_INSUFFICIENT_BALANCE, EVENT_INVALID_CHAIN, EVENT_NON_WHITELISTED_AIRPORT, EVENT_PERMIT_SIGNED, EVENT_PURACHASE_SUCCESSFUL, EVENT_PURCHASE_FAILED_UNKNOWN_ERROR, EVENT_PURCHASE_NOT_POSSIBLE, EVENT_PURCHASE_STARTED, EVENT_RISKPOOL_FULL, EVENT_USER_REJECTED, useAnalytics } from "./use_analytics";
+import { EVENT_API_ERROR, EVENT_NO_FLIGHT_FOUND, EVENT_BLACKLISTED_ARRIVAL_AIRPORT, EVENT_BLACKLISTED_DEPARTURE_AIRPORT, EVENT_INSUFFICIENT_BALANCE, EVENT_INVALID_CHAIN, EVENT_NON_WHITELISTED_AIRPORT, EVENT_PERMIT_SIGNED, EVENT_PURACHASE_SUCCESSFUL, EVENT_PURCHASE_FAILED_UNKNOWN_ERROR, EVENT_PURCHASE_NOT_POSSIBLE, EVENT_PURCHASE_STARTED, EVENT_RISKPOOL_FULL, EVENT_USER_REJECTED, useAnalytics } from "./use_analytics";
+import { Reason } from "../types/errors";
 
 export default function useApplication() {
     const { t } = useTranslation();
@@ -161,16 +162,19 @@ export default function useApplication() {
             console.log("purchase result", result);
 
             dispatch(setPolicy({policyNftId: result.policyNftId, riskId: result.riskId}));
-        } catch (err) {
+        } catch (err: unknown) {
             if (err instanceof PurchaseFailedError) {
                 console.log("purchase failed", err);
                 dispatch(setError({ message: `${t("error.purchase_failed")} (${err.decodedError?.reason || "unknown error"})`, level: "error" }));
             } else if (err instanceof PurchaseNotPossibleError) {
                 dispatch(setError({ message: t("error.purchase_currently_not_possible"), level: "error" }));
+            } else if (err instanceof Error && 'reason' in err && err.reason === Reason.NO_FLIGHT_FOUND) {
+                dispatch(setError({ message: t("error.no_flight_found"), level: "error", reason: Reason.NO_FLIGHT_FOUND }));
+                trackEvent(EVENT_NO_FLIGHT_FOUND, { category: "purchase"});
+            } else if (err instanceof Error && 'reason' in err && err.reason === Reason.INCONSISTENT_DATA) {
+                dispatch(setError({ message: t("error.inconsistent_data"), level: "error", reason: Reason.INCONSISTENT_DATA }));
             } else {
-                // @ts-expect-error code is custom field for metamask error
-                if (err.code !== undefined) {
-                    // @ts-expect-error code is custom field for metamask error
+                if (err && typeof err === 'object' && 'code' in err) {
                     if (err.code === "ACTION_REJECTED") {
                         dispatch(setError({ message: t("error.user_rejected"), level: "error" }));
                         trackEvent(EVENT_USER_REJECTED, { category: "purchase"});

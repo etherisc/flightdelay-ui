@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { FlightLib__factory, FlightOracle__factory, FlightProduct__factory, FlightUSD__factory } from "../../../contracts/flight";
 import { IPolicyService__factory } from "../../../contracts/gif";
 import { IBundleService__factory, IPoolService__factory } from "../../../contracts/gif/factories/pool";
-import { AirportBlacklistedError, AirportNotWhitelistedError, TransactionFailedException } from "../../../types/errors";
+import { AirportBlacklistedError, AirportNotWhitelistedError, FlightNotFoundError, InconsistentFlightDataError, TransactionFailedException } from "../../../types/errors";
 import { Airport } from "../../../types/flightstats/airport";
 import { ApplicationData, PermitData, PurchaseRequest } from "../../../types/purchase_request";
 import { LOGGER } from "../../../utils/logger_backend";
@@ -60,7 +60,17 @@ export async function POST(request: Request) {
                 return Response.json({
                     error: "BALANCE_ERROR"
                 }, { status: 500 });
-            } else {
+        } else if (err instanceof FlightNotFoundError) {
+            return Response.json({
+                error: "NO_FLIGHT_FOUND",
+                message: err.message,
+            }, { status: 400 });
+        } else if (err instanceof InconsistentFlightDataError) {
+            return Response.json({
+                error: "INCONSISTENT_DATA",
+                message: err.message,
+            }, { status: 400 });
+        } else {
                 // @ts-expect-error unknown error
                 LOGGER.error(`unexpected error: ${err.message}`);
                 return Response.json({
@@ -94,19 +104,19 @@ async function validateFlightPlan(reqId: string, application: ApplicationData) {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error(`[${reqId}] Flight not found on flightstats api`);
+            throw new FlightNotFoundError(`[${reqId}] Flight not found on flightstats api`);
         }
 
         const flightData = await response.json();
         
         const scheduledFlights = flightData.scheduledFlights;
         if (scheduledFlights.length === 0) {
-            throw new Error(`[${reqId}] Flight not found (1)`);
+            throw new FlightNotFoundError(`[${reqId}] Flight not found (1)`);
         }
 
         const appendix = flightData.appendix;
         if (appendix.length === 0) {
-            throw new Error(`[${reqId}] Flight not found (2)`);
+            throw new FlightNotFoundError(`[${reqId}] Flight not found (2)`);
         }
         const airports = appendix.airports.map((airport: Airport) => airport.iata) as string[];
         LOGGER.debug(`[${reqId}] airports in flightPlan: ${JSON.stringify(airports)}`);
@@ -129,19 +139,22 @@ async function validateFlightPlan(reqId: string, application: ApplicationData) {
 
         const departureAirportIataFlightStats = appendix.airports.find((airport: Airport) => airport.fs === scheduledFlights[0].departureAirportFsCode)?.iata;    
         if (departureAirportIataFlightStats !== application.departureAirport) {
-            throw new Error(`[${reqId}] Departure airport invalid`);
+            throw new InconsistentFlightDataError(`[${reqId}] Departure airport invalid`);
         }
 
         const arrivalAirportIataFlightStats = appendix.airports.find((airport: Airport) => airport.fs === scheduledFlights[0].arrivalAirportFsCode)?.iata;
         if (arrivalAirportIataFlightStats !== application.arrivalAirport) {
-            throw new Error(`[${reqId}] Arrival airport invalid`);
+            throw new InconsistentFlightDataError(`[${reqId}] Arrival airport invalid`);
         }
 
         LOGGER.debug(`[${reqId}] airports whitelisted`);
     } catch (err) {
+        if (err instanceof AirportBlacklistedError || err instanceof AirportNotWhitelistedError || err instanceof FlightNotFoundError || err instanceof InconsistentFlightDataError) {
+            throw err;
+        }
         // @ts-expect-error error has field message
         LOGGER.error(err.message);
-        throw new Error(`[${reqId}] Flight not found`);
+        throw new FlightNotFoundError(`[${reqId}] Flight not found`);
     }
 }
 

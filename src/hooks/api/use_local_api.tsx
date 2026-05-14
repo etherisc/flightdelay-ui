@@ -1,5 +1,6 @@
 import { ApplicationData, PermitData } from "../../types/purchase_request";
 import { PurchaseFailedError, PurchaseNotPossibleError } from "../../utils/error";
+import { Reason } from "../../types/errors";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -29,6 +30,16 @@ export function useLocalApi() {
                 throw new PurchaseFailedError(result.transaction, result.decodedError);
             } else if (result.error === "BALANCE_ERROR") {
                 throw new PurchaseNotPossibleError();
+            } else if (result.error === "NO_FLIGHT_FOUND") {
+                const err = new Error(result.message);
+                // @ts-expect-error adding custom field
+                err.reason = Reason.NO_FLIGHT_FOUND;
+                throw err;
+            } else if (result.error === "INCONSISTENT_DATA") {
+                const err = new Error(result.message);
+                // @ts-expect-error adding custom field
+                err.reason = Reason.INCONSISTENT_DATA;
+                throw err;
             } else {
                 throw new Error(`Error sending purchase protection request: ${result.statusText}`);
             }   

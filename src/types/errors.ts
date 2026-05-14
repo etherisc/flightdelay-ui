@@ -35,3 +35,15 @@ export class AirportNotWhitelistedError extends Error {
         super(`Airport ${airport} is not whitelisted`);
     }
 }
+
+export class FlightNotFoundError extends Error {
+    constructor(msg?: string) {
+        super(msg || "Flight not found");
+    }
+}
+
+export class InconsistentFlightDataError extends Error {
+    constructor(msg?: string) {
+        super(msg || "Inconsistent flight data");
+    }
+}
