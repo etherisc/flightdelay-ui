@@ -85,6 +85,7 @@
             "departureDate": "Please select a departure date"
         },
         "no_flight_found": "No matching flight found",
+        "comm_error": "Unable to connect to flight data service. Please try again later.",
         "inconsistent_data": "The flight data provided by the flight data service is inconsistent and cannot be used for protection purposes.",
         "airport_not_whitelisted": "Protection for flights from {{dep}} to {{arr}} is not available. Please choose a different flight. Refer to the <0>complete list of approved airports here</0>.",
         "airport_blacklisted": "Protection for flights from or to {{airport}} is not available. Please choose a different flight. Refer to the <0>complete list of approved airports here</0>.",

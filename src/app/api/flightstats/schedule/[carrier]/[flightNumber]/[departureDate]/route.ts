@@ -18,8 +18,16 @@ export async function GET(
     const flightNumber = params.flightNumber;
     const departureDate = params.departureDate;
     LOGGER.info(`[${reqId}] fetching flight status for ${carrier} ${flightNumber} ${departureDate}`);
-    const year = departureDate.split('-')[0];
-    const month = departureDate.split('-')[1];
-    const day = departureDate.split('-')[2];
+
+    const dateMatch = departureDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!dateMatch) {
+        LOGGER.warn(`[${reqId}] invalid departure date format: ${departureDate}`);
+        return Response.json(
+            { error: 'invalid_date', message: 'Departure date must be in YYYY-MM-DD format' },
+            { status: 400, headers: { 'Content-Type': 'application/json', 'X-Proxy-Request-Id': reqId } }
+        );
+    }
+    const [, year, month, day] = dateMatch;
+
     return sendRequestAndReturnResponse(reqId, flightstatsScheduleUrl(carrier, flightNumber, year, month, day));
 }
