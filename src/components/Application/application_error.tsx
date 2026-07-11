@@ -80,7 +80,7 @@ export function ApplicationError({flightFound, flightData}: {flightFound: boolea
             default:
                 trackEvent(EVENT_API_ERROR, { category: 'flight_search', error: errorReasonApi });
                 return <Box sx={{ py: 2 }}>
-                    <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
+                    <Alert severity="error"><Trans k="error.unknown_error" /></Alert>
                 </Box>;
         }
         
