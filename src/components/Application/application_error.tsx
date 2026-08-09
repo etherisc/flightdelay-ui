@@ -76,11 +76,17 @@ export function ApplicationError({flightFound, flightData}: {flightFound: boolea
                     return <Box sx={{ py: 2 }}>
                         <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
                     </Box>;
-            
+
+            case Reason.INCONSISTENT_DATA:
+                    trackEvent(EVENT_API_ERROR, { category: 'flight_search', error: errorReasonApi });
+                    return <Box sx={{ py: 2 }}>
+                        <Alert severity="error"><Trans k="error.inconsistent_data" /></Alert>
+                    </Box>;
+
             default:
                 trackEvent(EVENT_API_ERROR, { category: 'flight_search', error: errorReasonApi });
                 return <Box sx={{ py: 2 }}>
-                    <Alert severity="error"><Trans k="error.no_flight_found" /></Alert>
+                    <Alert severity="error"><Trans k="error.comm_error" /></Alert>
                 </Box>;
         }
         

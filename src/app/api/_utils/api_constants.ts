@@ -1,7 +1,11 @@
 export const FLIGHTSTATS_BASE_URL = process.env.FLIGHTSTATS_BASE_URL || 'https://api.flightstats.com/flex';
 
-export const FLIGHTSTATS_APP_ID = process.env.FLIGHTSTATS_APP_ID || '123456789';
-export const FLIGHTSTATS_APP_KEY = process.env.FLIGHTSTATS_APP_KEY || '123456789';
+export const FLIGHTSTATS_APP_ID = process.env.FLIGHTSTATS_APP_ID || '';
+export const FLIGHTSTATS_APP_KEY = process.env.FLIGHTSTATS_APP_KEY || '';
+
+if (!FLIGHTSTATS_APP_ID || !FLIGHTSTATS_APP_KEY) {
+    console.error('WARNING: FLIGHTSTATS_APP_ID and/or FLIGHTSTATS_APP_KEY environment variables are not set. Flightstats API requests will fail.');
+}
 
 export const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_BASE_URL || 'https://flightdelay.app';
 

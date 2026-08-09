@@ -8,7 +8,7 @@ export function useFlightstatsApi() {
     async function fetchFlightData(carrier: string, flightNumber: string, departureDate: dayjs.Dayjs): Promise<{ flights: ScheduledFlight[], airports: Airport[], carrier: string, flightNumber: string}> {
         console.log("fetching flight data for", carrier, flightNumber, departureDate);
         const uri = `/api/flightstats/schedule/${encodeURIComponent(carrier)}/${encodeURIComponent(flightNumber)}/${encodeURIComponent(departureDate.format('YYYY-MM-DD'))}`;
-        const res = await fetch(uri, { cache: 'force-cache' });
+        const res = await fetch(uri, { cache: 'no-store' });
 
         if (! res.ok) {
             throw new Error(`Error fetching flightstats data: ${res.statusText}`);
@@ -26,7 +26,7 @@ export function useFlightstatsApi() {
         
         return {
             flights: jsonResponse.scheduledFlights as ScheduledFlight[],
-            airports: jsonResponse.appendix.airports as Airport[],
+            airports: jsonResponse.appendix?.airports as Airport[] ?? [],
             carrier,
             flightNumber,
         };
