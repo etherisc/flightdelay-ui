@@ -9,6 +9,25 @@ export enum Reason {
     NOT_ENOUGH_CAPACITY,
 }
 
+export enum PurchaseErrorCode {
+    NO_FLIGHT_FOUND = "NO_FLIGHT_FOUND",
+    INCONSISTENT_DATA = "INCONSISTENT_DATA",
+    AIRPORT_BLACKLISTED = "AIRPORT_BLACKLISTED",
+    AIRPORT_NOT_WHITELISTED = "AIRPORT_NOT_WHITELISTED",
+}
+
+export class FlightNotFoundError extends Error {
+    constructor(message = 'Flight not found') {
+        super(message);
+    }
+}
+
+export class InconsistentFlightDataError extends Error {
+    constructor(message = 'Inconsistent flight data') {
+        super(message);
+    }
+}
+
 /**
  * Exception thrown when a transaction fails. Contains the transaction receipt in field `transaction`.
  */

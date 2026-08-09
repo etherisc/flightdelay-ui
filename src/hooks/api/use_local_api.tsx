@@ -1,5 +1,6 @@
+import { PurchaseErrorCode } from "../../types/errors";
 import { ApplicationData, PermitData } from "../../types/purchase_request";
-import { PurchaseFailedError, PurchaseNotPossibleError } from "../../utils/error";
+import { PurchaseFailedError, PurchaseNotPossibleError, PurchaseValidationError } from "../../utils/error";
 
 // @ts-expect-error BigInt is not defined in the global scope
 BigInt.prototype.toJSON = function () {
@@ -29,8 +30,10 @@ export function useLocalApi() {
                 throw new PurchaseFailedError(result.transaction, result.decodedError);
             } else if (result.error === "BALANCE_ERROR") {
                 throw new PurchaseNotPossibleError();
+            } else if (Object.values(PurchaseErrorCode).includes(result.error as PurchaseErrorCode)) {
+                throw new PurchaseValidationError(result.error as PurchaseErrorCode);
             } else {
-                throw new Error(`Error sending purchase protection request: ${result.statusText}`);
+                throw new Error(result.message || `Error sending purchase protection request: ${res.statusText}`);
             }   
         } 
 

@@ -1,4 +1,5 @@
 import { DecodedError } from "ethers-decode-error";
+import { PurchaseErrorCode } from "../types/errors";
 
 export function ensureError(value: unknown): Error {
     if (value instanceof Error) return value;
@@ -48,6 +49,15 @@ export class PurchaseFailedError extends Error {
 export class PurchaseNotPossibleError extends Error {
     constructor() {
         super("Purchase not possible");
+    }
+}
+
+export class PurchaseValidationError extends Error {
+    code: PurchaseErrorCode;
+
+    constructor(code: PurchaseErrorCode) {
+        super(`Purchase validation failed: ${code}`);
+        this.code = code;
     }
 }
 
