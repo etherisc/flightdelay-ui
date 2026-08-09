@@ -95,9 +95,12 @@ export const flightDataSlice = createSlice({
             state.flightNumber = action.payload.flightNumber;
             state.departureDate = action.payload.departureDate;
         },
-        setError(state, action: PayloadAction<{message: string, level: string}>) {
+        setError(state, action: PayloadAction<{message: string, level: string, reason?: Reason}>) {
             state.errorMessage = action.payload.message;
             state.errorLevel = action.payload.level;
+            if (action.payload.reason !== undefined) {
+                state.errorReasonApi = action.payload.reason;
+            }
         },
         resetFlightData(state) {
             // assign initial state
