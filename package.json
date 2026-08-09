@@ -35,7 +35,7 @@
     "abi-coder": "^5.0.0",
     "axios": "^1.13.5",
     "bufferutil": "^4.1.0",
-    "dayjs": "^1.11.10",
+    "dayjs": "^1.11.20",
     "encoding": "^0.1.13",
     "ethers": "^6.13.5",
     "ethers-decode-error": "^2.1.3",
